@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Datepicker template</title>
+	<link rel="stylesheet" href="/dependencies/css/bootstrap.min.css">
+	<link rel="stylesheet" href="calendar.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+<div id='calendar' tabindex='0' class='popover' style='display: block; outline: none'></div>
+
+<script id="calendar-template" type="text/template">
+	<div class='arrow'></div>                        
+	<h3 class='popover-title'>{{calendarTitle}}</h3>
+	<div class='dropdown month-dropdown pull-left'>
+		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'> 
+			<span class='fa-chevron-circle-down'></span> 
+			<span class='current-month'>{{currentMonth}}</span>       
+		</button> 
+		<ul class='dropdown-menu' role='menu'>
+			{{#months}}
+			<li><a>{{.}}</a></li>
+			{{/months}}
+		</ul>              
+	</div>                                                       
+	<div class='dropdown year-dropdown pull-right'>
+		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+			<span class='current-year'>{{currentYear}}</span>
+			<span class='fa-chevron-circle-down'></span>
+		</button>                                      
+		<ul class='dropdown-menu' role='menu'>
+			{{#years}}
+			<li><a>{{.}}</a></li>
+			{{/years}}
+		</ul>              
+	</div>                                                       
+	<div class='calendar-content popover-content'>
+		<table class='table calendar-table'>       
+			<thead>
+				<tr>
+					{{#weekdays}}
+					<td>{{.}}</td>
+					{{/weekdays}}
+				</tr>
+			</thead>
+
+			<tbody>
+				{{#currentContent}}
+				<tr>
+					{{#.}}
+					<td>{{.}}</td>
+					{{/.}}
+				</tr>
+				{{/currentContent}}
+			</tbody>                                   
+		</table>
+	</div> 
+	<div class='popover-footer col-xs-12'>
+		<div class=" col-xs-6">
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDate}}>
+		</div>
+		<div class="col-xs-6">
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDate}}>
+		</div>
+	</div>   
+</script>
+
+	<script src="/dependencies/js/jquery.min.js"></script>
+	<script src="/dependencies/js/moment.min.js"></script>
+	<script src="/dependencies/js/mustache.min.js"></script>
+	<script src="/dependencies/js/bootstrap.min.js"></script>
+	<script src="calendarlogic.js"></script>
+	<script>
+		$(document).ready(function(){
+			var calendar = new Calendar({
+				calendarTitle: 'Steinwäldchen',
+			});
+
+			var $calendar = $('#calendar');
+			var $template = $('#calendar-template');
+			var html = Mustache.render($template.html(), calendar);
+			Mustache.parse(html); 
+			$calendar.html(html);
+		});
+	</script>
+</body>
+</html>
