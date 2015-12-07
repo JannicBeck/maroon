@@ -19,9 +19,29 @@
 	background-color: #D9EDF7;
 }
 
-.calendar-table tbody td.active{
+.calendar-table tbody td.start{
+  background-color: #DFF0D8;
+  border-left: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+
+.calendar-table tbody td.interval{
+  background-color: #F5F5F5;
+  border-left: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+
+.calendar-table tbody td.end{
+  background-color: #F2DEDE;
+  border-left: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+
+
+
+.calendar-table tbody td.today{
 	font-weight: bold;
-    color: Maroon;
+  color: Maroon;
 }
 
 

@@ -1,29 +1,51 @@
+// calendar module logic no html, css or jquery allowed!!
 function Calendar(options) {
 
 	var weekdays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-	var months = ['Januar', 'Februar', 'März', 'April',
+	var monthNames = ['Januar', 'Februar', 'März', 'April',
 	'Mai', 'Juni', 'Juli', 'August',
 	'September', 'Oktober', 'November', 'Dezember'];
 	var rowNumber = (options.rowNumber ? options.rowNumber : 5);
 	var calendarTitle = (options.calendarTitle ? options.calendarTitle : 'Calendar');	
-	var date = new Date();
-	var currentYear = (options.fromYear ? options.fromYear : date.getFullYear());
+	var currentDate = new Date();
+	var currentYear = (options.fromYear ? options.fromYear : currentDate.getFullYear());
 	var untilYear = (options.untilYear ? options.untilYear : currentYear + 5);
 	var religiousWeek = options.religiousWeek;
 	if(religiousWeek) { weekdays.unshift(weekdays.pop()) };
 	var years = getClosedInterval(currentYear, untilYear);
-	var currentMonth = months[date.getMonth()];
-	
-	var currentContent = getCalendarContent(date, rowNumber, religiousWeek);
+	var currentMonth = monthNames[currentDate.getMonth()];
+	var currentDay = ('0' + currentDate.getDate()).slice(-2);
+	var currentContent = getCalendarContent();
 
 	var startDate = '';
 	var endDate = '';
 
-	function getCalendarContent(date, rowNumber, religiousWeek){
+	function updateCalendar(){
+		this.currentContent = getCalendarContent();
+	}
 
+	function setMonth(month){
+		this.currentMonth = month;
+		this.currentDate.setMonth(monthNames.indexOf(month));
+	}
+
+	function setYear(year){
+		this.currentYear = year;
+		this.currentDate.setYear(year);
+	}
+
+	function setDay(day){
+		this.currentDay = day;
+		this.currentDate.setDate(day);
+	}
+
+	// buggy months always start on tuesday
+	function getCalendarContent(){
+
+		var date = new Date(currentDate);
 		date.setDate(1);
-		var startOfMonth = date.getDate();
-		var startOfContent = (religiousWeek ? -startOfMonth : -startOfMonth+1);
+		var startOfMonth = (religiousWeek ? date.getDay() : (date.getDay() + 6) %7);
+		var startOfContent = -startOfMonth + 1;
 		date.setDate(startOfContent);
 		var COLS = 7;
 		var content = new Array(rowNumber);
@@ -47,7 +69,10 @@ function Calendar(options) {
 		return interval;
 	}
 
-
+	// returns true if obj is a number
+	function isNumber(obj) { 
+		return !isNaN(parseFloat(obj)); 
+	}
 
 	// var dayOfTheWeek = weekdays[date.getDate()];
 
@@ -65,8 +90,9 @@ function Calendar(options) {
 
 	// Returns the date portion of a Date object as a string, using locale conventions
 	// date.toLocaleDateString()
-	return {months: months, currentMonth: currentMonth, currentYear: currentYear, years: years, 
+	return {currentDay: currentDay, monthNames: monthNames, currentMonth: currentMonth, currentYear: currentYear, years: years, 
 		weekdays: weekdays, currentContent: currentContent, startDate: startDate, endDate: endDate, 
-		calendarTitle: calendarTitle};
+		calendarTitle: calendarTitle, updateCalendar: updateCalendar, currentDate: currentDate, setDay: setDay,
+		setMonth: setMonth, setYear: setYear};
 
 }

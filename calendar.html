@@ -20,10 +20,10 @@
 			<span class='fa-chevron-circle-down'></span> 
 			<span class='current-month'>{{currentMonth}}</span>       
 		</button> 
-		<ul class='dropdown-menu' role='menu'>
-			{{#months}}
+		<ul class='dropdown-menu month-dropdown' role='menu'>
+			{{#monthNames}}
 			<li><a>{{.}}</a></li>
-			{{/months}}
+			{{/monthNames}}
 		</ul>              
 	</div>                                                       
 	<div class='dropdown year-dropdown pull-right'>
@@ -31,7 +31,7 @@
 			<span class='current-year'>{{currentYear}}</span>
 			<span class='fa-chevron-circle-down'></span>
 		</button>                                      
-		<ul class='dropdown-menu' role='menu'>
+		<ul class='dropdown-menu year-dropdown' role='menu'>
 			{{#years}}
 			<li><a>{{.}}</a></li>
 			{{/years}}
@@ -76,14 +76,83 @@
 	<script>
 		$(document).ready(function(){
 			var calendar = new Calendar({
-				calendarTitle: 'Steinwäldchen',
+				calendarTitle: 'Steinwäldchen'
 			});
+
 
 			var $calendar = $('#calendar');
 			var $template = $('#calendar-template');
-			var html = Mustache.render($template.html(), calendar);
-			Mustache.parse(html); 
-			$calendar.html(html);
+
+			function render(){
+				var html = Mustache.render($template.html(), calendar);
+				Mustache.parse(html); 
+				$calendar.html(html);
+
+				var $monthList = $calendar.find('.month-dropdown li');
+				$monthList.on('click', monthSelect);
+
+				var $yearList = $calendar.find('.year-dropdown li');
+				$yearList.on('click', yearSelect);
+
+				var $days = $calendar.find('.calendar-table tbody tr');
+				$days.on('click', 'td', daySelect);
+
+
+				// issues come back and its gone
+				$days.find(':contains(' + calendar.currentDay + '):first').addClass('today');
+
+
+			}
+
+			render();
+
+			function monthSelect(e){
+				var $this = $(this);
+				var month = $this.find('a').html();
+				calendar.setMonth(month);
+				calendar.updateCalendar();
+				render();
+			}
+
+			function yearSelect(e){
+				var $this = $(this);
+				var year = $this.find('a').html();
+				calendar.setYear(year);
+				calendar.updateCalendar();
+				render();
+			}
+
+			var dayClicks = 0;
+			function daySelect(e){
+
+				var $this = $(this);
+				var day = $this.html();
+				calendar.setDay(day);
+
+				// change to if(startDate), if(endDate), if(startDate && endDate), if(startDate > endDate)...
+				if(dayClicks == 0){
+					$this.addClass('start');
+					// update calendar.startDate
+					dayClicks++;
+				} else if($this.hasClass('start')){
+					$this.removeClass('start');
+					dayClicks--;
+				} else if($this.hasClass('end')){
+					$this.removeClass('end');
+					dayClicks--;
+				} else{
+					$this.addClass('end');
+					// update calendar.endDate
+					// update calendar.interval
+					// $interval.addClass('interval');
+					dayClicks++;
+				}
+				
+			}
+
+
+
+
 		});
 	</script>
 </body>
