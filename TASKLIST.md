@@ -6,6 +6,7 @@
 - [ ] Adobe Colorwheel styling
 - [ ] Dynamic size
 - [ ] Mobile Fullscreen
+- [ ] Implement Prototypal Inheritance
 
 ## Functional
 - [ ] Year 
