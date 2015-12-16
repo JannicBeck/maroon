@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Datepicker template</title>
+	<title>Calendar Template - Mustache</title>
 	<link rel="stylesheet" href="/dependencies/css/bootstrap.min.css">
 	<link rel="stylesheet" href="calendar.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-
 </head>
 <body>
 
@@ -41,9 +40,9 @@
 		<table class='table calendar-table'>       
 			<thead>
 				<tr>
-					{{#weekdays}}
+					{{#dayNames}}
 					<td>{{.}}</td>
-					{{/weekdays}}
+					{{/dayNames}}
 				</tr>
 			</thead>
 
@@ -72,88 +71,19 @@
 	<script src="/dependencies/js/moment.min.js"></script>
 	<script src="/dependencies/js/mustache.min.js"></script>
 	<script src="/dependencies/js/bootstrap.min.js"></script>
-	<script src="calendarlogic.js"></script>
+	<script src="calendarLogic.js"></script>
+	<script src="calendarPresentation.js"></script>
+
 	<script>
-		$(document).ready(function(){
-			var calendar = new Calendar({
-				calendarTitle: 'Steinwäldchen'
-			});
+	$(document).ready(function(){
+		var $calendar = $('#calendar');
+		var $template = $('#calendar-template');
 
+		var myCalendar = new Calendar({});
+		startCalendar({ calendar: myCalendar, $template: $template, 
+				$calendar: $calendar });
 
-			var $calendar = $('#calendar');
-			var $template = $('#calendar-template');
-
-			function render(){
-				var html = Mustache.render($template.html(), calendar);
-				Mustache.parse(html); 
-				$calendar.html(html);
-
-				var $monthList = $calendar.find('.month-dropdown li');
-				$monthList.on('click', monthSelect);
-
-				var $yearList = $calendar.find('.year-dropdown li');
-				$yearList.on('click', yearSelect);
-
-				var $days = $calendar.find('.calendar-table tbody tr');
-				$days.on('click', 'td', daySelect);
-
-
-				// issues come back and its gone
-				$days.find(':contains(' + calendar.currentDay + '):first').addClass('today');
-
-
-			}
-
-			render();
-
-			function monthSelect(e){
-				var $this = $(this);
-				var month = $this.find('a').html();
-				calendar.setMonth(month);
-				calendar.updateCalendar();
-				render();
-			}
-
-			function yearSelect(e){
-				var $this = $(this);
-				var year = $this.find('a').html();
-				calendar.setYear(year);
-				calendar.updateCalendar();
-				render();
-			}
-
-			var dayClicks = 0;
-			function daySelect(e){
-
-				var $this = $(this);
-				var day = $this.html();
-				calendar.setDay(day);
-
-				// change to if(startDate), if(endDate), if(startDate && endDate), if(startDate > endDate)...
-				if(dayClicks == 0){
-					$this.addClass('start');
-					// update calendar.startDate
-					dayClicks++;
-				} else if($this.hasClass('start')){
-					$this.removeClass('start');
-					dayClicks--;
-				} else if($this.hasClass('end')){
-					$this.removeClass('end');
-					dayClicks--;
-				} else{
-					$this.addClass('end');
-					// update calendar.endDate
-					// update calendar.interval
-					// $interval.addClass('interval');
-					dayClicks++;
-				}
-				
-			}
-
-
-
-
-		});
+	});
 	</script>
 </body>
 </html>
