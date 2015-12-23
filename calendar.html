@@ -20,9 +20,9 @@
 			<span class='current-month'>{{currentMonth}}</span>       
 		</button> 
 		<ul class='dropdown-menu month-dropdown' role='menu'>
-			{{#monthNames}}
+			{{#monthList}}
 			<li><a>{{.}}</a></li>
-			{{/monthNames}}
+			{{/monthList}}
 		</ul>              
 	</div>                                                       
 	<div class='dropdown year-dropdown pull-right'>
@@ -31,18 +31,18 @@
 			<span class='fa-chevron-circle-down'></span>
 		</button>                                      
 		<ul class='dropdown-menu year-dropdown' role='menu'>
-			{{#years}}
+			{{#yearList}}
 			<li><a>{{.}}</a></li>
-			{{/years}}
+			{{/yearList}}
 		</ul>              
 	</div>                                                       
 	<div class='calendar-content popover-content'>
 		<table class='table calendar-table'>       
 			<thead>
 				<tr>
-					{{#dayNames}}
+					{{#dayList}}
 					<td>{{.}}</td>
-					{{/dayNames}}
+					{{/dayList}}
 				</tr>
 			</thead>
 
@@ -59,7 +59,7 @@
 	</div> 
 	<div class='popover-footer col-xs-12'>
 		<div class=" col-xs-6">
-			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDate}}>
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{currentDate}}>
 		</div>
 		<div class="col-xs-6">
 			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDate}}>
@@ -79,8 +79,12 @@
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
 
-		var myCalendar = new Calendar({});
-		startCalendar({ calendar: myCalendar, $template: $template, 
+		var myCalendar = new Calendar({
+			// 1 means start week on monday
+			startOfWeek: 0
+		});
+
+		launchCalendar({ calendar: myCalendar, $template: $template, 
 				$calendar: $calendar });
 
 	});

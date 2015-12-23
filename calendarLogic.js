@@ -4,46 +4,58 @@
 // complete off the shelf but at the same time flexibel (mustache, handlebars etc.)
 // and not because of a switch to turn off or on, but because of small loosely coupled parts
 
+// implement explicit scope
 // calendar module logic no html, css or jquery allowed!!
 function Calendar(options) {
 
+	// this has no use yet add a listener or smth
 	this.options = options;
-	this.months = getClosedInterval(0, 11);
-	this.weekdays = getClosedInterval(0, 6);	
+
 	this.currentDate = options.startDate || new Date();
-	this.untilDate = options.untilDate || new Date((this.currentDate.getFullYear() + 5).toString()); 
-	this.years = getClosedInterval(this.currentDate.getFullYear(), this.untilDate.getFullYear());
-	this.currentContent = updateContent(this.currentDate);
+	var currentYear = this.currentDate.getFullYear();
 
-	this.setContent = function(date){
-		this.currentContent = updateContent(date);
+	this.untilDate = options.untilDate || new Date((currentYear + 5).toString()); 
+	var untilYear = this.untilDate.getFullYear();
+
+	this.yearList = getClosedInterval(currentYear, untilYear);
+	
+	this.setContent = function(){
+		this.currentContent = updateContent(this.currentDate, this.options);
 	}
 
-	this.setMonth = function(month){
-		this.currentDate.setMonth(month);
-	}
+	// initialize content
+	this.setContent();
 
-	this.setYear = function(year){
-		this.currentDate.setYear(year);
-	}
+	// straight line code vs functions
+	// maybe implement more generic so we can generate 
+	//dates from Interval with startDate endDate also?
+	function updateContent(currentDate, options){
 
-	// maybe seperate operations? seems to heavy
-	// pass paramters instead of scoping?
-	function updateContent(currentDate){
-
+		// clone date so we don't modify it with object reference
 		var date = new Date(currentDate);
-		var rowNumber = options.rowNumber || 5;
+
+		// function getStartOfMonth(){}
+		var daysOfWeek = getClosedInterval(0, 6);
+		var startOfWeek = options.startOfWeek || 0;
+		// I dont like this startOfMonth should be normalized
+		// get start of Month according to start of week
 		date.setDate(1);
-		//var months = getClosedInterval(0, 11);
-		//months.unshift(months.pop());
-		// I don't like this
-		var startOfMonth = (options.religiousWeek ? date.getDay() : (date.getDay() + 6) %7);
+		// this could be a function and reused in launchCalendar
+		var i = 0;
+		while(i < startOfWeek){
+			daysOfWeek.unshift(daysOfWeek.pop());
+			i++;
+		}
+		var	startOfMonth = daysOfWeek[date.getDay()];
+
+		// function generateContent(){}
+		var rowNumber = options.rowNumber || 5;
+
 		var startOfContent = -startOfMonth + 1;
 		date.setDate(startOfContent);
 		var COLS = 7;
 		var content = new Array(rowNumber);
 
-		// i don't like it 
 		for(var i = 0; i < rowNumber; i++){
 			content[i] = new Array(COLS);
 			for(var j = 0; j < COLS; j++){
@@ -51,7 +63,15 @@ function Calendar(options) {
 				date.setDate(date.getDate() + 1);
 			}
 		}
+
 		return content;
+	}
+
+	// TBI
+	// use getClosedInterval and then iterate over interval
+	// and assign content on [i]
+	function getDateInterval(){
+
 	}
 
 	// returns a closed interval from start to end
