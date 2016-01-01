@@ -1,9 +1,4 @@
-.dropdown-menu {
-  min-width: 0px;
-}
-
 /* Custom default button */
-
 .btn-default,
 .btn-default:hover,
 .btn-default:focus {
@@ -55,11 +50,12 @@
 }
 
 .dropdown-toggle{
-	margin: 5px 5px 0px 5px;
+  margin: 5px 5px 0px 5px;
 }
 
 .dropdown-menu{
-	margin: 2px 5px 0px 5px;
+  margin: 2px 5px 0px 5px;
+  min-width: 0px;
 }
 
 .popover-footer {
@@ -73,3 +69,7 @@
   border-radius: 0 0 5px 5px;
 }
 
+.year-dropdown ul {
+  max-height: 200px;
+  overflow-x: hidden;
+}

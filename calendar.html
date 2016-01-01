@@ -29,7 +29,7 @@
 		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
 			<span class='current-year'>{{currentYear}}</span>
 			<span class='fa-chevron-circle-down'></span>
-		</button>                                      
+		</button>  
 		<ul class='dropdown-menu year-dropdown' role='menu'>
 			{{#yearList}}
 			<li><a>{{.}}</a></li>
@@ -59,10 +59,10 @@
 	</div> 
 	<div class='popover-footer col-xs-12'>
 		<div class=" col-xs-6">
-			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{currentDate}}>
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{}}>
 		</div>
 		<div class="col-xs-6">
-			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDate}}>
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{}}>
 		</div>
 	</div>   
 </script>

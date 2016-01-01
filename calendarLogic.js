@@ -1,86 +1,106 @@
+/*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
+"use strict";
+
 // small loosely coupled parts that do one thing very well
 // but at the same time coherent, consistent overall design when you put pieces together
 // they fit together seamlessly no impedance missmatch
 // complete off the shelf but at the same time flexibel (mustache, handlebars etc.)
 // and not because of a switch to turn off or on, but because of small loosely coupled parts
-
-// implement explicit scope
 // calendar module logic no html, css or jquery allowed!!
-function Calendar(options) {
+var Calendar = function (options) {
 
-	// this has no use yet add a listener or smth
-	this.options = options;
+    // returns a closed interval from start to end
+    var closedInterval = function (start, end) {
+        if (start > end) { return []; }
+        end++;
+        var interval = [];
+        interval.length = end - start;
+        var i = start;
+        do {
+            interval[i - start] = i;
+            i++;
+        } while (i < end);
+        return interval;
+    };
 
-	this.currentDate = options.startDate || new Date();
-	var currentYear = this.currentDate.getFullYear();
+    // returns a closed date interval from startDate to endDate
+    var closedDateInterval = function (startDate, endDate) {
 
-	this.untilDate = options.untilDate || new Date((currentYear + 5).toString()); 
-	var untilYear = this.untilDate.getFullYear();
+        if (startDate > endDate) { return []; }
+        endDate.setDate(endDate.getDate() + 1);
+        var dateInterval = [];
+        startDate = new Date(startDate);
 
-	this.yearList = getClosedInterval(currentYear, untilYear);
-	
-	this.setContent = function(){
-		this.currentContent = updateContent(this.currentDate, this.options);
-	}
+        do {
+            dateInterval.push(startDate);
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate() + 1);
+        } while (startDate < endDate);
+        return dateInterval;
+    };
 
-	// initialize content
-	this.setContent();
+    // straight line code vs functions
+    // maybe implement more generic so we can generate 
+    // dates from Interval with startDate endDate also?
+    var generateContent = function (currentDate, options) {
+        // clone date so we don't modify it with object reference
+        var date = new Date(currentDate);
 
-	// straight line code vs functions
-	// maybe implement more generic so we can generate 
-	//dates from Interval with startDate endDate also?
-	function updateContent(currentDate, options){
+        // get start of month according to start of week
+        var daysOfWeek = closedInterval(0, 6);
+        var startOfWeek = options.startOfWeek || 0;
+        // I dont like this startOfMonth should be normalized
+        date.setDate(1);
 
-		// clone date so we don't modify it with object reference
-		var date = new Date(currentDate);
+        // this could be a function and reused in launchCalendar
+        var k = 0;
+        while (k < startOfWeek) {
+            daysOfWeek.unshift(daysOfWeek.pop());
+            k++;
+        }
+        var startOfMonth = daysOfWeek[date.getDay()];
 
-		// function getStartOfMonth(){}
-		var daysOfWeek = getClosedInterval(0, 6);
-		var startOfWeek = options.startOfWeek || 0;
-		// I dont like this startOfMonth should be normalized
-		// get start of Month according to start of week
-		date.setDate(1);
-		// this could be a function and reused in launchCalendar
-		var i = 0;
-		while(i < startOfWeek){
-			daysOfWeek.unshift(daysOfWeek.pop());
-			i++;
-		}
-		var	startOfMonth = daysOfWeek[date.getDay()];
+        // generate calendar content
+        // replace with closedDateInterval and then slice to rowNumber
+        // and 7 columns 
+        // or call closedDateInterval multiple times
+        var rowNumber = options.rowNumber || 5;
 
-		// function generateContent(){}
-		var rowNumber = options.rowNumber || 5;
+        var startOfContent = -startOfMonth + 1;
+        date.setDate(startOfContent);
+        var COLS = 7;
+        var content = [];
+        content.length = rowNumber;
 
-		var startOfContent = -startOfMonth + 1;
-		date.setDate(startOfContent);
-		var COLS = 7;
-		var content = new Array(rowNumber);
+        for (var i = 0; i < rowNumber; i++) {
+            content[i] = [];
+            content[i].length = COLS;
+            for (var j = 0; j < COLS; j++) {
+                content[i][j] = new Date(date);
+                date.setDate(date.getDate() + 1);
+            }
+        }
+        return content;
+    };
 
-		for(var i = 0; i < rowNumber; i++){
-			content[i] = new Array(COLS);
-			for(var j = 0; j < COLS; j++){
-				content[i][j] = new Date(date);
-				date.setDate(date.getDate() + 1);
-			}
-		}
+    // this has no use yet add a listener or smth
+    this.options = options;
 
-		return content;
-	}
+    this.currentDate = options.startDate || new Date();
+    var currentYear = this.currentDate.getFullYear();
 
-	// TBI
-	// use getClosedInterval and then iterate over interval
-	// and assign content on [i]
-	function getDateInterval(){
+    this.untilDate = options.untilDate || new Date((currentYear + 5).toString());
+    var untilYear = this.untilDate.getFullYear();
 
-	}
+    this.yearList = closedInterval(currentYear, untilYear);
 
-	// returns a closed interval from start to end
-	function getClosedInterval(start, end){
-		var interval = new Array(end-start);
-		for(var i = start; i <= end; i++){
-			interval[i-start] = i;
-		}
-		return interval;
-	}
+    this.setContent = function () {
+        this.currentContent = generateContent(this.currentDate, this.options);
+    };
 
-}
+    // initialize content
+    this.setContent();
+
+
+
+};
