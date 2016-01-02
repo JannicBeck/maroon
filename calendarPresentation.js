@@ -54,6 +54,7 @@ var launchCalendar = function (options) {
     }
 
     function yearSelect(e) {
+        console.log('yearSelect fired');
         var $this = $(this);
         var year = $this.find('a').html();
         calendar.currentDate.setYear(year);
@@ -62,8 +63,11 @@ var launchCalendar = function (options) {
     }
 
     function daySelect(e) {
+        console.log('daySelect fired');
         var $this = $(this);
         var day = $this.html();
+        console.log(day);
+        calendar.setStartDateInterval(calendar.currentDate);
     }
 
     // I don't like this, title, month/dayList, years do not have to be updated
@@ -80,6 +84,10 @@ var launchCalendar = function (options) {
         var endDate = calendar.endDate;
         var currentMonth = monthList[currentDate.getMonth()];
         var currentContent = formatContent(calendar.currentContent);
+        var startDateInterval = calendar.startDateInterval;
+        var endDateInterval = calendar.endDateInterval;
+        var dateInterval = calendar.dateInterval;
+        var setDateInterval = calendar.setDateInterval;
 
         function formatContent(content) {
             // copy content so we won't modify the calendar object
@@ -103,7 +111,9 @@ var launchCalendar = function (options) {
                 dayList: dayList,
                 currentContent: currentContent,
                 calendarTitle: calendarTitle,
-                currentDate: currentDate
+                currentDate: currentDate,
+                startDateInterval: startDateInterval,
+                endDateInterval: endDateInterval
             };
     }
 };

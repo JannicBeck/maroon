@@ -1,4 +1,5 @@
 /*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
+/*jshint strict: true*/
 "use strict";
 
 // small loosely coupled parts that do one thing very well
@@ -37,30 +38,33 @@ var Calendar = function (options) {
         return dateInterval;
     };
 
+    // straight-line code over functions
     var generateContent = function (date, options) {
-        // clone date so we don't modify it with object reference
-        var dateClone = new Date(date);
+        // clone date so we don't modify it via object reference
+        date = new Date(date);
 
         // get start of month according to start of week
+        // I dont like this, think of another mapping function, this could be 1 line of code
+        // but I can reuse it for launchCalendar
         var daysOfWeek = closedInterval(0, 6);
         var startOfWeek = options.startOfWeek || 0;
-        dateClone.setDate(1);
+        date.setDate(1);
         var k = 0;
         while (k < startOfWeek) {
             daysOfWeek.unshift(daysOfWeek.pop());
             k++;
         }
-        var startOfMonth = daysOfWeek[dateClone.getDay()];
+        var startOfMonth = daysOfWeek[date.getDay()];
 
         // generate calendar content
         var rowNumber = options.rowNumber || 6;
         var startOfContent = -startOfMonth + 1;
-        dateClone.setDate(startOfContent);
+        date.setDate(startOfContent);
         var COLS = 7;
         var cellNumber = rowNumber * COLS;
-        var endDate = new Date(dateClone);
+        var endDate = new Date(date);
         endDate.setDate(endDate.getDate() + cellNumber - 1);
-        var dateInterval = closedDateInterval(dateClone, endDate);
+        var dateInterval = closedDateInterval(date, endDate);
         var content = [];
         for (var i = 0; i < rowNumber; i++) {
             content[i] = dateInterval.splice(0, COLS);
@@ -74,17 +78,22 @@ var Calendar = function (options) {
 
     this.currentDate = options.startDate || new Date();
     var currentYear = this.currentDate.getFullYear();
-
-    this.untilDate = options.untilDate || new Date((currentYear + 5).toString());
-    var untilYear = this.untilDate.getFullYear();
-
+    this.endDate = options.endDate || new Date((currentYear + 5).toString());
+    var untilYear = this.endDate.getFullYear();
     this.yearList = closedInterval(currentYear, untilYear);
-
     this.setContent = function () {
         this.currentContent = generateContent(this.currentDate, this.options);
     };
-
-    // initialize content
     this.setContent();
+
+    this.setDateInterval = function () {
+        this.dateInterval = closedDateInterval(this.startDateInterval, this.endDateInterval);
+    };
+    this.setStartDateInterval = function (date) {
+        this.startDateInterval = new Date(date);
+    };
+    this.setEndDateInterval = function (date) {
+        this.endDateInterval = new Date(date);
+    };
 
 };

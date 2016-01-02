@@ -59,10 +59,10 @@
 	</div> 
 	<div class='popover-footer col-xs-12'>
 		<div class=" col-xs-6">
-			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{}}>
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDateInterval}}>
 		</div>
 		<div class="col-xs-6">
-			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{}}>
+			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDateInterval}}>
 		</div>
 	</div>   
 </script>
@@ -83,6 +83,10 @@
 			// 1 means start week on monday
 			startOfWeek: 0
 		});
+		console.log(myCalendar.startDateInterval);
+		console.log(myCalendar.endDateInterval);
+		console.log(myCalendar.setDateInterval);
+		console.log(myCalendar.dateInterval);
 
 		launchCalendar({ calendar: myCalendar, $template: $template, 
 				$calendar: $calendar });
