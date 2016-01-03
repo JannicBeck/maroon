@@ -46,15 +46,15 @@ var Calendar = function (options) {
         // get start of month according to start of week
         // I dont like this, think of another mapping function, this could be 1 line of code
         // but I can reuse it for launchCalendar
-        var daysOfWeek = closedInterval(0, 6);
+        var dayList = closedInterval(0, 6);
         var startOfWeek = options.startOfWeek || 0;
         date.setDate(1);
         var k = 0;
         while (k < startOfWeek) {
-            daysOfWeek.unshift(daysOfWeek.pop());
+            dayList.unshift(dayList.pop());
             k++;
         }
-        var startOfMonth = daysOfWeek[date.getDay()];
+        var startOfMonth = dayList[date.getDay()];
 
         // generate calendar content
         var rowNumber = options.rowNumber || 6;

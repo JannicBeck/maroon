@@ -75,7 +75,7 @@
 	<script src="calendarPresentation.js"></script>
 
 	<script>
-	$(document).ready(function(){
+	$(document).ready(function($){
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
 
@@ -91,7 +91,7 @@
 		launchCalendar({ calendar: myCalendar, $template: $template, 
 				$calendar: $calendar });
 
-	});
+	}(jQuery));
 	</script>
 </body>
 </html>

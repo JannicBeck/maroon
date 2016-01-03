@@ -2,19 +2,10 @@
 "use strict";
 // you can write your own presentation on top of the logic
 // a change here should never lead to a change in the logic
-// integrate this module into the calendar object? f.e. myCalendar.launchCalendar(options)
+// integrate this module into the calendar object? f.e. myCalendar.launch(options)
 var launchCalendar = function (options) {
 
-    // functionality to exclude days?
     var calendar = options.calendar;
-    var calendarTitle = options.calendarTitle || 'Calendar';
-    var dayList = options.dayList || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    var monthList = options.monthList || ['January', 'February', 'March', 'April',
-        'May', 'June', 'July', 'August',
-        'September', 'October', 'November', 'December'];
-    // is it really a good idea to seperate dayList and startOfWeek?
-    // maybe implement locale and moment, but also allow for dayList option
-
     var $calendar = options.$calendar;
     var $template = options.$template;
 
@@ -30,17 +21,10 @@ var launchCalendar = function (options) {
         $calendar.html(html);
     }
 
-
-    // I don't like to rebind events everytime we render maybe use partials or smth?
     function bindEvents() {
-        var $monthList = $calendar.find('.month-dropdown li');
-        $monthList.on('click', monthSelect);
-
-        var $yearList = $calendar.find('.year-dropdown li');
-        $yearList.on('click', yearSelect);
-
-        var $days = $calendar.find('.calendar-table tbody tr');
-        $days.on('click', 'td', daySelect);
+        $calendar.on("click", '.month-dropdown li', monthSelect);
+        $calendar.on("click", '.year-dropdown li', yearSelect);
+        $calendar.on("click", '.calendar-table tbody tr', daySelect);
     }
 
     function monthSelect(e) {
@@ -71,25 +55,20 @@ var launchCalendar = function (options) {
     }
 
     // I don't like this, title, month/dayList, years do not have to be updated
-    // on month/year/day select, basically only content
     // I like the revealing pattern though
     function generateView() {
 
-        // wow such ugly very unconventional
-        var currentDate = calendar.currentDate;
-        var currentYear = currentDate.getFullYear();
-        var currentDay = currentDate.getDate();
-        var yearList = calendar.yearList;
-        var startDate = calendar.startDate;
-        var endDate = calendar.endDate;
-        var currentMonth = monthList[currentDate.getMonth()];
-        var currentContent = formatContent(calendar.currentContent);
-        var startDateInterval = calendar.startDateInterval;
-        var endDateInterval = calendar.endDateInterval;
-        var dateInterval = calendar.dateInterval;
-        var setDateInterval = calendar.setDateInterval;
+        var generateDefaultDayList = function (startOfWeek) {
+            var dayList = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            var k = 0;
+            while (k < startOfWeek) {
+                dayList.push(dayList.shift());
+                k++;
+            }
+            return dayList;
+        };
 
-        function formatContent(content) {
+        var formatContent = function (content) {
             // copy content so we won't modify the calendar object
             var formattedContent = content.map(function (row) {
                 return row.slice(0);
@@ -97,23 +76,39 @@ var launchCalendar = function (options) {
 
             formattedContent.forEach(function (row) {
                 row.forEach(function (col, j) {
+                    // ugly two digit hack use moment instead
                     row[j] = ('0' + col.getDate()).slice(-2);
                 });
             });
             return formattedContent;
-        }
+        };
 
-        return {currentDay: currentDay,
-                monthList: monthList,
-                currentMonth: currentMonth,
-                currentYear: currentYear,
+        var calendarTitle = options.calendarTitle || 'Calendar';
+        var yearList = calendar.yearList;
+        var monthList = options.monthList || ['January', 'February', 'March', 'April',
+                                                'May', 'June', 'July', 'August',
+                                                'September', 'October', 'November', 'December'];
+        var dayList = options.dayList || generateDefaultDayList(calendar.options.startOfWeek);
+
+        // wow such ugly very unconventional
+        var currentDate = calendar.currentDate;
+        var currentYear = currentDate.getFullYear();
+        var currentMonth = monthList[currentDate.getMonth()];
+        var startDate = calendar.startDate;
+        var endDate = calendar.endDate;
+        var currentContent = formatContent(calendar.currentContent);
+        var startDateInterval = calendar.startDateInterval;
+        var endDateInterval = calendar.endDateInterval;
+
+        return {calendarTitle: calendarTitle,
                 yearList: yearList,
+                monthList: monthList,
                 dayList: dayList,
+                currentYear: currentYear,
+                currentMonth: currentMonth,
                 currentContent: currentContent,
-                calendarTitle: calendarTitle,
-                currentDate: currentDate,
                 startDateInterval: startDateInterval,
-                endDateInterval: endDateInterval
+                endDateInterval: endDateInterval 
             };
     }
 };
