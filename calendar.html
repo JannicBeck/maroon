@@ -12,32 +12,32 @@
 <div id='calendar' tabindex='0' class='popover' style='display: block; outline: none'></div>
 
 <script id="calendar-template" type="text/template">
-	<div class='arrow'></div>                        
+	<div class='arrow'></div>
 	<h3 class='popover-title'>{{calendarTitle}}</h3>
 	<div class='dropdown month-dropdown pull-left'>
-		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'> 
-			<span class='fa-chevron-circle-down'></span> 
-			<span class='current-month'>{{currentMonth}}</span>       
-		</button> 
+		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+			<span class='fa-chevron-circle-down'></span>
+			<span class='current-month'>{{currentMonth}}</span>
+		</button>
 		<ul class='dropdown-menu month-dropdown' role='menu'>
 			{{#monthList}}
 			<li><a>{{.}}</a></li>
 			{{/monthList}}
-		</ul>              
-	</div>                                                       
+		</ul>
+	</div>
 	<div class='dropdown year-dropdown pull-right'>
 		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
 			<span class='current-year'>{{currentYear}}</span>
 			<span class='fa-chevron-circle-down'></span>
-		</button>  
+		</button>
 		<ul class='dropdown-menu year-dropdown' role='menu'>
 			{{#yearList}}
 			<li><a>{{.}}</a></li>
 			{{/yearList}}
-		</ul>              
-	</div>                                                       
+		</ul>
+	</div>
 	<div class='calendar-content popover-content'>
-		<table class='table calendar-table'>       
+		<table class='table calendar-table'>
 			<thead>
 				<tr>
 					{{#dayList}}
@@ -54,9 +54,9 @@
 					{{/.}}
 				</tr>
 				{{/currentContent}}
-			</tbody>                                   
+			</tbody>
 		</table>
-	</div> 
+	</div>
 	<div class='popover-footer col-xs-12'>
 		<div class=" col-xs-6">
 			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDateInterval}}>
@@ -64,7 +64,7 @@
 		<div class="col-xs-6">
 			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDateInterval}}>
 		</div>
-	</div>   
+	</div>
 </script>
 
 	<script src="/dependencies/js/jquery.min.js"></script>
@@ -75,7 +75,7 @@
 	<script src="calendarPresentation.js"></script>
 
 	<script>
-	$(document).ready(function($){
+	$(function($){
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
 
@@ -88,8 +88,11 @@
 		console.log(myCalendar.setDateInterval);
 		console.log(myCalendar.dateInterval);
 
-		launchCalendar({ calendar: myCalendar, $template: $template, 
-				$calendar: $calendar });
+		var options = { calendar: myCalendar, $template: $template,
+				$calendar: $calendar, calendarTitle: 'My Awesome Calendar',
+			 	monthList: moment.months(), dayList: moment.weekdaysMin()}
+
+		launchCalendar(options);
 
 	}(jQuery));
 	</script>
