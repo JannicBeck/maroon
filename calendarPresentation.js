@@ -8,6 +8,7 @@ var launchCalendar = function (options) {
     var calendar = options.calendar;
     var $calendar = options.$calendar;
     var $template = options.$template;
+    var view = generateView;
 
     (function init() {
         render();
@@ -15,7 +16,7 @@ var launchCalendar = function (options) {
     }());
 
     function render() {
-        var view = generateView();
+        view = generateView();
         var html = Mustache.render($template.html(), view);
         Mustache.parse(html);
         $calendar.html(html);
@@ -28,17 +29,15 @@ var launchCalendar = function (options) {
     }
 
     function monthSelect(e) {
-        console.log('monthSelect fired');
         var $this = $(this);
         var monthName = $this.find('a').html();
-        var month = monthList.indexOf(monthName);
+        var month = view.monthList.indexOf(monthName);
         calendar.currentDate.setMonth(month);
         calendar.setContent();
         render();
     }
 
     function yearSelect(e) {
-        console.log('yearSelect fired');
         var $this = $(this);
         var year = $this.find('a').html();
         calendar.currentDate.setYear(year);
@@ -47,7 +46,6 @@ var launchCalendar = function (options) {
     }
 
     function daySelect(e) {
-        console.log('daySelect fired');
         var $this = $(this);
         var day = $this.html();
         console.log(day);
@@ -108,7 +106,7 @@ var launchCalendar = function (options) {
                 currentMonth: currentMonth,
                 currentContent: currentContent,
                 startDateInterval: startDateInterval,
-                endDateInterval: endDateInterval 
+                endDateInterval: endDateInterval
             };
     }
 };

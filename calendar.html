@@ -68,7 +68,7 @@
 </script>
 
 	<script src="/dependencies/js/jquery.min.js"></script>
-	<script src="/dependencies/js/moment.min.js"></script>
+	<script src="/dependencies/js/moment-with-locales.min.js"></script>
 	<script src="/dependencies/js/mustache.min.js"></script>
 	<script src="/dependencies/js/bootstrap.min.js"></script>
 	<script src="calendarLogic.js"></script>
@@ -87,7 +87,7 @@
 		console.log(myCalendar.endDateInterval);
 		console.log(myCalendar.setDateInterval);
 		console.log(myCalendar.dateInterval);
-
+		moment.locale('de');
 		var options = { calendar: myCalendar, $template: $template,
 				$calendar: $calendar, calendarTitle: 'My Awesome Calendar',
 			 	monthList: moment.months(), dayList: moment.weekdaysMin()}

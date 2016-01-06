@@ -15,7 +15,6 @@ var Calendar = function (options) {
         if (start > end) { return []; }
         end++;
         var interval = [];
-        interval.length = end - start;
         var i = start;
         do {
             interval[i - start] = i;
@@ -37,6 +36,36 @@ var Calendar = function (options) {
         } while (startDate <= endDate);
         return dateInterval;
     };
+
+    // x start of the interval
+    // y end of the interval
+    // incFun function to increment x or y
+    // greaterThan function which checks if x > y
+    // returns a closed interval from start to end
+    var interval = function (x, y, inc, greaterThan, clone) {
+        var greaterThan = greaterThan || function (x, y) { return x > y; }
+        if (greaterThan()) { return [] };
+        inc ? inc(y) : y++;
+        var interval = [];
+        // use clone function
+        if (clone) x = clone(x);
+        do {
+            interval.push(x);
+            // use clone function
+            if (clone) x = clone(x);
+            inc ? inc(x) : x++;
+        } while (x < y);
+        return interval;
+    };
+    var inc = function (x) { x.setDate(x.getDate() + 1) };
+    var clone = function (x) { return new Date(x) };
+    var x = new Date();
+    var y = clone(x);
+    inc(y);
+    inc(y);
+    inc(y);
+    console.log(interval(x, y, inc));
+    console.log(interval(1, 10));
 
     // straight-line code over functions
     var generateContent = function (date, options) {
