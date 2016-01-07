@@ -56,16 +56,6 @@ var launchCalendar = function (options) {
     // I like the revealing pattern though
     function generateView() {
 
-        var generateDefaultDayList = function (startOfWeek) {
-            var dayList = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-            var k = 0;
-            while (k < startOfWeek) {
-                dayList.push(dayList.shift());
-                k++;
-            }
-            return dayList;
-        };
-
         var formatContent = function (content) {
             // copy content so we won't modify the calendar object
             var formattedContent = content.map(function (row) {
@@ -86,7 +76,12 @@ var launchCalendar = function (options) {
         var monthList = options.monthList || ['January', 'February', 'March', 'April',
                                                 'May', 'June', 'July', 'August',
                                                 'September', 'October', 'November', 'December'];
-        var dayList = options.dayList || generateDefaultDayList(calendar.options.startOfWeek);
+        var dayList = options.dayList || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        var k = 0;
+        while (k < calendar.options.startOfWeek) {
+            dayList.push(dayList.shift());
+            k++;
+        }
 
         // wow such ugly very unconventional
         var currentDate = calendar.currentDate;
