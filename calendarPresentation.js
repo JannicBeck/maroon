@@ -25,7 +25,7 @@ var launchCalendar = function (options) {
     function bindEvents() {
         $calendar.on("click", '.month-dropdown li', monthSelect);
         $calendar.on("click", '.year-dropdown li', yearSelect);
-        $calendar.on("click", '.calendar-table tbody tr', daySelect);
+        $calendar.on("click", '.calendar-table tbody td', daySelect);
     }
 
     function monthSelect(e) {
@@ -48,8 +48,9 @@ var launchCalendar = function (options) {
     function daySelect(e) {
         var $this = $(this);
         var day = $this.html();
-        console.log(day);
-        calendar.setStartDateInterval(calendar.currentDate);
+        calendar.currentDate.setDate(day);
+        calendar.startDateInterval = calendar.currentDate;
+        render();
     }
 
     // I don't like this, title, month/dayList, years do not have to be updated
@@ -90,8 +91,8 @@ var launchCalendar = function (options) {
         var startDate = calendar.startDate;
         var endDate = calendar.endDate;
         var currentContent = formatContent(calendar.currentContent);
-        var startDateInterval = calendar.startDateInterval;
-        var endDateInterval = calendar.endDateInterval;
+        var startDateInterval = calendar.startDateInterval.toLocaleString();
+        var endDateInterval = calendar.endDateInterval.toLocaleString();
 
         return {calendarTitle: calendarTitle,
                 yearList: yearList,

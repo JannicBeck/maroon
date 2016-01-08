@@ -86,11 +86,7 @@ var Calendar = function (options) {
     this.setDateInterval = function () {
         this.dateInterval = closedDateInterval(this.startDateInterval, this.endDateInterval);
     };
-    this.setStartDateInterval = function (date) {
-        this.startDateInterval = new Date(date);
-    };
-    this.setEndDateInterval = function (date) {
-        this.endDateInterval = new Date(date);
-    };
+    this.startDateInterval = new Date();
+    this.endDateInterval = new Date();
 
 };
