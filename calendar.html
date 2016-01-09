@@ -47,13 +47,13 @@
 			</thead>
 
 			<tbody>
-				{{#currentContent}}
+				{{#content}}
 				<tr>
 					{{#.}}
 					<td>{{.}}</td>
 					{{/.}}
 				</tr>
-				{{/currentContent}}
+				{{/content}}
 			</tbody>
 		</table>
 	</div>
@@ -80,18 +80,17 @@
 		var $template = $('#calendar-template');
 
 		var myCalendar = new Calendar({
-			// 1 means start week on monday
-			startOfWeek: 0
+			timespan: [2016, 2020],
+			nrows: 6,
+			startOfWeek: 1 // 1 means start week on monday
 		});
-		console.log(myCalendar.startDateInterval);
-		console.log(myCalendar.endDateInterval);
-		console.log(myCalendar.dateInterval);
+
 		moment.locale('de');
 		var options = { calendar: myCalendar, $template: $template,
 				$calendar: $calendar, calendarTitle: 'My Awesome Calendar',
 			 	monthList: moment.months(), dayList: moment.weekdaysMin()}
 
-		launchCalendar(options);
+		myCalendar.launch(options);
 
 	}(jQuery));
 	</script>
