@@ -92,10 +92,9 @@ var Calendar = function (options) {
     "use strict";
     // you can write your own presentation on top of the logic
     // a change here should never lead to a change in the logic
-    // integrate this module into the calendar object? f.e. myCalendar.launch(options)
-    this.launch = function (options) {
+    this.launch = function () {
 
-        var calendar = options.calendar;
+        var calendar = this;
         var $calendar = options.$calendar;
         var $template = options.$template;
         var calendarTitle = options.calendarTitle || 'Calendar';
@@ -104,7 +103,7 @@ var Calendar = function (options) {
                                                 'September', 'October', 'November', 'December'];
         var dayList = options.dayList || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
         var k = 0;
-        var startOfWeek = calendar.options.startOfWeek;
+        var startOfWeek = options.startOfWeek;
         while (k < startOfWeek) {
             dayList.push(dayList.shift());
             k++;
@@ -112,7 +111,6 @@ var Calendar = function (options) {
 
         // use pubsub pattern instead?
         var generateView = function () {
-
             var formatContent = function (content) {
                 // copy content so we won't modify the calendar object
                 var formattedContent = content.map(function (row) {
@@ -129,11 +127,11 @@ var Calendar = function (options) {
                 return formattedContent;
             };
 
-            var yearList = calendar.yearList;
             var content = formatContent(calendar.content);
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
             var currentMonth = monthList[currentDate.getMonth()];
+            var yearList = calendar.yearList;
 
             return {calendarTitle: calendarTitle,
                     yearList: yearList,
@@ -145,10 +143,10 @@ var Calendar = function (options) {
                 };
         };
 
-        var view = generateView();
+        var view = generateView(this);
 
         var render = function () {
-            view = generateView();
+            view = generateView(this);
             var html = Mustache.render($template.html(), view);
             Mustache.parse(html);
             $calendar.html(html);

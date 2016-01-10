@@ -71,26 +71,24 @@
 	<script src="/dependencies/js/moment-with-locales.min.js"></script>
 	<script src="/dependencies/js/mustache.min.js"></script>
 	<script src="/dependencies/js/bootstrap.min.js"></script>
-	<script src="calendarLogic.js"></script>
-	<script src="calendarPresentation.js"></script>
+	<script src="calendar.js"></script>
 
 	<script>
 	$(function($){
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
-
+		moment.locale('de');
 		var myCalendar = new Calendar({
 			timespan: [2016, 2020],
-			nrows: 6,
-			startOfWeek: 1 // 1 means start week on monday
+			nrows: 5,
+			startOfWeek: 1, // 1 means start week on monday
+			$template: $template,
+			$calendar: $calendar,
+			calendarTitle: 'My Awesome Calendar',
+			monthList: moment.months(),
+			dayList: moment.weekdaysMin()
 		});
-
-		moment.locale('de');
-		var options = { calendar: myCalendar, $template: $template,
-				$calendar: $calendar, calendarTitle: 'My Awesome Calendar',
-			 	monthList: moment.months(), dayList: moment.weekdaysMin()}
-
-		myCalendar.launch(options);
+		myCalendar.launch();
 
 	}(jQuery));
 	</script>
