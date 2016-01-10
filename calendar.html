@@ -77,18 +77,19 @@
 	$(function($){
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
-		moment.locale('de');
 		var myCalendar = new Calendar({
 			timespan: [2016, 2020],
 			nrows: 5,
 			startOfWeek: 1, // 1 means start week on monday
 			$template: $template,
 			$calendar: $calendar,
+			locale: 'de',
 			calendarTitle: 'My Awesome Calendar',
-			monthList: moment.months(),
-			dayList: moment.weekdaysMin()
-		});
-		myCalendar.launch();
+			// monthList: ['First', 'Second', 'Third', 'Fourth',
+	        //             'Fifth', 'Sixth', 'Seventh', 'Eighth',
+	        //             'Nineth', 'Tenth', 'Eleventh', 'Twelfth'],
+			// dayList: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th']
+		}).popover();
 
 	}(jQuery));
 	</script>

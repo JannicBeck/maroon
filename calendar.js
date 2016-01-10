@@ -92,16 +92,35 @@ var Calendar = function (options) {
     "use strict";
     // you can write your own presentation on top of the logic
     // a change here should never lead to a change in the logic
-    this.launch = function () {
+    this.popover = function () {
 
         var calendar = this;
         var $calendar = options.$calendar;
         var $template = options.$template;
         var calendarTitle = options.calendarTitle || 'Calendar';
-        var monthList = options.monthList || ['January', 'February', 'March', 'April',
-                                                'May', 'June', 'July', 'August',
-                                                'September', 'October', 'November', 'December'];
-        var dayList = options.dayList || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+        // this is the fallback
+        var monthList = ['January', 'February', 'March', 'April',
+                        'May', 'June', 'July', 'August',
+                        'September', 'October', 'November', 'December'];
+        var dayList = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+        // if moment is loaded use overwrite the fallback
+        if (typeof moment !== 'undefined') {
+            var locale = options.locale || 'en';
+            moment.locale(locale);
+            monthList = moment.months();
+			dayList = moment.weekdaysMin();
+        }
+
+        // if parameters are supplied overwrite moment || fallback
+        if (options.monthList) {
+            monthList = options.monthList;
+        }
+        if (options.dayList) {
+            dayList = options.dayList;
+        }
+
         var k = 0;
         var startOfWeek = options.startOfWeek;
         while (k < startOfWeek) {
