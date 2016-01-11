@@ -85,6 +85,7 @@ var Calendar = function (options) {
     this.endDateInterval = new Date();
 
 
+
     /* !--- START OF PRESENTATION LOGIC ---! */
     /*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
     /*jshint strict: true*/
@@ -92,12 +93,14 @@ var Calendar = function (options) {
     "use strict";
     // you can write your own presentation on top of the logic
     // a change here should never lead to a change in the logic
-    this.popover = function () {
+    // part of this can be considered logic and is not specific to a datepicker
+    // maybe work with inheritance?
+    this.datepicker = function (options) {
 
         var calendar = this;
         var $calendar = options.$calendar;
         var $template = options.$template;
-        var calendarTitle = options.calendarTitle || 'Calendar';
+        var calendarTitle = options.calendarTitle || calendar.currentDate.toLocaleDateString();
 
         // this is the fallback
         var monthList = ['January', 'February', 'March', 'April',
@@ -128,7 +131,6 @@ var Calendar = function (options) {
             k++;
         }
 
-        // use pubsub pattern instead?
         var generateView = function () {
             var formatContent = function (content) {
                 // copy content so we won't modify the calendar object
@@ -195,6 +197,9 @@ var Calendar = function (options) {
             var $this = $(this);
             var day = $this.html();
             console.log(day);
+            // how do I know if day belongs to current month or before?
+            // mapping function needed pseudocode: content[indexOf('<li>')]
+            // alternative: bind content[i] to li[i] when rendering the html
             render();
         };
 

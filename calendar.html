@@ -41,7 +41,7 @@
 			<thead>
 				<tr>
 					{{#dayList}}
-					<td>{{.}}</td>
+					<th>{{.}}</th>
 					{{/dayList}}
 				</tr>
 			</thead>
@@ -57,14 +57,14 @@
 			</tbody>
 		</table>
 	</div>
-	<div class='popover-footer col-xs-12'>
+	<!-- <div class='popover-footer col-xs-12'>
 		<div class=" col-xs-6">
 			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDateInterval}}>
 		</div>
 		<div class="col-xs-6">
 			<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDateInterval}}>
 		</div>
-	</div>
+	</div> -->
 </script>
 
 	<script src="/dependencies/js/jquery.min.js"></script>
@@ -81,15 +81,16 @@
 			timespan: [2016, 2020],
 			nrows: 5,
 			startOfWeek: 1, // 1 means start week on monday
+		}).datepicker({
 			$template: $template,
 			$calendar: $calendar,
 			locale: 'de',
-			calendarTitle: 'My Awesome Calendar',
+			// calendarTitle: 'My Awesome Datepicker',
 			// monthList: ['First', 'Second', 'Third', 'Fourth',
-	        //             'Fifth', 'Sixth', 'Seventh', 'Eighth',
-	        //             'Nineth', 'Tenth', 'Eleventh', 'Twelfth'],
+			//             'Fifth', 'Sixth', 'Seventh', 'Eighth',
+			//             'Nineth', 'Tenth', 'Eleventh', 'Twelfth'],
 			// dayList: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th']
-		}).popover();
+		});
 
 	}(jQuery));
 	</script>
