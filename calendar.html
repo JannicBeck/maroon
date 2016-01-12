@@ -13,16 +13,16 @@
 
 <script id="calendar-template" type="text/template">
 	<div class='arrow'></div>
-	<h3 class='popover-title'>{{calendarTitle}}</h3>
+	<h3 class='popover-title'>{{title}}</h3>
 	<div class='dropdown month-dropdown pull-left'>
 		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
 			<span class='fa-chevron-circle-down'></span>
 			<span class='current-month'>{{currentMonth}}</span>
 		</button>
 		<ul class='dropdown-menu month-dropdown' role='menu'>
-			{{#monthList}}
+			{{#months}}
 			<li><a>{{.}}</a></li>
-			{{/monthList}}
+			{{/months}}
 		</ul>
 	</div>
 	<div class='dropdown year-dropdown pull-right'>
@@ -40,9 +40,9 @@
 		<table class='table calendar-table'>
 			<thead>
 				<tr>
-					{{#dayList}}
+					{{#weekdays}}
 					<th>{{.}}</th>
-					{{/dayList}}
+					{{/weekdays}}
 				</tr>
 			</thead>
 
@@ -84,12 +84,13 @@
 		}).datepicker({
 			$template: $template,
 			$calendar: $calendar,
-			locale: 'de',
-			// calendarTitle: 'My Awesome Datepicker',
-			// monthList: ['First', 'Second', 'Third', 'Fourth',
-			//             'Fifth', 'Sixth', 'Seventh', 'Eighth',
-			//             'Nineth', 'Tenth', 'Eleventh', 'Twelfth'],
-			// dayList: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th']
+			// locale: 'de',
+			// title: 'My Awesome Datepicker',
+			// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+			//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
+			//             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+			// weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+			// weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 		});
 
 	}(jQuery));

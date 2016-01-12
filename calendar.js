@@ -37,20 +37,22 @@ var Calendar = function (options) {
         return dateInterval;
     };
 
+    var dayList = closedInterval(0, 6);
+    var startOfWeek = options.startOfWeek || 0;
+
+    // rearrange dayList so startOfWeek equals dayList[0]
+    var k = 0;
+    while (k < startOfWeek) {
+        dayList.unshift(dayList.pop());
+        k++;
+    }
+
     // straight-line code over functions
     var generateContent = function (date, options) {
         // clone date so we don't modify it via object reference
         date = new Date(date);
-
-        // get start of month according to start of week
-        var dayList = closedInterval(0, 6);
-        var startOfWeek = options.startOfWeek || 0;
+        // get start of month according to start of
         date.setDate(1);
-        var k = 0;
-        while (k < startOfWeek) {
-            dayList.unshift(dayList.pop());
-            k++;
-        }
         var startOfMonth = dayList[date.getDay()];
 
         // generate calendar content
@@ -85,7 +87,6 @@ var Calendar = function (options) {
     this.endDateInterval = new Date();
 
 
-
     /* !--- START OF PRESENTATION LOGIC ---! */
     /*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
     /*jshint strict: true*/
@@ -100,37 +101,40 @@ var Calendar = function (options) {
         var calendar = this;
         var $calendar = options.$calendar;
         var $template = options.$template;
-        var calendarTitle = options.calendarTitle || calendar.currentDate.toLocaleDateString();
 
-        // this is the fallback
-        var monthList = ['January', 'February', 'March', 'April',
+        // fallback for months and weekdays
+        var months = ['January', 'February', 'March', 'April',
                         'May', 'June', 'July', 'August',
                         'September', 'October', 'November', 'December'];
-        var dayList = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        // if moment is loaded use overwrite the fallback
+        // if moment is loaded overwrite the fallback
         if (typeof moment !== 'undefined') {
             var locale = options.locale || 'en';
             moment.locale(locale);
-            monthList = moment.months();
-			dayList = moment.weekdaysMin();
+            months = moment.months();
+			weekdays = moment.weekdays();
         }
 
-        // if parameters are supplied overwrite moment || fallback
-        if (options.monthList) {
-            monthList = options.monthList;
-        }
-        if (options.dayList) {
-            dayList = options.dayList;
+        // if months is supplied as parameter overwrite montList
+        if (options.months) {
+            months = options.months;
         }
 
-        var k = 0;
-        var startOfWeek = options.startOfWeek;
-        while (k < startOfWeek) {
-            dayList.push(dayList.shift());
-            k++;
+        // if weekdays is supplied as parameter overwrite weekdays
+        if (options.weekdays) {
+            weekdays = options.weekdays;
+        } else {
+            // rearrange weekdays according to start of week
+            var k = 0;
+            var startOfWeek = calendar.options.startOfWeek;
+            while (k < startOfWeek) {
+                weekdays.push(weekdays.shift());
+                k++;
+            }
         }
 
+        // generates the view
         var generateView = function () {
             var formatContent = function (content) {
                 // copy content so we won't modify the calendar object
@@ -141,30 +145,42 @@ var Calendar = function (options) {
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
                     row.forEach(function (col, j) {
-                        // ugly two digit hack use moment instead
+                        // two digit days
                         row[j] = ('0' + col.getDate()).slice(-2);
                     });
                 });
                 return formattedContent;
             };
 
+            var generateDefaultTitle = function  () {
+                var currentDate = calendar.currentDate;
+                var dayName = weekdays[dayList[currentDate.getDay()]];
+                var month = months[currentDate.getMonth()];
+                var day = currentDate.getDate();
+                var year = currentDate.getFullYear();
+                var title = dayName + ', ' + month + ', ' + day + ', ' + year;
+                return title;
+            };
+
+            var title = options.title || generateDefaultTitle();
             var content = formatContent(calendar.content);
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
-            var currentMonth = monthList[currentDate.getMonth()];
+            var currentMonth = months[currentDate.getMonth()];
             var yearList = calendar.yearList;
+            weekdays.forEach(function (day, i) { weekdays[i] = day.substring(0, 2) });
 
-            return {calendarTitle: calendarTitle,
+            return {title: title,
                     yearList: yearList,
-                    monthList: monthList,
-                    dayList: dayList,
+                    months: months,
+                    weekdays: weekdays,
                     currentYear: currentYear,
                     currentMonth: currentMonth,
                     content: content
                 };
         };
 
-        var view = generateView(this);
+        var view;
 
         var render = function () {
             view = generateView(this);
@@ -179,7 +195,7 @@ var Calendar = function (options) {
         var monthSelect = function (e) {
             var $this = $(this);
             var monthName = $this.find('a').html();
-            var month = view.monthList.indexOf(monthName);
+            var month = view.months.indexOf(monthName);
             calendar.currentDate.setMonth(month);
             calendar.setContent();
             render();
