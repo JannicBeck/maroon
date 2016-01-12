@@ -107,6 +107,12 @@ var Calendar = function (options) {
                         'May', 'June', 'July', 'August',
                         'September', 'October', 'November', 'December'];
         var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var weekdaysMin = [];
+        var weekdaysShort = [];
+        weekdays.forEach(function (day, i) {
+            weekdaysShort[i] = day.substring(0, 3)
+            weekdaysMin[i] = day.substring(0, 2)
+        });
 
         // if moment is loaded overwrite the fallback
         if (typeof moment !== 'undefined') {
@@ -114,6 +120,8 @@ var Calendar = function (options) {
             moment.locale(locale);
             months = moment.months();
 			weekdays = moment.weekdays();
+            weekdaysShort = moment.weekdaysShort();
+            weekdaysMin = moment.weekdaysMin();
         }
 
         // if months is supplied as parameter overwrite montList
@@ -121,9 +129,9 @@ var Calendar = function (options) {
             months = options.months;
         }
 
-        // if weekdays is supplied as parameter overwrite weekdays
+        // if weekdays is supplied as parameter overwrite all weekdays variables
         if (options.weekdays) {
-            weekdays = options.weekdays;
+            weekdays = weekdaysMin = weekdaysShort = options.weekdays;
         } else {
             // rearrange weekdays according to start of week
             var k = 0;
@@ -152,7 +160,7 @@ var Calendar = function (options) {
                 return formattedContent;
             };
 
-            var generateDefaultTitle = function  () {
+            var formatDefaultTitle = function  () {
                 var currentDate = calendar.currentDate;
                 var dayName = weekdays[dayList[currentDate.getDay()]];
                 var month = months[currentDate.getMonth()];
@@ -162,18 +170,17 @@ var Calendar = function (options) {
                 return title;
             };
 
-            var title = options.title || generateDefaultTitle();
+            var title = options.title || formatDefaultTitle();
             var content = formatContent(calendar.content);
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
             var yearList = calendar.yearList;
-            weekdays.forEach(function (day, i) { weekdays[i] = day.substring(0, 2) });
 
             return {title: title,
                     yearList: yearList,
                     months: months,
-                    weekdays: weekdays,
+                    weekdays: weekdaysMin,
                     currentYear: currentYear,
                     currentMonth: currentMonth,
                     content: content
