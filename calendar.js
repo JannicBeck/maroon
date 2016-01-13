@@ -133,13 +133,21 @@ var Calendar = function (options) {
         if (options.weekdays) {
             weekdays = weekdaysMin = weekdaysShort = options.weekdays;
         } else {
-            // rearrange weekdays according to start of week
-            var k = 0;
-            var startOfWeek = calendar.options.startOfWeek;
-            while (k < startOfWeek) {
-                weekdays.push(weekdays.shift());
-                k++;
-            }
+            // push and shift an array n times
+            var pushShiftArray = function (array, n) {
+                var k = 0;
+                while (k < n) {
+                    array.push(array.shift());
+                    k++;
+                }
+                return array;
+            };
+
+            // rearrange weekday arrays according to start of week
+            var n = calendar.options.startOfWeek;
+            pushShiftArray(weekdays, n);
+            pushShiftArray(weekdaysMin, n);
+            pushShiftArray(weekdaysShort, n);
         }
 
         // generates the view
