@@ -25,7 +25,6 @@ var Calendar = function (options) {
 
     // returns a closed date interval from startDate to endDate
     var closedDateInterval = function (startDate, endDate) {
-
         if (startDate > endDate) { return []; }
         var dateInterval = [];
         startDate = new Date(startDate);
@@ -94,9 +93,9 @@ var Calendar = function (options) {
     "use strict";
     // you can write your own presentation on top of the logic
     // a change here should never lead to a change in the logic
-    // part of this can be considered logic and is not specific to a datepicker
-    // maybe work with inheritance?
-    this.datepicker = function (options) {
+    // part of this can be considered as presentation logic (f.e. monthSelect) and is not specific
+    // to a datepicker maybe work with inheritance?
+    this.launch = function (options) {
 
         var calendar = this;
         var $calendar = options.$calendar;
@@ -228,7 +227,7 @@ var Calendar = function (options) {
             var $this = $(this);
             var day = $this.html();
             console.log(day);
-            // how do I know if day belongs to current month or before?
+            // does not tell if day belongs to current month or before
             // mapping function needed pseudocode: content[indexOf('<li>')]
             // alternative: bind content[i] to li[i] when rendering the html
             render();
