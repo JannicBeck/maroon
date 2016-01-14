@@ -9,4 +9,21 @@ title: Maroon
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
+  {% highlight javascript %}
+  var myCalendar = new Calendar({
+  			timespan: [2016, 2020],
+  			nrows: 5,
+  			startOfWeek: 1, // 1 means start week on monday
+  		}).launch({
+  			$template: $template,
+  			$calendar: $calendar,
+  			// locale: 'de',
+  			// title: 'My Awesome Calendar',
+  			months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+  			            'Majo', 'Junio', 'Julio', 'Aŭgusto',
+  			            'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+  			weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+  			// weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+  		});
+  {% endhighlight %}
 </div>
