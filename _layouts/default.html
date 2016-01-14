@@ -51,6 +51,90 @@
         </aside>
       </div>
     </div>
+    {% raw %}
+    <script id="calendar-template" type="text/template">
+    	<h3 class='popover-title'>{{title}}</h3>
+    	<div class='dropdown month-dropdown pull-left'>
+    		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+    			<span class='fa-chevron-circle-down'></span>
+    			<span class='current-month'>{{currentMonth}}</span>
+    		</button>
+    		<ul class='dropdown-menu month-dropdown' role='menu'>
+    			{{#months}}
+    			<li><a>{{.}}</a></li>
+    			{{/months}}
+    		</ul>
+    	</div>
+    	<div class='dropdown year-dropdown pull-right'>
+    		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+    			<span class='current-year'>{{currentYear}}</span>
+    			<span class='fa-chevron-circle-down'></span>
+    		</button>
+    		<ul class='dropdown-menu year-dropdown' role='menu'>
+    			{{#yearList}}
+    			<li><a>{{.}}</a></li>
+    			{{/yearList}}
+    		</ul>
+    	</div>
+    	<div class='calendar-content popover-content'>
+    		<table class='table calendar-table'>
+    			<thead>
+    				<tr>
+    					{{#weekdays}}
+    					<th>{{.}}</th>
+    					{{/weekdays}}
+    				</tr>
+    			</thead>
 
+    			<tbody>
+    				{{#content}}
+    				<tr>
+    					{{#.}}
+    					<td>{{.}}</td>
+    					{{/.}}
+    				</tr>
+    				{{/content}}
+    			</tbody>
+    		</table>
+    	</div>
+    </script>
+    {% endraw %}
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/stylesheets/tw-bs.3.1.1.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/stylesheets/calendar.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="{{ site.baseurl }}/javascript/calendar.js"></script>
+    <script>
+    $(function($){
+        var $calendar = $('#calendar');
+        var $template = $('#calendar-template');
+        var myCalendar = new Calendar({
+            timespan: [2016, 2020],
+            nrows: 5,
+            startOfWeek: 1, // 1 means start week on monday
+        });
+
+        $('#demo').click(function(){
+            myCalendar.launch({
+                $template: $template,
+                $calendar: $calendar,
+                // locale: 'de',
+                // title: 'My Awesome Datepicker',
+                // months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+                //             'Majo', 'Junio', 'Julio', 'Aŭgusto',
+                //             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+                // weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+                // weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+            });
+            $calendar.toggle();
+        });
+
+
+    }(jQuery));
+    </script>
   </body>
 </html>
