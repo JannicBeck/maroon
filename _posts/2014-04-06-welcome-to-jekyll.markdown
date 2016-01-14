@@ -10,12 +10,22 @@ To add new posts, simply add a file in the `_posts` directory that follows the c
 
 Jekyll also offers powerful support for code snippets:
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
+{% highlight javascript %}
+var myCalendar = new Calendar({
+			timespan: [2016, 2020],
+			nrows: 5,
+			startOfWeek: 1, // 1 means start week on monday
+		}).launch({
+			$template: $template,
+			$calendar: $calendar,
+			// locale: 'de',
+			// title: 'My Awesome Calendar',
+			months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+			            'Majo', 'Junio', 'Julio', 'Aŭgusto',
+			            'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+			weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+			// weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+		});
 {% endhighlight %}
 
 Check out the [Jekyll docs][jekyll] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll's GitHub repo][jekyll-gh].
