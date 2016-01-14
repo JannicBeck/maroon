@@ -1,5 +1,5 @@
 /* Custom default button */
-.btn-default,
+.tw-bs .btn-default,
 .btn-default:hover,
 .btn-default:focus {
   color: #333;
@@ -8,11 +8,16 @@
   border: 1px solid #fff;
 }
 
-.calendar-table tbody td:hover{
+#calendar {
+    position: relative;
+}
+
+
+.tw-bs .calendar-table tbody td:hover{
 	background-color: #D9EDF7;
 }
 
-.calendar-table thead th{
+.tw-bs .calendar-table thead th{
 	font-weight: normal;
 }
 
@@ -36,13 +41,13 @@
 
 
 
-.calendar-table tbody td.today{
+.tw-bs .calendar-table tbody td.today{
 	font-weight: bold;
   color: Maroon;
 }
 
 
-.calendar-table tbody td{
+.tw-bs .calendar-table tbody td{
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -51,11 +56,11 @@
 	cursor: pointer;
 }
 
-.dropdown-toggle{
+.tw-bs .dropdown-toggle{
   margin: 5px 5px 0px 5px;
 }
 
-.dropdown-menu{
+.tw-bs .dropdown-menu{
   margin: 2px 5px 0px 5px;
   min-width: 0px;
 }
@@ -78,7 +83,7 @@
     text-align: center;*/
 }
 
-.year-dropdown ul {
+.tw-bs .year-dropdown ul {
   max-height: 200px;
   overflow-x: hidden;
 }
