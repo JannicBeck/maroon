@@ -134,11 +134,12 @@ var Calendar = function (options) {
             weekdays = weekdaysMin = weekdaysShort = options.weekdays;
         } else {
 
-            // repeats a method call of an object n times with parameter passed as string
-            var repMethod = function (obj, method, param, n) {
+            // repeats a method call of an object n times with parameter of type function
+            // returns the return value of the methods n-th call
+            var repMethod = function (obj, method, paramFun, n) {
                 var state;
                 for (var i = 0; i < n; i++) {
-                    state = method.call(obj, eval(param));
+                    state = method.call(obj, paramFun());
                 }
                 return state;
             };
@@ -147,9 +148,9 @@ var Calendar = function (options) {
             var n = calendar.options.startOfWeek;
 
             // replace with weekdays.forEach() where weekdays is an array [weekdays, weekdaysMin, weekdaysShort]
-            repMethod(weekdays, weekdays.push, 'repMethod(weekdays, weekdays.shift, undefined, 1)', n);
-            repMethod(weekdaysMin, weekdaysMin.push, 'repMethod(weekdaysMin, weekdaysMin.shift, undefined, 1)', n);
-            repMethod(weekdaysShort, weekdaysShort.push, 'repMethod(weekdaysShort, weekdaysShort.shift, undefined, 1)', n);
+            repMethod(weekdays, weekdays.push, function() { return repMethod(weekdays, weekdays.shift, function() {}, 1); }, n);
+            repMethod(weekdaysShort, weekdaysShort.push, function() { return repMethod(weekdaysShort, weekdaysShort.shift, function() {}, 1); }, n);
+            repMethod(weekdaysMin, weekdaysMin.push, function() { return repMethod(weekdaysMin, weekdaysMin.shift, function() {}, 1); }, n);
         }
 
         // generates the view
