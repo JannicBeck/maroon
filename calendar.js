@@ -143,6 +143,19 @@ var Calendar = function (options) {
                 return array;
             };
 
+            // this function is more generic and will replace pushShiftArray function
+            var repMethod = function (obj, method, param, n) {
+                var state;
+                for (var i = 0; i < n; i++) {
+                    state = method.call(obj, param);
+                }
+                return state;
+            };
+
+            // repMethod(weekdays, weekdays.push, repMethod(weekdays, weekdays.shift, undefined, 1), n);
+
+            var n = calendar.options.startOfWeek;
+
             // rearrange weekday arrays according to start of week
             var n = calendar.options.startOfWeek;
             pushShiftArray(weekdays, n);
