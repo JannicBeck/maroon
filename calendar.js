@@ -133,34 +133,23 @@ var Calendar = function (options) {
         if (options.weekdays) {
             weekdays = weekdaysMin = weekdaysShort = options.weekdays;
         } else {
-            // push and shift an array n times
-            var pushShiftArray = function (array, n) {
-                var k = 0;
-                while (k < n) {
-                    array.push(array.shift());
-                    k++;
-                }
-                return array;
-            };
 
-            // this function is more generic and will replace pushShiftArray function
+            // repeats a method call of an object n times with parameter passed as string
             var repMethod = function (obj, method, param, n) {
                 var state;
                 for (var i = 0; i < n; i++) {
-                    state = method.call(obj, param);
+                    state = method.call(obj, eval(param));
                 }
                 return state;
             };
 
-            // repMethod(weekdays, weekdays.push, repMethod(weekdays, weekdays.shift, undefined, 1), n);
-
-            var n = calendar.options.startOfWeek;
-
             // rearrange weekday arrays according to start of week
             var n = calendar.options.startOfWeek;
-            pushShiftArray(weekdays, n);
-            pushShiftArray(weekdaysMin, n);
-            pushShiftArray(weekdaysShort, n);
+
+            // replace with weekdays.forEach() where weekdays is an array [weekdays, weekdaysMin, weekdaysShort]
+            repMethod(weekdays, weekdays.push, 'repMethod(weekdays, weekdays.shift, undefined, 1)', n);
+            repMethod(weekdaysMin, weekdaysMin.push, 'repMethod(weekdaysMin, weekdaysMin.shift, undefined, 1)', n);
+            repMethod(weekdaysShort, weekdaysShort.push, 'repMethod(weekdaysShort, weekdaysShort.shift, undefined, 1)', n);
         }
 
         // generates the view
