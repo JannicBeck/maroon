@@ -39,12 +39,21 @@ var Calendar = function (options) {
     var dayList = closedInterval(0, 6);
     var startOfWeek = options.startOfWeek || 0;
 
+    // repeats a method call of an object n times with parameter of type function
+    // returns the return value of the methods n-th call
+    var repMethod = function (obj, method, param, n) {
+        var state;
+        for (var i = 0; i < n; i++) {
+            state = method.call(obj, param());
+        }
+        return state;
+    };
+
     // rearrange dayList so startOfWeek equals dayList[0]
-    var k = 0;
-    while (k < startOfWeek) {
-        dayList.unshift(dayList.pop());
-        k++;
-    }
+    repMethod(dayList, Array.prototype.unshift,
+        function() {
+            return repMethod(dayList, Array.prototype.pop, function() {}, 1);
+        }, startOfWeek);
 
     // straight-line code over functions
     var generateContent = function (date, options) {
@@ -101,57 +110,36 @@ var Calendar = function (options) {
         var $calendar = options.$calendar;
         var $template = options.$template;
 
-        // fallback for months and weekdays
         var months = ['January', 'February', 'March', 'April',
                         'May', 'June', 'July', 'August',
                         'September', 'October', 'November', 'December'];
-        // make weekdays an array of length 3 with [weekdays, weekdaysShort, weekdaysMin]
-        var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var weekdaysMin = [];
-        var weekdaysShort = [];
-        weekdays.forEach(function (day, i) {
-            weekdaysShort[i] = day.substring(0, 3)
-            weekdaysMin[i] = day.substring(0, 2)
-        });
+        var weekdaysLong = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        // if moment is loaded overwrite the fallback
         if (typeof moment !== 'undefined') {
             var locale = options.locale || 'en';
             moment.locale(locale);
             months = moment.months();
-			weekdays = moment.weekdays();
-            weekdaysShort = moment.weekdaysShort();
-            weekdaysMin = moment.weekdaysMin();
+            weekdaysLong = moment.weekdays();
         }
 
-        // if months is supplied as parameter overwrite montList
-        if (options.months) {
-            months = options.months;
-        }
+        // format weekdays according to startOfWeek parameter
+        var n = calendar.options.startOfWeek;
+        var param = function () {
+            return repMethod(weekdaysLong, Array.prototype.shift, function() {}, 1);
+        };
+        repMethod(weekdaysLong, Array.prototype.push, param, n);
 
-        // if weekdays is supplied as parameter overwrite all weekdays variables
-        if (options.weekdays) {
-            weekdays = weekdaysMin = weekdaysShort = options.weekdays;
-        } else {
+        // overwrite months and weekdays if they are supplied by parameters
+        // this is assuming that the weekdays are already formatted according to startOfWeek
+        months = options.months || months;
+        weekdaysLong = options.weekdays || weekdaysLong;
 
-            // repeats a method call of an object n times with parameter of type function
-            // returns the return value of the methods n-th call
-            var repMethod = function (obj, method, paramFun, n) {
-                var state;
-                for (var i = 0; i < n; i++) {
-                    state = method.call(obj, paramFun());
-                }
-                return state;
-            };
-
-            // rearrange weekday arrays according to start of week
-            var n = calendar.options.startOfWeek;
-
-            // replace with weekdays.forEach() where weekdays is an array [weekdays, weekdaysMin, weekdaysShort]
-            repMethod(weekdays, weekdays.push, function() { return repMethod(weekdays, weekdays.shift, function() {}, 1); }, n);
-            repMethod(weekdaysShort, weekdaysShort.push, function() { return repMethod(weekdaysShort, weekdaysShort.shift, function() {}, 1); }, n);
-            repMethod(weekdaysMin, weekdaysMin.push, function() { return repMethod(weekdaysMin, weekdaysMin.shift, function() {}, 1); }, n);
-        }
+        var weekdaysShort = [];
+        var weekdaysMin = [];
+        weekdaysLong.forEach(function (day, i) {
+            weekdaysShort[i] = day.substring(0, 3)
+            weekdaysMin[i] = day.substring(0, 2)
+        });
 
         // generates the view
         var generateView = function () {
@@ -173,7 +161,7 @@ var Calendar = function (options) {
 
             var formatDefaultTitle = function  () {
                 var currentDate = calendar.currentDate;
-                var dayName = weekdays[dayList[currentDate.getDay()]];
+                var dayName = weekdaysLong[dayList[currentDate.getDay()]];
                 var month = months[currentDate.getMonth()];
                 var day = currentDate.getDate();
                 var year = currentDate.getFullYear();
@@ -187,11 +175,12 @@ var Calendar = function (options) {
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
             var yearList = calendar.yearList;
+            var weekdays = weekdaysMin;
 
             return {title: title,
                     yearList: yearList,
                     months: months,
-                    weekdays: weekdaysMin,
+                    weekdays: weekdays,
                     currentYear: currentYear,
                     currentMonth: currentMonth,
                     content: content
