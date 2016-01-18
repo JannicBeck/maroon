@@ -12,14 +12,15 @@ var Calendar = function (options) {
 
     // returns a closed interval from start to end
     var closedInterval = function (start, end) {
-        if (start > end) { return []; }
-        end++;
+        if (start > end) {
+            return [];
+        }
         var interval = [];
         var i = start;
         do {
             interval[i - start] = i;
             i++;
-        } while (i < end);
+        } while (i <= end);
         return interval;
     };
 
@@ -37,6 +38,7 @@ var Calendar = function (options) {
     };
 
     var dayList = closedInterval(0, 6);
+    // 0 means sundays, 1 monday ...
     var startOfWeek = options.startOfWeek || 0;
 
     // repeats a method call of an object n times with parameter of type function
@@ -49,17 +51,17 @@ var Calendar = function (options) {
         return state;
     };
 
-    // rearrange dayList so startOfWeek equals dayList[0]
-    repMethod(dayList, Array.prototype.unshift,
-        function() {
-            return repMethod(dayList, Array.prototype.pop, function() {}, 1);
-        }, startOfWeek);
+    // rearrange dayList according to startOfWeek
+    var param = function () {
+        return repMethod(dayList, Array.prototype.pop, function() {}, 1);
+    };
+    repMethod(dayList, Array.prototype.unshift, param, startOfWeek);
 
     // straight-line code over functions
     var generateContent = function (date, options) {
         // clone date so we don't modify it via object reference
         date = new Date(date);
-        // get start of month according to start of
+        // get start of month according to startOfWeek
         date.setDate(1);
         var startOfMonth = dayList[date.getDay()];
 
@@ -82,17 +84,21 @@ var Calendar = function (options) {
     // this has no use yet add a listener or smth
     this.options = options;
     this.currentDate = new Date();
-    var timespan = options.timespan || [this.currentDate.getFullYear(), this.currentDate.getFullYear() + 5];
+    var timespan = options.timespan || [this.currentDate.getFullYear(),
+                                        this.currentDate.getFullYear() + 5];
     this.yearList = closedInterval(timespan[0], timespan[1]);
     this.setContent = function () {
         this.content = generateContent(this.currentDate, this.options);
     };
     this.setContent();
+
+    /*
     this.setDateInterval = function () {
         this.dateInterval = closedDateInterval(this.startDateInterval, this.endDateInterval);
     };
     this.startDateInterval = new Date();
     this.endDateInterval = new Date();
+    */
 
 
     /* !--- START OF PRESENTATION LOGIC ---! */
@@ -110,39 +116,9 @@ var Calendar = function (options) {
         var $calendar = options.$calendar;
         var $template = options.$template;
 
-        var months = ['January', 'February', 'March', 'April',
-                        'May', 'June', 'July', 'August',
-                        'September', 'October', 'November', 'December'];
-        var weekdaysLong = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-        if (typeof moment !== 'undefined') {
-            var locale = options.locale || 'en';
-            moment.locale(locale);
-            months = moment.months();
-            weekdaysLong = moment.weekdays();
-        }
-
-        // format weekdays according to startOfWeek parameter
-        var n = calendar.options.startOfWeek;
-        var param = function () {
-            return repMethod(weekdaysLong, Array.prototype.shift, function() {}, 1);
-        };
-        repMethod(weekdaysLong, Array.prototype.push, param, n);
-
-        // overwrite months and weekdays if they are supplied by parameters
-        // this is assuming that the weekdays are already formatted according to startOfWeek
-        months = options.months || months;
-        weekdaysLong = options.weekdays || weekdaysLong;
-
-        var weekdaysShort = [];
-        var weekdaysMin = [];
-        weekdaysLong.forEach(function (day, i) {
-            weekdaysShort[i] = day.substring(0, 3)
-            weekdaysMin[i] = day.substring(0, 2)
-        });
-
         // generates the view
         var generateView = function () {
+
             var formatContent = function (content) {
                 // copy content so we won't modify the calendar object
                 var formattedContent = content.map(function (row) {
@@ -159,31 +135,74 @@ var Calendar = function (options) {
                 return formattedContent;
             };
 
-            var formatDefaultTitle = function  () {
-                var currentDate = calendar.currentDate;
-                var dayName = weekdaysLong[dayList[currentDate.getDay()]];
-                var month = months[currentDate.getMonth()];
-                var day = currentDate.getDate();
-                var year = currentDate.getFullYear();
+            var weekdaysLong = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+                                'Thursday', 'Friday', 'Saturday'];
+            var months = ['January', 'February', 'March', 'April',
+                            'May', 'June', 'July', 'August',
+                            'September', 'October', 'November', 'December'];
+
+            // moment module
+            // overwrite weekdaysLong and months if moment is available
+            if (typeof moment !== 'undefined') {
+                var locale = options.locale || 'en';
+                moment.locale(locale);
+                months = moment.months();
+                weekdaysLong = moment.weekdays();
+            }
+
+            var formatWeekdays = function (weekdaysLong, startOfWeek) {
+                // format weekdays according to startOfWeek parameter
+                var param = function () {
+                    return repMethod(weekdaysLong, Array.prototype.shift, function() {}, 1);
+                };
+                repMethod(weekdaysLong, Array.prototype.push, param, startOfWeek);
+
+                // overwrite weekdays if they are supplied by parameters
+                // this is assuming that the parameter 'weekdays' is already formatted according to startOfWeek
+                weekdaysLong = options.weekdays || weekdaysLong;
+
+                var weekdaysShort = [];
+                var weekdaysMin = [];
+                weekdaysLong.forEach(function (day, i) {
+                    weekdaysShort[i] = day.substring(0, 3)
+                    weekdaysMin[i] = day.substring(0, 2)
+                });
+                var weekdays = [weekdaysLong, weekdaysShort, weekdaysMin];
+                return weekdays;
+            };
+
+            var formatDefaultTitle = function  (date, weekdays, months) {
+                // dayList is neccessary to translate the day according to startOfWeek
+                var dayName = weekdays[dayList[date.getDay()]];
+                var month = months[date.getMonth()];
+                var day = date.getDate();
+                var year = date.getFullYear();
                 var title = dayName + ', ' + month + ', ' + day + ', ' + year;
                 return title;
             };
 
-            var title = options.title || formatDefaultTitle();
-            var content = formatContent(calendar.content);
+            var yearList = calendar.yearList;
+            // overwrite months if they are supplid by parameter
+            months = options.months || months;
+            var weekdays = formatWeekdays(weekdaysLong, calendar.options.startOfWeek);
+            var weekdaysLong = weekdays[0];
+            var weekdaysShort = weekdays[1];
+            var weekdaysMin = weekdays[2];
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
-            var yearList = calendar.yearList;
-            var weekdays = weekdaysMin;
+            var content = formatContent(calendar.content);
+            var title = options.title || formatDefaultTitle(calendar.currentDate, weekdaysLong, months);
 
-            return {title: title,
-                    yearList: yearList,
+            // return the view
+            return {yearList: yearList,
                     months: months,
-                    weekdays: weekdays,
+                    weekdays: weekdaysMin,
+                    currentDate: currentDate,
                     currentYear: currentYear,
                     currentMonth: currentMonth,
-                    content: content
+                    content: content,
+                    title: title
                 };
         };
 
@@ -198,6 +217,10 @@ var Calendar = function (options) {
 
         // initialize
         render();
+
+        var render = function () {
+
+        }
 
         var monthSelect = function (e) {
             var $this = $(this);

@@ -76,6 +76,7 @@
 	$(function($){
 		var $calendar = $('#calendar');
 		var $template = $('#calendar-template');
+
 		var myCalendar = new Calendar({
 			timespan: [2016, 2020],
 			nrows: 5,
@@ -85,10 +86,10 @@
 			$calendar: $calendar,
 			locale: 'de',
 			// title: 'My Awesome Datepicker',
-			// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
-			//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
-			//             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
-			// weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+			months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+			            'Majo', 'Junio', 'Julio', 'Aŭgusto',
+			            'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+			weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
 		});
 
 	}(jQuery));
