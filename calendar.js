@@ -86,7 +86,7 @@ var Calendar = function (options) {
     this.currentDate = new Date();
     var timespan = options.timespan || [this.currentDate.getFullYear(),
                                         this.currentDate.getFullYear() + 5];
-    this.yearList = closedInterval(timespan[0], timespan[1]);
+    this.years = closedInterval(timespan[0], timespan[1]);
     this.setContent = function () {
         this.content = generateContent(this.currentDate, this.options);
     };
@@ -113,8 +113,6 @@ var Calendar = function (options) {
     this.launch = function (options) {
 
         var calendar = this;
-        var $calendar = options.$calendar;
-        var $template = options.$template;
 
         // generates the view
         var generateView = function () {
@@ -146,8 +144,8 @@ var Calendar = function (options) {
             if (typeof moment !== 'undefined') {
                 var locale = options.locale || 'en';
                 moment.locale(locale);
-                months = moment.months();
                 weekdaysLong = moment.weekdays();
+                months = moment.months();
             }
 
             var formatWeekdays = function (weekdaysLong, startOfWeek) {
@@ -181,8 +179,8 @@ var Calendar = function (options) {
                 return title;
             };
 
-            var yearList = calendar.yearList;
-            // overwrite months if they are supplid by parameter
+            var years = calendar.years;
+            // overwrite months if they are supplied by parameter
             months = options.months || months;
             var weekdays = formatWeekdays(weekdaysLong, calendar.options.startOfWeek);
             var weekdaysLong = weekdays[0];
@@ -195,7 +193,7 @@ var Calendar = function (options) {
             var title = options.title || formatDefaultTitle(calendar.currentDate, weekdaysLong, months);
 
             // return the view
-            return {yearList: yearList,
+            return {years: years,
                     months: months,
                     weekdays: weekdaysMin,
                     currentDate: currentDate,
@@ -206,21 +204,33 @@ var Calendar = function (options) {
                 };
         };
 
+        var $placeholder = $('#calendar-placeholder');
+        var $template = $('#calendar-template');
         var view;
 
+        // inserts the view into the html
         var render = function () {
-            view = generateView(this);
+            view = generateView();
             var html = Mustache.render($template.html(), view);
             Mustache.parse(html);
-            $calendar.html(html);
+            $placeholder.html(html);
         };
+
+        // var render = function () {
+        //     view = generateView();
+        //     var $years = $template.find('#calendar-years');
+        //     var $months = $template.find('#calendar-months');
+        //     var $weekdays = $template.find('#calendar-weekdays');
+        //     var $currentDate = $template.find('#calendar-currentDate');
+        //     var $currentYear = $template.find('#calendar-currentYear');
+        //     var $currentMonth = $template.find('#calendar-currentMonth');
+        //     var $content = $template.find('#calendar-content');
+        //     var $title = $template.find('#calendar-title');
+        //     $placeholder.html($template.html());
+        // };
 
         // initialize
         render();
-
-        var render = function () {
-
-        }
 
         var monthSelect = function (e) {
             var $this = $(this);
@@ -250,9 +260,9 @@ var Calendar = function (options) {
         };
 
         // bind events
-        $calendar.on("click", '.month-dropdown li', monthSelect);
-        $calendar.on("click", '.year-dropdown li', yearSelect);
-        $calendar.on("click", '.calendar-table tbody td', daySelect);
+        $placeholder.on("click", '.month-dropdown li', monthSelect);
+        $placeholder.on("click", '.year-dropdown li', yearSelect);
+        $placeholder.on("click", '.calendar-table tbody td', daySelect);
 
     };
 

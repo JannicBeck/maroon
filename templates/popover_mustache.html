@@ -1,0 +1,52 @@
+<h3 id="calendar-title" class='popover-title'>{{title}}</h3>
+<div class='dropdown month-dropdown pull-left'>
+	<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+		<span class='fa-chevron-circle-down'></span>
+		<span id="calendar-currentMonth" class='current-month'>{{currentMonth}}</span>
+	</button>
+	<ul id="calendar-months" class='dropdown-menu month-dropdown' role='menu'>
+		{{#months}}
+		<li><a>{{.}}</a></li>
+		{{/months}}
+	</ul>
+</div>
+<div class='dropdown year-dropdown pull-right'>
+	<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+		<span id="calendar-currentYear" class='current-year'>{{currentYear}}</span>
+		<span class='fa-chevron-circle-down'></span>
+	</button>
+	<ul id="calendar-years" class='dropdown-menu year-dropdown' role='menu'>
+		{{#years}}
+		<li><a>{{.}}</a></li>
+		{{/years}}
+	</ul>
+</div>
+<div class='calendar-content popover-content'>
+	<table class='table calendar-table'>
+		<thead>
+			<tr id="calendar-weekdays">
+				{{#weekdays}}
+				<th>{{.}}</th>
+				{{/weekdays}}
+			</tr>
+		</thead>
+
+		<tbody id="calendar-content">
+			{{#content}}
+			<tr>
+				{{#.}}
+				<td>{{.}}</td>
+				{{/.}}
+			</tr>
+			{{/content}}
+		</tbody>
+	</table>
+</div>
+<!-- <div class='popover-footer col-xs-12'>
+<div class=" col-xs-6">
+ 		<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Anreise' value={{startDateInterval}}>
+</div>
+<div class="col-xs-6">
+		<input id='start' class='datepickerInput form-control input-sm' type="text" placeholder='Abreise' value={{endDateInterval}}>
+	</div>
+</div> -->
