@@ -52,10 +52,9 @@ var Calendar = function (options) {
     };
 
     // rearrange dayList according to startOfWeek
-    var param = function () {
+    repMethod(dayList, Array.prototype.unshift, function() {
         return repMethod(dayList, Array.prototype.pop, function() {}, 1);
-    };
-    repMethod(dayList, Array.prototype.unshift, param, startOfWeek);
+    }, startOfWeek);
 
     // straight-line code over functions
     var generateContent = function (date, options) {
@@ -150,10 +149,9 @@ var Calendar = function (options) {
 
             var formatWeekdays = function (weekdaysLong, startOfWeek) {
                 // format weekdays according to startOfWeek parameter
-                var param = function () {
+                repMethod(weekdaysLong, Array.prototype.push, function () {
                     return repMethod(weekdaysLong, Array.prototype.shift, function() {}, 1);
-                };
-                repMethod(weekdaysLong, Array.prototype.push, param, startOfWeek);
+                }, startOfWeek);
 
                 // overwrite weekdays if they are supplied by parameters
                 // this is assuming that the parameter 'weekdays' is already formatted according to startOfWeek
@@ -208,7 +206,7 @@ var Calendar = function (options) {
         var $template = $('#calendar-template');
         var view;
 
-        // inserts the view into the html
+        // inserts the view into the html with mustache templating
         var render = function () {
             view = generateView();
             var html = Mustache.render($template.html(), view);
@@ -216,18 +214,53 @@ var Calendar = function (options) {
             $placeholder.html(html);
         };
 
-        // var render = function () {
-        //     view = generateView();
-        //     var $years = $template.find('#calendar-years');
-        //     var $months = $template.find('#calendar-months');
-        //     var $weekdays = $template.find('#calendar-weekdays');
-        //     var $currentDate = $template.find('#calendar-currentDate');
-        //     var $currentYear = $template.find('#calendar-currentYear');
-        //     var $currentMonth = $template.find('#calendar-currentMonth');
-        //     var $content = $template.find('#calendar-content');
-        //     var $title = $template.find('#calendar-title');
-        //     $placeholder.html($template.html());
-        // };
+        // inserts the view into the html with jquery
+        var render = function () {
+            view = generateView();
+            $placeholder.html($template.html());
+
+            // Cache DOM
+            var $years = $placeholder.find('#calendar-years');
+            var $months = $placeholder.find('#calendar-months');
+            var $weekdays = $placeholder.find('#calendar-weekdays');
+            var $currentDate = $placeholder.find('#calendar-currentDate');
+            var $currentYear = $placeholder.find('#calendar-currentYear');
+            var $currentMonth = $placeholder.find('#calendar-currentMonth');
+            var $content = $placeholder.find('#calendar-content');
+            var $title = $placeholder.find('#calendar-title');
+
+            // this function will be merged with repMethod
+            var repit = function (obj, method, param, iter) {
+                var state;
+                iter.forEach(function(elem, index){
+                    state = method.call(obj, param(elem));
+                });
+                return state;
+            };
+
+            repit($months, $.prototype.append, function(elem) {
+                 return '<li><a>' + elem + '</a></li>';
+            }, view.months);
+            repit($years, $.prototype.append, function(elem) {
+                 return '<li><a>' + elem + '</a></li>';
+            }, view.years);
+            repit($weekdays, $.prototype.append, function(elem) {
+                 return '<th>' + elem + '</th>';
+            }, view.weekdays);
+
+            $currentDate.html(view.currentDate);
+            $currentYear.html(view.currentYear);
+            $currentMonth.html(view.currentMonth);
+            $title.html(view.title);
+
+            view.content.forEach(function(row, i){
+                $content.append('<tr></tr>');
+                row.forEach(function(cell, j){
+                    $content.find('tr:last-child').append('<td>' + cell + '</td>');
+                });
+            });
+
+        };
 
         // initialize
         render();
