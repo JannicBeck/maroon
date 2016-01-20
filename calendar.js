@@ -8,6 +8,7 @@
 // complete off the shelf but at the same time flexibel (mustache, handlebars etc.)
 // and not because of a switch to turn off or on, but because of small loosely coupled parts
 // calendar module logic no html, css or jquery allowed!!
+
 var Calendar = function (options) {
 
     // returns a closed interval from start to end
@@ -24,11 +25,15 @@ var Calendar = function (options) {
         return interval;
     };
 
+
     // returns a closed date interval from startDate to endDate
     var closedDateInterval = function (startDate, endDate) {
-        if (startDate > endDate) { return []; }
+        if (startDate > endDate) {
+            return [];
+        }
         var dateInterval = [];
         startDate = new Date(startDate);
+
         do {
             dateInterval.push(startDate);
             startDate = new Date(startDate);
@@ -51,10 +56,25 @@ var Calendar = function (options) {
         return state;
     };
 
+    // this function will be merged with repMethod
+    var repMethodF = function (obj, method, args, iter) {
+        var state;
+        console.log(iter);
+        iter.forEach(function(elem, index){
+            state = method.apply(obj, args);
+        });
+        return state;
+    };
+    repMethodF(dayList, Array.prototype.unshift, function() {
+        return [repMethod(dayList, Array.prototype.pop, function() {}, 1)];
+    }, closedInterval(1, 1));
+    // closedInterval(0, 0) == [], so forEach is executed 0 times
+    // console.log(closedInterval(1, startOfWeek));
+
     // rearrange dayList according to startOfWeek
-    repMethod(dayList, Array.prototype.unshift, function() {
-        return repMethod(dayList, Array.prototype.pop, function() {}, 1);
-    }, startOfWeek);
+    // repMethod(dayList, Array.prototype.unshift, function() {
+    //     return repMethod(dayList, Array.prototype.pop, function() {}, 1);
+    // }, startOfWeek);
 
     // straight-line code over functions
     var generateContent = function (date, options) {
