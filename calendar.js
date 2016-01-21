@@ -47,34 +47,23 @@ var Calendar = function (options) {
     var startOfWeek = options.startOfWeek || 0;
 
     // repeats a method call of an object n times with parameter of type function
-    // returns the return value of the methods n-th call
-    var repMethod = function (obj, method, param, n) {
+    // returns the value of the n-th method call
+    // obj: an object on which the method will be called
+    // method: a method that will be called on the object
+    // getArgs: a function which returns the arguments of the method as an array
+    // the getArgs function has access to all variables inside the repMethod function
+    // iter: an object over which the repMethod function will iterate
+    var repMethod = function (obj, method, getArgs, iter) {
         var state;
-        for (var i = 0; i < n; i++) {
-            state = method.call(obj, param());
-        }
-        return state;
-    };
-
-    // this function will be merged with repMethod
-    var repMethodF = function (obj, method, args, iter) {
-        var state;
-        console.log(iter);
-        iter.forEach(function(elem, index){
-            state = method.apply(obj, args);
+        iter.forEach(function(elem, idx){
+            state = method.apply(obj, getArgs(elem, idx, state));
         });
         return state;
     };
-    repMethodF(dayList, Array.prototype.unshift, function() {
-        return [repMethod(dayList, Array.prototype.pop, function() {}, 1)];
-    }, closedInterval(1, 1));
-    // closedInterval(0, 0) == [], so forEach is executed 0 times
-    // console.log(closedInterval(1, startOfWeek));
 
-    // rearrange dayList according to startOfWeek
-    // repMethod(dayList, Array.prototype.unshift, function() {
-    //     return repMethod(dayList, Array.prototype.pop, function() {}, 1);
-    // }, startOfWeek);
+    repMethod(dayList, Array.prototype.unshift, function getArgs() {
+        return [dayList.pop()];
+    }, closedInterval(1, startOfWeek));
 
     // straight-line code over functions
     var generateContent = function (date, options) {
@@ -169,9 +158,9 @@ var Calendar = function (options) {
 
             var formatWeekdays = function (weekdaysLong, startOfWeek) {
                 // format weekdays according to startOfWeek parameter
-                repMethod(weekdaysLong, Array.prototype.push, function () {
-                    return repMethod(weekdaysLong, Array.prototype.shift, function() {}, 1);
-                }, startOfWeek);
+                repMethod(weekdaysLong, Array.prototype.push, function getArgs() {
+                    return [weekdaysLong.shift()];
+                }, [startOfWeek]);
 
                 // overwrite weekdays if they are supplied by parameters
                 // this is assuming that the parameter 'weekdays' is already formatted according to startOfWeek
@@ -249,23 +238,14 @@ var Calendar = function (options) {
             var $content = $placeholder.find('#calendar-content');
             var $title = $placeholder.find('#calendar-title');
 
-            // this function will be merged with repMethod
-            var repit = function (obj, method, param, iter) {
-                var state;
-                iter.forEach(function(elem, index){
-                    state = method.call(obj, param(elem));
-                });
-                return state;
-            };
-
-            repit($months, $.prototype.append, function(elem) {
-                 return '<li><a>' + elem + '</a></li>';
+            repMethod($months, jQuery.prototype.append, function getArgs(elem) {
+                return ['<li><a>' + elem + '</a></li>'];
             }, view.months);
-            repit($years, $.prototype.append, function(elem) {
-                 return '<li><a>' + elem + '</a></li>';
+            repMethod($years, jQuery.prototype.append, function getArgs(elem) {
+                return ['<li><a>' + elem + '</a></li>'];
             }, view.years);
-            repit($weekdays, $.prototype.append, function(elem) {
-                 return '<th>' + elem + '</th>';
+            repMethod($weekdays, jQuery.prototype.append, function getArgs(elem) {
+                return ['<th>' + elem + '</th>'];
             }, view.weekdays);
 
             $currentDate.html(view.currentDate);
