@@ -110,8 +110,6 @@
     <script src="{{ site.baseurl }}/javascript/calendar.js"></script>
     <script>
     $(function($){
-        var $calendar = $('#calendar');
-        var $template = $('#calendar-template');
         var myCalendar = new Calendar({
             timespan: [2016, 2020],
             nrows: 5,
@@ -120,8 +118,6 @@
 
         $('#demo').click(function(){
             myCalendar.launch({
-                $template: $template,
-                $calendar: $calendar,
                 locale: 'de',
                 // title: 'My Awesome Datepicker',
                 // months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',

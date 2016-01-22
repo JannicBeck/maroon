@@ -4,55 +4,77 @@
 
 // small loosely coupled parts that do one thing very well
 // but at the same time coherent, consistent overall design when you put pieces together
-// they fit together seamlessly no impedance missmatch
+// they fit together seamlessly
 // complete off the shelf but at the same time flexibel (mustache, handlebars etc.)
 // and not because of a switch to turn off or on, but because of small loosely coupled parts
-// calendar module logic no html, css or jquery allowed!!
+
 var Calendar = function (options) {
 
     // returns a closed interval from start to end
     var closedInterval = function (start, end) {
-        if (start > end) { return []; }
-        end++;
+        if (start > end) {
+            return [];
+        }
         var interval = [];
         var i = start;
         do {
             interval[i - start] = i;
             i++;
-        } while (i < end);
+        } while (i <= end);
         return interval;
     };
 
     // returns a closed date interval from startDate to endDate
     var closedDateInterval = function (startDate, endDate) {
-        if (startDate > endDate) { return []; }
+        if (startDate > endDate) {
+            return [];
+        }
         var dateInterval = [];
-        startDate = new Date(startDate);
+        // clone start date so we don't modify it via object reference
+        var dateIterator = new Date(startDate);
+
         do {
-            dateInterval.push(startDate);
-            startDate = new Date(startDate);
-            startDate.setDate(startDate.getDate() + 1);
-        } while (startDate <= endDate);
+            dateInterval.push(dateIterator);
+            // clone dateIterator so we don't modify the date
+            // object of the previous Iteration
+            dateIterator = new Date(dateIterator);
+            // increment the dateIterator by 1 day
+            dateIterator.setDate(dateIterator.getDate() + 1);
+        } while (dateIterator <= endDate);
         return dateInterval;
     };
 
-    var dayList = closedInterval(0, 6);
     var startOfWeek = options.startOfWeek || 0;
 
-    // rearrange dayList so startOfWeek equals dayList[0]
-    var k = 0;
-    while (k < startOfWeek) {
-        dayList.unshift(dayList.pop());
-        k++;
-    }
+    // returns the day of the week according to startOfWeek
+    var getWeekday = function (date, startOfWeek) {
+        var dayList = closedInterval(0, 6);
+        // reorder dayList according to startOfWeek
+        var i = 0;
+        while (i < startOfWeek) {
+            dayList.unshift(dayList.pop());
+            i++;
+        }
+        return dayList[date.getDay()];
+    };
+
+    // turns an array a into a m x n matrix
+    var toMatrix = function (a, m, n) {
+        var result = [];
+        for (var i = 0; i < m; i++) {
+            result[i] = a.splice(0, n);
+        }
+        return result;
+    };
 
     // straight-line code over functions
     var generateContent = function (date, options) {
         // clone date so we don't modify it via object reference
         date = new Date(date);
-        // get start of month according to start of
+        // get start of month according to startOfWeek
         date.setDate(1);
-        var startOfMonth = dayList[date.getDay()];
+        // 0 means start week on sunday, 1 monday ...
+        var startOfMonth = getWeekday(date, startOfWeek);
 
         // generate calendar content
         var nrows = options.nrows || 6;
@@ -63,27 +85,33 @@ var Calendar = function (options) {
         var endDate = new Date(date);
         endDate.setDate(endDate.getDate() + cellNumber - 1);
         var dateInterval = closedDateInterval(date, endDate);
-        var content = [];
-        for (var i = 0; i < nrows; i++) {
-            content[i] = dateInterval.splice(0, COLS);
-        }
+        var content = toMatrix(dateInterval, nrows, COLS);
         return content;
     };
 
     // this has no use yet add a listener or smth
     this.options = options;
+
     this.currentDate = new Date();
-    var timespan = options.timespan || [this.currentDate.getFullYear(), this.currentDate.getFullYear() + 5];
-    this.yearList = closedInterval(timespan[0], timespan[1]);
+
+    var today = new Date();
+
+    var timespan = options.timespan || [this.currentDate.getFullYear(),
+                                        this.currentDate.getFullYear() + 5];
+    this.years = closedInterval(timespan[0], timespan[1]);
+
     this.setContent = function () {
         this.content = generateContent(this.currentDate, this.options);
     };
     this.setContent();
+
+    /*
     this.setDateInterval = function () {
         this.dateInterval = closedDateInterval(this.startDateInterval, this.endDateInterval);
     };
     this.startDateInterval = new Date();
     this.endDateInterval = new Date();
+    */
 
     /* !--- START OF PRESENTATION LOGIC ---! */
     /*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
@@ -96,61 +124,12 @@ var Calendar = function (options) {
     // to a datepicker maybe work with inheritance?
     this.launch = function (options) {
 
+        // find a way to avoid this - pun intended
         var calendar = this;
-        var $calendar = options.$calendar;
-        var $template = options.$template;
-
-        // fallback for months and weekdays
-        var months = ['January', 'February', 'March', 'April',
-                        'May', 'June', 'July', 'August',
-                        'September', 'October', 'November', 'December'];
-        // make weekdays an array of length 3 with [weekdays, weekdaysShort, weekdaysMin]
-        var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var weekdaysMin = [];
-        var weekdaysShort = [];
-        weekdays.forEach(function (day, i) {
-            weekdaysShort[i] = day.substring(0, 3)
-            weekdaysMin[i] = day.substring(0, 2)
-        });
-
-        // if moment is loaded overwrite the fallback
-        if (typeof moment !== 'undefined') {
-            var locale = options.locale || 'en';
-            moment.locale(locale);
-            months = moment.months();
-			weekdays = moment.weekdays();
-            weekdaysShort = moment.weekdaysShort();
-            weekdaysMin = moment.weekdaysMin();
-        }
-
-        // if months is supplied as parameter overwrite montList
-        if (options.months) {
-            months = options.months;
-        }
-
-        // if weekdays is supplied as parameter overwrite all weekdays variables
-        if (options.weekdays) {
-            weekdays = weekdaysMin = weekdaysShort = options.weekdays;
-        } else {
-            // push and shift an array n times
-            var pushShiftArray = function (array, n) {
-                var k = 0;
-                while (k < n) {
-                    array.push(array.shift());
-                    k++;
-                }
-                return array;
-            };
-
-            // rearrange weekday arrays according to start of week
-            var n = calendar.options.startOfWeek;
-            pushShiftArray(weekdays, n);
-            pushShiftArray(weekdaysMin, n);
-            pushShiftArray(weekdaysShort, n);
-        }
 
         // generates the view
         var generateView = function () {
+
             var formatContent = function (content) {
                 // copy content so we won't modify the calendar object
                 var formattedContent = content.map(function (row) {
@@ -159,49 +138,130 @@ var Calendar = function (options) {
 
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
-                    row.forEach(function (col, j) {
+                    row.forEach(function (cell, j) {
                         // two digit days
-                        row[j] = ('0' + col.getDate()).slice(-2);
+                        row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
+                        // mark today
+                        if (cell.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
+                            row[j].addClass('today');
+                        }
+                        if (cell.getMonth() !== currentDate.getMonth()){
+                            row[j].addClass('secondary');
+                        }
                     });
                 });
                 return formattedContent;
             };
 
-            var formatDefaultTitle = function  () {
-                var currentDate = calendar.currentDate;
-                var dayName = weekdays[dayList[currentDate.getDay()]];
-                var month = months[currentDate.getMonth()];
-                var day = currentDate.getDate();
-                var year = currentDate.getFullYear();
+            var weekdaysLong = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+                                'Thursday', 'Friday', 'Saturday'];
+            var months = ['January', 'February', 'March', 'April',
+                            'May', 'June', 'July', 'August',
+                            'September', 'October', 'November', 'December'];
+
+            // moment module
+            // overwrite weekdaysLong and months if moment is available
+            if (typeof moment !== 'undefined') {
+                var locale = options.locale || 'en';
+                moment.locale(locale);
+                weekdaysLong = moment.weekdays();
+                months = moment.months();
+            }
+
+            var formatWeekdays = function (weekdaysLong, startOfWeek) {
+                // format weekdays according to startOfWeek parameter
+                var i = 0;
+                while (i < startOfWeek) {
+                    weekdaysLong.push(weekdaysLong.shift());
+                    i++;
+                }
+
+                // overwrite weekdays if they are supplied by parameters
+                // this is assuming that the parameter 'weekdays' is already formatted according to startOfWeek
+                weekdaysLong = options.weekdays || weekdaysLong;
+
+                var weekdaysShort = [];
+                var weekdaysMin = [];
+                weekdaysLong.forEach(function (day, i) {
+                    weekdaysShort[i] = day.substring(0, 3)
+                    weekdaysMin[i] = day.substring(0, 2)
+                });
+                var weekdays = [weekdaysLong, weekdaysShort, weekdaysMin];
+                return weekdays;
+            };
+
+            var formatTitle = function (date, weekdays, months) {
+                // getWeekday is neccessary to translate the day according to startOfWeek
+                var dayName = weekdays[getWeekday(date, startOfWeek)];
+                var month = months[date.getMonth()];
+                var day = date.getDate();
+                var year = date.getFullYear();
                 var title = dayName + ', ' + month + ', ' + day + ', ' + year;
                 return title;
             };
 
-            var title = options.title || formatDefaultTitle();
-            var content = formatContent(calendar.content);
+            var years = calendar.years;
+            // overwrite months if they are supplied by parameter
+            months = options.months || months;
+            var weekdays = formatWeekdays(weekdaysLong, calendar.options.startOfWeek);
+            var weekdaysLong = weekdays[0];
+            var weekdaysShort = weekdays[1];
+            var weekdaysMin = weekdays[2];
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
-            var yearList = calendar.yearList;
+            var content = formatContent(calendar.content);
+            var title = options.title || formatTitle(calendar.currentDate, weekdaysLong, months);
 
-            return {title: title,
-                    yearList: yearList,
-                    months: months,
-                    weekdays: weekdaysMin,
-                    currentYear: currentYear,
-                    currentMonth: currentMonth,
-                    content: content
-                };
+            // return the view
+            return {years, months, weekdaysLong: weekdaysLong,
+                    weekdaysShort, weekdaysMin, currentDate,
+                    currentYear, currentMonth, content, title };
         };
 
+        var $placeholder = $('#calendar-placeholder');
+        var $template = $('#calendar-template');
         var view;
 
+        // inserts the view into the html using jquery
         var render = function () {
-            view = generateView(this);
-            var html = Mustache.render($template.html(), view);
-            console.log(html);
-            Mustache.parse(html);
-            $calendar.html(html);
+            view = generateView();
+            $placeholder.html($template.html());
+
+            // Cache DOM
+            var $years = $placeholder.find('#calendar-years');
+            var $months = $placeholder.find('#calendar-months');
+            var $weekdays = $placeholder.find('#calendar-weekdays');
+            var $currentDate = $placeholder.find('#calendar-currentDate');
+            var $currentYear = $placeholder.find('#calendar-currentYear');
+            var $currentMonth = $placeholder.find('#calendar-currentMonth');
+            var $content = $placeholder.find('#calendar-content');
+            var $title = $placeholder.find('#calendar-title');
+
+            view.months.forEach(function(month, idx) {
+                $months.append('<li><a>' + month + '</a></li>');
+            });
+
+            view.years.forEach(function(year, idx) {
+                $years.append('<li><a>' + year + '</a></li>');
+            });
+
+            view.weekdaysMin.forEach(function(day, idx) {
+                $weekdays.append('<th>' + day + '</th>');
+            });
+
+            $currentDate.html(view.currentDate);
+            $currentYear.html(view.currentYear);
+            $currentMonth.html(view.currentMonth);
+            $title.html(view.title);
+
+            view.content.forEach(function(row, i){
+                $content.append('<tr></tr>');
+                row.forEach(function(cell, j){
+                    $content.find('tr:last-child').append(cell);
+                });
+            });
+
         };
 
         // initialize
@@ -235,9 +295,9 @@ var Calendar = function (options) {
         };
 
         // bind events
-        $calendar.on("click", '.month-dropdown li', monthSelect);
-        $calendar.on("click", '.year-dropdown li', yearSelect);
-        $calendar.on("click", '.calendar-table tbody td', daySelect);
+        $placeholder.on("click", '.month-dropdown li', monthSelect);
+        $placeholder.on("click", '.year-dropdown li', yearSelect);
+        $placeholder.on("click", '.calendar-table tbody td', daySelect);
 
     };
 
