@@ -4,10 +4,9 @@
 
 // small loosely coupled parts that do one thing very well
 // but at the same time coherent, consistent overall design when you put pieces together
-// they fit together seamlessly no impedance missmatch
+// they fit together seamlessly
 // complete off the shelf but at the same time flexibel (mustache, handlebars etc.)
 // and not because of a switch to turn off or on, but because of small loosely coupled parts
-// calendar module logic no html, css or jquery allowed!!
 
 var Calendar = function (options) {
 
@@ -92,7 +91,10 @@ var Calendar = function (options) {
 
     // this has no use yet add a listener or smth
     this.options = options;
+
     this.currentDate = new Date();
+
+    var today = new Date();
 
     var timespan = options.timespan || [this.currentDate.getFullYear(),
                                         this.currentDate.getFullYear() + 5];
@@ -136,9 +138,13 @@ var Calendar = function (options) {
 
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
-                    row.forEach(function (col, j) {
+                    row.forEach(function (cell, j) {
                         // two digit days
-                        row[j] = ('0' + col.getDate()).slice(-2);
+                        row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
+                        // mark today
+                        if (cell.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
+                            row[j].addClass('today');
+                        }
                     });
                 });
                 return formattedContent;
@@ -205,21 +211,54 @@ var Calendar = function (options) {
             var title = options.title || formatTitle(calendar.currentDate, weekdaysLong, months);
 
             // return the view
-            return {years, months, weekdays: weekdaysMin,
-                    currentDate, currentYear, currentMonth,
-                    content, title };
+            return {years, months, weekdaysLong: weekdaysLong,
+                    weekdaysShort, weekdaysMin, currentDate,
+                    currentYear, currentMonth, content, title };
         };
 
         var $placeholder = $('#calendar-placeholder');
         var $template = $('#calendar-template');
         var view;
 
-        // inserts the view into the html using mustache templating
+        // inserts the view into the html using jquery
         var render = function () {
             view = generateView();
-            var html = Mustache.render($template.html(), view);
-            Mustache.parse(html);
-            $placeholder.html(html);
+            $placeholder.html($template.html());
+
+            // Cache DOM
+            var $years = $placeholder.find('#calendar-years');
+            var $months = $placeholder.find('#calendar-months');
+            var $weekdays = $placeholder.find('#calendar-weekdays');
+            var $currentDate = $placeholder.find('#calendar-currentDate');
+            var $currentYear = $placeholder.find('#calendar-currentYear');
+            var $currentMonth = $placeholder.find('#calendar-currentMonth');
+            var $content = $placeholder.find('#calendar-content');
+            var $title = $placeholder.find('#calendar-title');
+
+            view.months.forEach(function(month, idx) {
+                $months.append('<li><a>' + month + '</a></li>');
+            });
+
+            view.years.forEach(function(year, idx) {
+                $years.append('<li><a>' + year + '</a></li>');
+            });
+
+            view.weekdaysMin.forEach(function(day, idx) {
+                $weekdays.append('<th>' + day + '</th>');
+            });
+
+            $currentDate.html(view.currentDate);
+            $currentYear.html(view.currentYear);
+            $currentMonth.html(view.currentMonth);
+            $title.html(view.title);
+
+            view.content.forEach(function(row, i){
+                $content.append('<tr></tr>');
+                row.forEach(function(cell, j){
+                    $content.find('tr:last-child').append(cell);
+                });
+            });
+
         };
 
         // initialize
