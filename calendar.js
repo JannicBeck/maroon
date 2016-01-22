@@ -25,32 +25,48 @@ var Calendar = function (options) {
         return interval;
     };
 
-
     // returns a closed date interval from startDate to endDate
     var closedDateInterval = function (startDate, endDate) {
         if (startDate > endDate) {
             return [];
         }
         var dateInterval = [];
-        startDate = new Date(startDate);
+        // clone start date so we don't modify it via object reference
+        var dateIterator = new Date(startDate);
 
         do {
-            dateInterval.push(startDate);
-            startDate = new Date(startDate);
-            startDate.setDate(startDate.getDate() + 1);
-        } while (startDate <= endDate);
+            dateInterval.push(dateIterator);
+            // clone dateIterator so we don't modify the date
+            // object of the previous Iteration
+            dateIterator = new Date(dateIterator);
+            // increment the dateIterator by 1 day
+            dateIterator.setDate(dateIterator.getDate() + 1);
+        } while (dateIterator <= endDate);
         return dateInterval;
     };
 
-    var dayList = closedInterval(0, 6);
-    // 0 means sundays, 1 monday ...
     var startOfWeek = options.startOfWeek || 0;
 
-    var i = 0;
-    while (i < startOfWeek) {
-        dayList.unshift(dayList.pop());
-        i++;
-    }
+    // returns the day of the week according to startOfWeek
+    var getWeekday = function (date, startOfWeek) {
+        var dayList = closedInterval(0, 6);
+        // reorder dayList according to startOfWeek
+        var i = 0;
+        while (i < startOfWeek) {
+            dayList.unshift(dayList.pop());
+            i++;
+        }
+        return dayList[date.getDay()];
+    };
+
+    // turns an array a into a m x n matrix
+    var toMatrix = function (a, m, n) {
+        var result = [];
+        for (var i = 0; i < m; i++) {
+            result[i] = a.splice(0, n);
+        }
+        return result;
+    };
 
     // straight-line code over functions
     var generateContent = function (date, options) {
@@ -58,7 +74,8 @@ var Calendar = function (options) {
         date = new Date(date);
         // get start of month according to startOfWeek
         date.setDate(1);
-        var startOfMonth = dayList[date.getDay()];
+        // 0 means start week on sunday, 1 monday ...
+        var startOfMonth = getWeekday(date, startOfWeek);
 
         // generate calendar content
         var nrows = options.nrows || 6;
@@ -69,19 +86,18 @@ var Calendar = function (options) {
         var endDate = new Date(date);
         endDate.setDate(endDate.getDate() + cellNumber - 1);
         var dateInterval = closedDateInterval(date, endDate);
-        var content = [];
-        for (var i = 0; i < nrows; i++) {
-            content[i] = dateInterval.splice(0, COLS);
-        }
+        var content = toMatrix(dateInterval, nrows, COLS);
         return content;
     };
 
     // this has no use yet add a listener or smth
     this.options = options;
     this.currentDate = new Date();
+
     var timespan = options.timespan || [this.currentDate.getFullYear(),
                                         this.currentDate.getFullYear() + 5];
     this.years = closedInterval(timespan[0], timespan[1]);
+
     this.setContent = function () {
         this.content = generateContent(this.currentDate, this.options);
     };
@@ -94,7 +110,6 @@ var Calendar = function (options) {
     this.startDateInterval = new Date();
     this.endDateInterval = new Date();
     */
-
 
     /* !--- START OF PRESENTATION LOGIC ---! */
     /*jslint browser: true, devel: true, vars: true, plusplus: true, maxerr: 50 */
@@ -166,9 +181,9 @@ var Calendar = function (options) {
                 return weekdays;
             };
 
-            var formatDefaultTitle = function  (date, weekdays, months) {
-                // dayList is neccessary to translate the day according to startOfWeek
-                var dayName = weekdays[dayList[date.getDay()]];
+            var formatTitle = function (date, weekdays, months) {
+                // getWeekday is neccessary to translate the day according to startOfWeek
+                var dayName = weekdays[getWeekday(date, startOfWeek)];
                 var month = months[date.getMonth()];
                 var day = date.getDate();
                 var year = date.getFullYear();
@@ -187,7 +202,7 @@ var Calendar = function (options) {
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
             var content = formatContent(calendar.content);
-            var title = options.title || formatDefaultTitle(calendar.currentDate, weekdaysLong, months);
+            var title = options.title || formatTitle(calendar.currentDate, weekdaysLong, months);
 
             // return the view
             return {years, months, weekdays: weekdaysMin,
@@ -199,54 +214,12 @@ var Calendar = function (options) {
         var $template = $('#calendar-template');
         var view;
 
-        // inserts the view into the html with mustache templating
+        // inserts the view into the html using mustache templating
         var render = function () {
             view = generateView();
             var html = Mustache.render($template.html(), view);
             Mustache.parse(html);
             $placeholder.html(html);
-        };
-
-        // inserts the view into the html with jquery
-        var render = function () {
-            view = generateView();
-            $placeholder.html($template.html());
-
-            // Cache DOM - this is somehow bad but can't be avoided due to
-            // replacable render function
-            var $years = $placeholder.find('#calendar-years');
-            var $months = $placeholder.find('#calendar-months');
-            var $weekdays = $placeholder.find('#calendar-weekdays');
-            var $currentDate = $placeholder.find('#calendar-currentDate');
-            var $currentYear = $placeholder.find('#calendar-currentYear');
-            var $currentMonth = $placeholder.find('#calendar-currentMonth');
-            var $content = $placeholder.find('#calendar-content');
-            var $title = $placeholder.find('#calendar-title');
-
-            view.months.forEach(function(month, idx) {
-                $months.append('<li><a>' + month + '</a></li>');
-            });
-
-            view.years.forEach(function(year, idx) {
-                $years.append('<li><a>' + year + '</a></li>');
-            });
-
-            view.weekdays.forEach(function(day, idx) {
-                $weekdays.append('<th>' + day + '</th>');
-            });
-
-            $currentDate.html(view.currentDate);
-            $currentYear.html(view.currentYear);
-            $currentMonth.html(view.currentMonth);
-            $title.html(view.title);
-
-            view.content.forEach(function(row, i){
-                $content.append('<tr></tr>');
-                row.forEach(function(cell, j){
-                    $content.find('tr:last-child').append('<td>' + cell + '</td>');
-                });
-            });
-
         };
 
         // initialize

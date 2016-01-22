@@ -12,38 +12,51 @@
 <div id='calendar-placeholder' tabindex='0' class='popover' style='display: block; outline: none'></div>
 
 <script id="calendar-template" type="text/template">
-	<h3 id="calendar-title" class='popover-title'></h3>
+	<h3 id="calendar-title" class='popover-title'>{{title}}</h3>
 	<div class='dropdown month-dropdown pull-left'>
 		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
 			<span class='fa-chevron-circle-down'></span>
-			<span id="calendar-currentMonth" class='current-month'></span>
+			<span id="calendar-currentMonth" class='current-month'>{{currentMonth}}</span>
 		</button>
 		<ul id="calendar-months" class='dropdown-menu month-dropdown' role='menu'>
-
+			{{#months}}
+			<li><a>{{.}}</a></li>
+			{{/months}}
 		</ul>
 	</div>
 	<div class='dropdown year-dropdown pull-right'>
 		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
-			<span id="calendar-currentYear" class='current-year'></span>
+			<span id="calendar-currentYear" class='current-year'>{{currentYear}}</span>
 			<span class='fa-chevron-circle-down'></span>
 		</button>
 		<ul id="calendar-years" class='dropdown-menu year-dropdown' role='menu'>
-
+			{{#years}}
+			<li><a>{{.}}</a></li>
+			{{/years}}
 		</ul>
 	</div>
 	<div class='calendar-content popover-content'>
 		<table class='table calendar-table'>
 			<thead>
 				<tr id="calendar-weekdays">
-
+					{{#weekdays}}
+					<th>{{.}}</th>
+					{{/weekdays}}
 				</tr>
 			</thead>
 
 			<tbody id="calendar-content">
-
+				{{#content}}
+				<tr>
+					{{#.}}
+					<td>{{.}}</td>
+					{{/.}}
+				</tr>
+				{{/content}}
 			</tbody>
 		</table>
 	</div>
+
 </script>
 
 	<script src="/dependencies/js/jquery.min.js"></script>
@@ -58,7 +71,7 @@
 		var myCalendar = new Calendar({
 			timespan: [2016, 2020],
 			nrows: 5,
-			startOfWeek: 3, // 1 means start week on monday
+			startOfWeek: 1, // 1 means start week on monday
 		}).launch({
 			locale: 'de',
 			// title: 'My Awesome Datepicker',
