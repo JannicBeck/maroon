@@ -46,24 +46,11 @@ var Calendar = function (options) {
     // 0 means sundays, 1 monday ...
     var startOfWeek = options.startOfWeek || 0;
 
-    // repeats a method call of an object n times with parameter of type function
-    // returns the value of the n-th method call
-    // obj: an object on which the method will be called
-    // method: a method that will be called on the object
-    // getArgs: a function which returns the arguments of the method as an array
-    // the getArgs function has access to all variables inside the repMethod function
-    // iter: an object over which the repMethod function will iterate
-    var repMethod = function (obj, method, getArgs, iter) {
-        var state;
-        iter.forEach(function(elem, idx){
-            state = method.apply(obj, getArgs(elem, idx, state));
-        });
-        return state;
-    };
-
-    repMethod(dayList, Array.prototype.unshift, function getArgs() {
-        return [dayList.pop()];
-    }, closedInterval(1, startOfWeek));
+    var i = 0;
+    while (i < startOfWeek) {
+        dayList.unshift(dayList.pop());
+        i++;
+    }
 
     // straight-line code over functions
     var generateContent = function (date, options) {
@@ -120,6 +107,7 @@ var Calendar = function (options) {
     // to a datepicker maybe work with inheritance?
     this.launch = function (options) {
 
+        // find a way to avoid this - pun intended
         var calendar = this;
 
         // generates the view
@@ -158,9 +146,11 @@ var Calendar = function (options) {
 
             var formatWeekdays = function (weekdaysLong, startOfWeek) {
                 // format weekdays according to startOfWeek parameter
-                repMethod(weekdaysLong, Array.prototype.push, function getArgs() {
-                    return [weekdaysLong.shift()];
-                }, [startOfWeek]);
+                var i = 0;
+                while (i < startOfWeek) {
+                    weekdaysLong.push(weekdaysLong.shift());
+                    i++;
+                }
 
                 // overwrite weekdays if they are supplied by parameters
                 // this is assuming that the parameter 'weekdays' is already formatted according to startOfWeek
@@ -200,15 +190,9 @@ var Calendar = function (options) {
             var title = options.title || formatDefaultTitle(calendar.currentDate, weekdaysLong, months);
 
             // return the view
-            return {years: years,
-                    months: months,
-                    weekdays: weekdaysMin,
-                    currentDate: currentDate,
-                    currentYear: currentYear,
-                    currentMonth: currentMonth,
-                    content: content,
-                    title: title
-                };
+            return {years, months, weekdays: weekdaysMin,
+                    currentDate, currentYear, currentMonth,
+                    content, title };
         };
 
         var $placeholder = $('#calendar-placeholder');
@@ -228,7 +212,8 @@ var Calendar = function (options) {
             view = generateView();
             $placeholder.html($template.html());
 
-            // Cache DOM
+            // Cache DOM - this is somehow bad but can't be avoided due to
+            // replacable render function
             var $years = $placeholder.find('#calendar-years');
             var $months = $placeholder.find('#calendar-months');
             var $weekdays = $placeholder.find('#calendar-weekdays');
@@ -238,15 +223,17 @@ var Calendar = function (options) {
             var $content = $placeholder.find('#calendar-content');
             var $title = $placeholder.find('#calendar-title');
 
-            repMethod($months, jQuery.prototype.append, function getArgs(elem) {
-                return ['<li><a>' + elem + '</a></li>'];
-            }, view.months);
-            repMethod($years, jQuery.prototype.append, function getArgs(elem) {
-                return ['<li><a>' + elem + '</a></li>'];
-            }, view.years);
-            repMethod($weekdays, jQuery.prototype.append, function getArgs(elem) {
-                return ['<th>' + elem + '</th>'];
-            }, view.weekdays);
+            view.months.forEach(function(month, idx) {
+                $months.append('<li><a>' + month + '</a></li>');
+            });
+
+            view.years.forEach(function(year, idx) {
+                $years.append('<li><a>' + year + '</a></li>');
+            });
+
+            view.weekdays.forEach(function(day, idx) {
+                $weekdays.append('<th>' + day + '</th>');
+            });
 
             $currentDate.html(view.currentDate);
             $currentYear.html(view.currentYear);
