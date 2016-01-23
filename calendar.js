@@ -94,16 +94,20 @@ var Calendar = function (options) {
 
     this.currentDate = new Date();
 
-    var today = new Date();
-
     var timespan = options.timespan || [this.currentDate.getFullYear(),
                                         this.currentDate.getFullYear() + 5];
     this.years = closedInterval(timespan[0], timespan[1]);
 
+    this.content;
+
     this.setContent = function () {
         this.content = generateContent(this.currentDate, this.options);
     };
+
+    // initialize content
     this.setContent();
+
+    var today = new Date();
 
     /*
     this.setDateInterval = function () {
@@ -127,26 +131,66 @@ var Calendar = function (options) {
         // find a way to avoid this - pun intended
         var calendar = this;
 
+        // callback functions
+        var monthSelect = function (e) {
+            var $this = $(this);
+            var monthName = $this.find('a').html();
+            var month = view.months.indexOf(monthName);
+            calendar.currentDate.setMonth(month);
+            calendar.setContent();
+            render();
+            styleContent();
+        };
+
+        var yearSelect = function (e) {
+            var $this = $(this);
+            var year = $this.find('a').html();
+            calendar.currentDate.setYear(year);
+            calendar.setContent();
+            render();
+            styleContent();
+        };
+
+        var daySelect = function (date, $cell) {
+            console.log(date);
+            console.log($cell);
+
+        };
+
+        var $today;
+        // days that do not belong to the current month
+        var $secondaryDays = [];
+
         // generates the view
         var generateView = function () {
 
-            var formatContent = function (content) {
+            var formatContent = function (content, daySelect) {
                 // copy content so we won't modify the calendar object
-                var formattedContent = content.map(function (row) {
-                    return row.slice(0);
-                });
+                // var formattedContent = content.map(function (row) {
+                //     return row.slice(0);
+                // });
+                var formattedContent = content;
 
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
                     row.forEach(function (cell, j) {
                         // two digit days
                         row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
-                        // mark today
+                        // get today
                         if (cell.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
-                            row[j].addClass('today');
+                            $today = row[j];
                         }
+                        // get days which are not part of month
+                        if (cell.getMonth() !== currentDate.getMonth()){
+                            $secondaryDays.push(row[j]);
+                        }
+                        // bind day select callback
+                        row[j].on('click', function(){
+                            daySelect(cell, row[j]);
+                        });
                     });
                 });
+
                 return formattedContent;
             };
 
@@ -207,7 +251,7 @@ var Calendar = function (options) {
             var currentDate = calendar.currentDate;
             var currentYear = currentDate.getFullYear();
             var currentMonth = months[currentDate.getMonth()];
-            var content = formatContent(calendar.content);
+            var content = formatContent(calendar.content, daySelect);
             var title = options.title || formatTitle(calendar.currentDate, weekdaysLong, months);
 
             // return the view
@@ -261,40 +305,21 @@ var Calendar = function (options) {
 
         };
 
+        var styleContent = function () {
+            $secondaryDays.forEach(function(elem, idx) {
+                elem.addClass('secondary');
+            });
+            $today.addClass('today');
+        };
+
         // initialize
         render();
-
-        var monthSelect = function (e) {
-            var $this = $(this);
-            var monthName = $this.find('a').html();
-            var month = view.months.indexOf(monthName);
-            calendar.currentDate.setMonth(month);
-            calendar.setContent();
-            render();
-        };
-
-        var yearSelect = function (e) {
-            var $this = $(this);
-            var year = $this.find('a').html();
-            calendar.currentDate.setYear(year);
-            calendar.setContent();
-            render();
-        };
-
-        var daySelect = function (e) {
-            var $this = $(this);
-            var day = $this.html();
-            console.log(day);
-            // does not tell if day belongs to current month or before
-            // mapping function needed pseudocode: content[indexOf('<li>')]
-            // alternative: bind content[i] to li[i] when rendering the html
-            render();
-        };
+        styleContent();
 
         // bind events
         $placeholder.on("click", '.month-dropdown li', monthSelect);
         $placeholder.on("click", '.year-dropdown li', yearSelect);
-        $placeholder.on("click", '.calendar-table tbody td', daySelect);
+        // $placeholder.on("click", '.calendar-table tbody td', daySelect);
 
     };
 

@@ -36,10 +36,12 @@
   border-right: 1px solid #DDDDDD;
 }
 
-
+.calendar-table tbody td.secondary{
+  color: #DDD;
+}
 
 .calendar-table tbody td.today{
-	font-weight: bold;
+  font-weight: bold;
   color: Maroon;
 }
 
