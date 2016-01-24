@@ -20,20 +20,14 @@
 
 .calendar-table tbody td.start{
   background-color: #DFF0D8;
-  border-left: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
 }
 
 .calendar-table tbody td.interval{
   background-color: #F5F5F5;
-  border-left: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
 }
 
 .calendar-table tbody td.end{
   background-color: #F2DEDE;
-  border-left: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
 }
 
 .calendar-table tbody td.secondary{

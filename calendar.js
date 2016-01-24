@@ -190,6 +190,10 @@ var Calendar = function (options) {
                         if (cell.getMonth() !== currentDate.getMonth()){
                             $secondaryDays.push(row[j]);
                         }
+                        // get selected date
+                        if (cell.setHours(1, 1, 1, 1) === currentDate.setHours(1, 1, 1, 1)) {
+                            $selectedDate = row[j];
+                        }
                         // bind day select callback
                         row[j].on('click', function(){
                             daySelect(cell, row[j]);
@@ -317,7 +321,6 @@ var Calendar = function (options) {
             });
             $today.addClass('today');
 
-            // does not work yet because old jquery object is queried
             if ($selectedDate) {
                 $selectedDate.addClass('active');
             }
