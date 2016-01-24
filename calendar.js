@@ -152,9 +152,11 @@ var Calendar = function (options) {
         };
 
         var daySelect = function (date, $cell) {
-            console.log(date);
-            console.log($cell);
-
+            // set currentDate or reference date object?
+            calendar.currentDate.setDate(date.getDate());
+            // calendar.currentDate = date;
+            render();
+            styleContent();
         };
 
         var $today;
@@ -166,10 +168,9 @@ var Calendar = function (options) {
 
             var formatContent = function (content, daySelect) {
                 // copy content so we won't modify the calendar object
-                // var formattedContent = content.map(function (row) {
-                //     return row.slice(0);
-                // });
-                var formattedContent = content;
+                var formattedContent = content.map(function (row) {
+                    return row.slice(0);
+                });
 
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
@@ -177,8 +178,9 @@ var Calendar = function (options) {
                         // two digit days
                         row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
                         // get today
-                        if (cell.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
+                        if (cell.setHours(1, 1, 1, 1) === today.setHours(1, 1, 1, 1)) {
                             $today = row[j];
+                            today = cell;
                         }
                         // get days which are not part of month
                         if (cell.getMonth() !== currentDate.getMonth()){
