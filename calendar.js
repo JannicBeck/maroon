@@ -152,9 +152,11 @@ var Calendar = function (options) {
         };
 
         var daySelect = function (date, $cell) {
-            // set currentDate or reference date object?
             calendar.currentDate.setDate(date.getDate());
-            // calendar.currentDate = date;
+            calendar.currentDate.setMonth(date.getMonth());
+            calendar.currentDate.setYear(date.getFullYear());
+            calendar.setContent();
+            $selectedDate = $cell;
             render();
             styleContent();
         };
@@ -162,6 +164,8 @@ var Calendar = function (options) {
         var $today;
         // days that do not belong to the current month
         var $secondaryDays = [];
+        // currently selected date
+        var $selectedDate;
 
         // generates the view
         var generateView = function () {
@@ -312,6 +316,11 @@ var Calendar = function (options) {
                 elem.addClass('secondary');
             });
             $today.addClass('today');
+
+            // does not work yet because old jquery object is queried
+            if ($selectedDate) {
+                $selectedDate.addClass('active');
+            }
         };
 
         // initialize
