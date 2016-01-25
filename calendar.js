@@ -89,6 +89,19 @@ var Calendar = function (options) {
         return content;
     };
 
+    // searches the content for a specific date and returns its index
+    var indexOfDate = function (date, content) {
+        var result = -1;
+        var flatContent = Array.prototype.concat.apply([], content);
+        flatContent.forEach(function(elem, idx) {
+            if (elem.setHours(1, 1, 1, 1) === date.setHours(1, 1, 1, 1)) {
+                result = idx;
+            }
+        });
+        return result;
+    };
+
+
     // this has no use yet add a listener or smth
     this.options = options;
 
@@ -161,11 +174,9 @@ var Calendar = function (options) {
             styleContent();
         };
 
-        var $today;
+        // var $today;
         // days that do not belong to the current month
         var $secondaryDays = [];
-        // currently selected date
-        var $selectedDate;
 
         // generates the view
         var generateView = function () {
@@ -181,19 +192,12 @@ var Calendar = function (options) {
                     row.forEach(function (cell, j) {
                         // two digit days
                         row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
-                        // get today
-                        if (cell.setHours(1, 1, 1, 1) === today.setHours(1, 1, 1, 1)) {
-                            $today = row[j];
-                            today = cell;
-                        }
+
                         // get days which are not part of month
                         if (cell.getMonth() !== currentDate.getMonth()){
                             $secondaryDays.push(row[j]);
                         }
-                        // get selected date
-                        if (cell.setHours(1, 1, 1, 1) === currentDate.setHours(1, 1, 1, 1)) {
-                            $selectedDate = row[j];
-                        }
+
                         // bind day select callback
                         row[j].on('click', function(){
                             daySelect(cell, row[j]);
@@ -316,14 +320,21 @@ var Calendar = function (options) {
         };
 
         var styleContent = function () {
+
+            var flatContent = Array.prototype.concat.apply([], view.content);
+
+            var $today = flatContent[indexOfDate(today, calendar.content)];
+            var $selectedDate = flatContent[indexOfDate(calendar.currentDate, calendar.content)];
+
+            $selectedDate.addClass('active');
+            if ($today) {
+                $today.addClass('today');
+            }
+
             $secondaryDays.forEach(function(elem, idx) {
                 elem.addClass('secondary');
             });
-            $today.addClass('today');
 
-            if ($selectedDate) {
-                $selectedDate.addClass('active');
-            }
         };
 
         // initialize
@@ -333,7 +344,6 @@ var Calendar = function (options) {
         // bind events
         $placeholder.on("click", '.month-dropdown li', monthSelect);
         $placeholder.on("click", '.year-dropdown li', yearSelect);
-        // $placeholder.on("click", '.calendar-table tbody td', daySelect);
 
     };
 
