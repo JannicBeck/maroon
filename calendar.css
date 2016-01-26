@@ -18,6 +18,10 @@
 	font-weight: normal;
 }
 
+.calendar-table thead th.primary{
+	border-bottom: 1px solid maroon;
+}
+
 .calendar-table tbody td.start{
   background-color: #DFF0D8;
 }
@@ -34,7 +38,7 @@
   color: #DDD;
 }
 
-.calendar-table tbody td.today{
+.calendar-table tbody td.primary{
   font-weight: bold;
   color: Maroon;
 }
