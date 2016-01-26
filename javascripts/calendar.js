@@ -78,6 +78,13 @@ var Calendar = function (options) {
 
         // generate calendar content
         var nrows = options.nrows || 6;
+
+        // ensures that the calendar is long enough to display
+        // all dates of the current month
+        if (startOfMonth > 4 && nrows < 6) {
+            nrows = 6;
+        }
+
         var startOfContent = -startOfMonth + 1;
         date.setDate(startOfContent);
         var COLS = 7;
