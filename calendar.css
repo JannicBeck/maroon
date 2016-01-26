@@ -40,7 +40,7 @@
 
 .calendar-table tbody td.primary{
   font-weight: bold;
-  color: Maroon;
+  color: maroon;
 }
 
 
@@ -83,4 +83,8 @@
 .year-dropdown ul {
   max-height: 200px;
   overflow-x: hidden;
+}
+
+#calendar-placeholder {
+    position: relative;
 }
