@@ -47,7 +47,7 @@ var Calendar = function (options) {
     var startOfWeek = options.startOfWeek || 0;
 
     // returns the day of the week according to startOfWeek
-    var getWeekday = function (date, startOfWeek) {
+    var getWeekday = function (date) {
         var dayList = closedInterval(0, 6);
         // reorder dayList according to startOfWeek
         var i = 0;
@@ -74,7 +74,7 @@ var Calendar = function (options) {
         // get start of month according to startOfWeek
         date.setDate(1);
         // 0 means start week on sunday, 1 monday ...
-        var startOfMonth = getWeekday(date, startOfWeek);
+        var startOfMonth = getWeekday(date);
 
         // generate calendar content
         var nrows = options.nrows || 6;
@@ -87,6 +87,28 @@ var Calendar = function (options) {
         var dateInterval = closedDateInterval(date, endDate);
         var content = toMatrix(dateInterval, nrows, COLS);
         return content;
+    };
+
+    var compareDate = function (date, otherDate) {
+        // setHours(1, 3, 3, 7) is neccessary because we don't care for the time portion
+        return date.setHours(1, 3, 3, 7) === otherDate.setHours(1, 3, 3, 7) ? true : false;
+    };
+    var compareMonth = function (date, otherDate) {
+        return date.getMonth() === otherDate.getMonth() ? false : true;
+    };
+
+    // searches the content for a specific condition and returns an array with indeces or [] if none found
+    var searchContent = function (date, content, condition) {
+        var result = [];
+        var COLS = 7;
+        content.forEach(function(row, j) {
+            row.forEach(function(cell, i){
+                if (condition(date, cell)) {
+                    result.push(i + j*COLS);
+                }
+            });
+        });
+        return result;
     };
 
     // this has no use yet add a listener or smth
@@ -156,16 +178,10 @@ var Calendar = function (options) {
             calendar.currentDate.setMonth(date.getMonth());
             calendar.currentDate.setYear(date.getFullYear());
             calendar.setContent();
-            $selectedDate = $cell;
             render();
             styleContent();
         };
 
-        var $today;
-        // days that do not belong to the current month
-        var $secondaryDays = [];
-        // currently selected date
-        var $selectedDate;
 
         // generates the view
         var generateView = function () {
@@ -181,19 +197,7 @@ var Calendar = function (options) {
                     row.forEach(function (cell, j) {
                         // two digit days
                         row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
-                        // get today
-                        if (cell.setHours(1, 1, 1, 1) === today.setHours(1, 1, 1, 1)) {
-                            $today = row[j];
-                            today = cell;
-                        }
-                        // get days which are not part of month
-                        if (cell.getMonth() !== currentDate.getMonth()){
-                            $secondaryDays.push(row[j]);
-                        }
-                        // get selected date
-                        if (cell.setHours(1, 1, 1, 1) === currentDate.setHours(1, 1, 1, 1)) {
-                            $selectedDate = row[j];
-                        }
+
                         // bind day select callback
                         row[j].on('click', function(){
                             daySelect(cell, row[j]);
@@ -243,7 +247,7 @@ var Calendar = function (options) {
 
             var formatTitle = function (date, weekdays, months) {
                 // getWeekday is neccessary to translate the day according to startOfWeek
-                var dayName = weekdays[getWeekday(date, startOfWeek)];
+                var dayName = weekdays[getWeekday(date)];
                 var month = months[date.getMonth()];
                 var day = date.getDate();
                 var year = date.getFullYear();
@@ -316,11 +320,33 @@ var Calendar = function (options) {
         };
 
         var styleContent = function () {
+
+            // search the calendar content for indices
+            var todayIdx = searchContent(today, calendar.content, compareDate);
+            var selectedDateIdx = searchContent(calendar.currentDate, calendar.content, compareDate);
+            var secondaryDaysIdxList = searchContent(calendar.currentDate, calendar.content, compareMonth);
+
+            // flatten view content so we can access its items via indices more easily
+            var flatViewContent = Array.prototype.concat.apply([], view.content);
+            // get the corresponding jquery objects from the view content
+            var $today = flatViewContent[todayIdx];
+            var $selectedDate = flatViewContent[selectedDateIdx];
+            var $secondaryDays = [];
+            secondaryDaysIdxList.forEach(function(idx) {
+                $secondaryDays.push(flatViewContent[idx]);
+            });
+
+            // style the jquery objects
+            $selectedDate.addClass('active');
+            if ($today) {
+                $today.addClass('primary');
+            }
             $secondaryDays.forEach(function(elem, idx) {
                 elem.addClass('secondary');
             });
-            $today.addClass('today');
-            $selectedDate.addClass('active');
+            var $weekdays = $placeholder.find('#calendar-weekdays th');
+            var currentWeekday = getWeekday(calendar.currentDate);
+            $weekdays.eq(currentWeekday).addClass('primary');
         };
 
         // initialize
