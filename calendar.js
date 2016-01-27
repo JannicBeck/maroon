@@ -118,6 +118,25 @@ var Calendar = function (options) {
         return result;
     };
 
+    // recursive search
+    var recSearchContent = function (date, flatContent, condition) {
+        return condition(date, flatContent[0]) || recSearchContent(date, flatContent.splice(1), condition);
+    };
+
+    var linearSearchContent = function (date, flatContent, condition) {
+        for (var i = 0; i < flatContent.length; i++){
+            if (condition(date, flatContent[i])) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    // binary search
+    var binarySearchContent = function (date, flatContent, condition) {
+
+    };
+
     // this has no use yet add a listener or smth
     this.options = options;
 
@@ -330,8 +349,15 @@ var Calendar = function (options) {
 
             // search the calendar content for indices
             var todayIdx = searchContent(today, calendar.content, compareDate);
+            console.log(searchContent(today, calendar.content, compareDate));
             var selectedDateIdx = searchContent(calendar.currentDate, calendar.content, compareDate);
             var secondaryDaysIdxList = searchContent(calendar.currentDate, calendar.content, compareMonth);
+
+            var flatContent = Array.prototype.concat.apply([], calendar.content);
+            console.log(linearSearchContent(today, flatContent, compareDate));
+
+            console.log(recSearchContent(calendar.currentDate, flatContent, compareDate));
+
 
             // flatten view content so we can access its items via indices more easily
             var flatViewContent = Array.prototype.concat.apply([], view.content);
