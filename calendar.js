@@ -100,40 +100,9 @@ var Calendar = function (options) {
         // setHours(1, 3, 3, 7) is neccessary because we don't care for the time portion
         return date.setHours(1, 3, 3, 7) === otherDate.setHours(1, 3, 3, 7) ? true : false;
     };
-    var compareMonth = function (date, otherDate) {
-        return date.getMonth() === otherDate.getMonth() ? false : true;
-    };
 
-    // searches the content for a specific condition and returns an array with indeces or [] if none found
-    var searchContent = function (date, content, condition) {
-        var result = [];
-        var COLS = 7;
-        content.forEach(function(row, j) {
-            row.forEach(function(cell, i){
-                if (condition(date, cell)) {
-                    result.push(i + j*COLS);
-                }
-            });
-        });
-        return result;
-    };
-
-    // recursive search
-    var recSearchContent = function (date, flatContent, condition) {
-        return condition(date, flatContent[0]) || recSearchContent(date, flatContent.splice(1), condition);
-    };
-
-    var linearSearchContent = function (date, flatContent, condition) {
-        for (var i = 0; i < flatContent.length; i++){
-            if (condition(date, flatContent[i])) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
-    // binary search
-    var binarySearchContent = function (date, flatContent, condition) {
+    // binary search for a date in the content
+    var searchContent = function (date, flatContent, condition) {
 
     };
 
@@ -212,6 +181,8 @@ var Calendar = function (options) {
         // generates the view
         var generateView = function () {
 
+
+
             var formatContent = function (content, daySelect) {
                 // copy content so we won't modify the calendar object
                 var formattedContent = content.map(function (row) {
@@ -220,13 +191,16 @@ var Calendar = function (options) {
 
                 // format copy of content accordingly
                 formattedContent.forEach(function (row) {
-                    row.forEach(function (cell, j) {
+                    row.forEach(function (date, j) {
+
+                        // don't do the jquery conversion here and daySelect binding here?
+
                         // two digit days
-                        row[j] = $('<td>' + ('0' + cell.getDate()).slice(-2) + '</td>');
+                        row[j] = $('<td>' + ('0' + date.getDate()).slice(-2) + '</td>');
 
                         // bind day select callback
                         row[j].on('click', function(){
-                            daySelect(cell, row[j]);
+                            daySelect(date, row[j]);
                         });
                     });
                 });
@@ -347,36 +321,22 @@ var Calendar = function (options) {
 
         var styleContent = function () {
 
-            // search the calendar content for indices
-            var todayIdx = searchContent(today, calendar.content, compareDate);
-            console.log(searchContent(today, calendar.content, compareDate));
-            var selectedDateIdx = searchContent(calendar.currentDate, calendar.content, compareDate);
-            var secondaryDaysIdxList = searchContent(calendar.currentDate, calendar.content, compareMonth);
-
+            // flatten both contents, so we can loop and index more easily
             var flatContent = Array.prototype.concat.apply([], calendar.content);
-            console.log(linearSearchContent(today, flatContent, compareDate));
-
-            console.log(recSearchContent(calendar.currentDate, flatContent, compareDate));
-
-
-            // flatten view content so we can access its items via indices more easily
             var flatViewContent = Array.prototype.concat.apply([], view.content);
-            // get the corresponding jquery objects from the view content
-            var $today = flatViewContent[todayIdx];
-            var $selectedDate = flatViewContent[selectedDateIdx];
-            var $secondaryDays = [];
-            secondaryDaysIdxList.forEach(function(idx) {
-                $secondaryDays.push(flatViewContent[idx]);
+
+            flatContent.forEach(function(date, idx) {
+                if (compareDate(today, date)) {
+                    flatViewContent[idx].addClass('primary');
+                }
+                if (compareDate(calendar.currentDate, date)) {
+                    flatViewContent[idx].addClass('active');
+                }
+                if (date.getMonth() !== calendar.currentDate.getMonth()) {
+                    flatViewContent[idx].addClass('secondary');
+                }
             });
 
-            // style the jquery objects
-            $selectedDate.addClass('active');
-            if ($today) {
-                $today.addClass('primary');
-            }
-            $secondaryDays.forEach(function(elem, idx) {
-                elem.addClass('secondary');
-            });
             var $weekdays = $placeholder.find('#calendar-weekdays th');
             var currentWeekday = getWeekday(calendar.currentDate);
             $weekdays.eq(currentWeekday).addClass('primary');
