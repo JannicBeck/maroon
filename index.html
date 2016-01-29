@@ -2,73 +2,82 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Calendar Template - Mustache</title>
-	<link rel="stylesheet" href="/dependencies/css/bootstrap.min.css">
-	<link rel="stylesheet" href="calendar.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<title>Maroon</title>
+	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="maroon.css">
+	<script src="maroon.js"></script>
+
 </head>
 <body>
 
 <div id='calendar-placeholder' tabindex='0' class='popover' style='display: block; outline: none'></div>
 
 <script id="calendar-template" type="text/template">
-	<h3 id="calendar-title" class='popover-title'></h3>
-	<div class='dropdown month-dropdown pull-left'>
-		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
-			<span class='fa-chevron-circle-down'></span>
-			<span id="calendar-currentMonth" class='current-month'></span>
-		</button>
-		<ul id="calendar-months" class='dropdown-menu month-dropdown' role='menu'>
+<h3 id="calendar-title" class='popover-title'>{{title}}</h3>
+<div class='dropdown month-dropdown pull-left'>
+	<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+		<span class='fa-chevron-circle-down'></span>
+		<span id="calendar-currentMonth" class='current-month'>{{month}}</span>
+	</button>
+	<ul id="calendar-months" class='dropdown-menu month-dropdown' role='menu'>
+		{{#months}}
+		<li><a>{{.}}</a></li>
+		{{/months}}
+	</ul>
+</div>
+<div class='dropdown year-dropdown pull-right'>
+	<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
+		<span id="calendar-currentYear" class='current-year'>{{year}}</span>
+		<span class='fa-chevron-circle-down'></span>
+	</button>
+	<ul id="calendar-years" class='dropdown-menu year-dropdown' role='menu'>
+		{{#years}}
+		<li><a>{{.}}</a></li>
+		{{/years}}
+	</ul>
+</div>
+<div class='calendar-content popover-content'>
+	<table class='table calendar-table'>
+		<thead>
+			<tr id="calendar-weekdays">
+				{{#weekdaysMin}}
+				<th>{{.}}</th>
+				{{/weekdaysMin}}
+			</tr>
+		</thead>
 
-		</ul>
-	</div>
-	<div class='dropdown year-dropdown pull-right'>
-		<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
-			<span id="calendar-currentYear" class='current-year'></span>
-			<span class='fa-chevron-circle-down'></span>
-		</button>
-		<ul id="calendar-years" class='dropdown-menu year-dropdown' role='menu'>
-
-		</ul>
-	</div>
-	<div class='calendar-content popover-content'>
-		<table class='table calendar-table'>
-			<thead>
-				<tr id="calendar-weekdays">
-
-				</tr>
-			</thead>
-
-			<tbody id="calendar-content">
-
-			</tbody>
-		</table>
-	</div>
-
+		<tbody id="calendar-content">
+			{{#content}}
+			<tr>
+				{{#.}}
+				<td>{{.}}</td>
+				{{/.}}
+			</tr>
+			{{/content}}
+		</tbody>
+	</table>
+</div>
 </script>
 
-	<script src="/dependencies/js/jquery.min.js"></script>
-	<script src="/dependencies/js/moment-with-locales.min.js"></script>
-	<script src="/dependencies/js/mustache.min.js"></script>
-	<script src="/dependencies/js/bootstrap.min.js"></script>
-	<script src="calendar.js"></script>
+	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script>window.jQuery || document.write('<script src="bower_components/jquery/dist/jquery.min.js"><\/script>')</script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
+	<script src="bower_components/mustache/mustache.min.js"></script>
 
 	<script>
-	$(function($){
-
-		var myCalendar = new Calendar({
-			timespan: [2016, 2028],
-			startOfWeek: 1 // 1 means start week on monday
-		}).launch({
-			locale: 'de',
-			// title: 'My Awesome Datepicker',
-			// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
-			//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
-			//             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
-			// weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
-		});
-
-	}(jQuery));
+	var options = {
+		timespan: [2016, 2020],
+		startOfWeek: 1, // 1 means start week on monday
+		locale: 'de',
+		// title: 'My Awesome Datepicker',
+		// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
+		//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
+		//             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
+		// weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
+	};
+	var maroonCalendar = Calendar(options);
 	</script>
 </body>
 </html>
