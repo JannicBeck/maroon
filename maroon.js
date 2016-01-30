@@ -6,7 +6,6 @@ function Calendar(options) {
     moment.locale(locale);
     var startOfWeek = options.startOfWeek || 0;
     var currentDate = new moment();
-    var title = options.title || currentDate.format('MM-DD-YYYY');
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
@@ -103,6 +102,7 @@ function Calendar(options) {
         $placeholder.on('click', '.calendar-table tbody td', daySelect);
 
         function generateView() {
+            var title = options.title || currentDate.format('dddd Do MMMM YYYY');
 
             var viewContent = content.slice();
             viewContent.forEach(function(date, idx) {
@@ -130,7 +130,14 @@ function Calendar(options) {
 
             return {years, months, weekdays, weekdaysShort,
                     weekdaysMin, currentDate, year, month,
-                    content: viewContent, title };
+                    content: viewContent, title ,
+                    lam : function () {
+                      return function(text, render) {
+                          return "<b>" + render(text) + "</b>";
+                      }
+                    }
+
+                };
         };
 
         // inserts the view into the html using mustache templating
@@ -161,6 +168,11 @@ function Calendar(options) {
             updateContent();
             render();
         };
+
+        // If the value of a section variable is a function, it will be called in the context
+        // of the current item in the list on each iteration.
+
+        // I should give classes in here and bind events based on those f.e. 'today'
 
     }(jQuery));
 
