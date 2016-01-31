@@ -18,7 +18,7 @@
 <div class='dropdown month-dropdown pull-left'>
 	<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
 		<span class='fa-chevron-circle-down'></span>
-		<span id="calendar-currentMonth" class='current-month'>{{#lam}}{{month}}{{/lam}}</span>
+		<span id="calendar-currentMonth" class='current-month'>{{month}}</span>
 	</button>
 	<ul id="calendar-months" class='dropdown-menu month-dropdown' role='menu'>
 		{{#months}}
@@ -70,7 +70,7 @@
 	var options = {
 		timespan: [2016, 2020],
 		startOfWeek: 1, // 1 means start week on monday
-		locale: 'en',
+		locale: 'de',
 		// title: 'My Awesome Datepicker',
 		// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
 		//             'Majo', 'Junio', 'Julio', 'Aŭgusto',

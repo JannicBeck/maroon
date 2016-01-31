@@ -9,7 +9,7 @@ function Calendar(options) {
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
-    var today = new moment();
+    var today = currentDate;
 
     function updateContent() {
         content = generateContent();
@@ -82,10 +82,32 @@ function Calendar(options) {
         return content;
     };
 
-    // binary search for a date in the content
-    function searchContent() {
-
+    // linear search for a date in the content
+    function searchContent(date, condition) {
+        var result = [];
+        var len = content.length;
+        content.forEach(function(elem, idx) {
+            if (condition(date, elem)) {
+                result.push(idx);
+            }
+        });
+        return result;
     };
+
+    function equalDates(date, otherDate) {
+        if (date.isSame(otherDate)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function nonEqualMonths(date, otherDate) {
+        if (date.isSame(otherDate, 'month')) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     $(function($){
 
@@ -103,7 +125,6 @@ function Calendar(options) {
 
         function generateView() {
             var title = options.title || currentDate.format('dddd Do MMMM YYYY');
-
             var viewContent = content.slice();
             viewContent.forEach(function(date, idx) {
                 viewContent[idx] = date.format('DD');
@@ -128,16 +149,9 @@ function Calendar(options) {
             var year = currentDate.year();
             var month = months[currentDate.month()];
 
-            return {years, months, weekdays, weekdaysShort,
+            return { years, months, weekdays, weekdaysShort,
                     weekdaysMin, currentDate, year, month,
-                    content: viewContent, title ,
-                    lam : function () {
-                      return function(text, render) {
-                          return "<b>" + render(text) + "</b>";
-                      }
-                    }
-
-                };
+                    content: viewContent, title };
         };
 
         // inserts the view into the html using mustache templating
@@ -146,6 +160,42 @@ function Calendar(options) {
             var html = Mustache.render($template.html(), view);
             Mustache.parse(html);
             $placeholder.html(html);
+            styleContent();
+        };
+
+        function styleContent() {
+
+            var $content = $('#calendar-content tr');
+            var $weekdays = $('#calendar-weekdays th');
+
+            var todayIdx = searchContent(today, equalDates);
+            var currentDateIdx = searchContent(currentDate, equalDates);
+            var secondaryDateIdx = searchContent(currentDate, nonEqualMonths);
+            var weekdayIdx = getWeekday(currentDate);
+
+            styleDate(todayIdx, 'primary');
+            styleDate(currentDateIdx, 'active');
+            secondaryDateIdx.forEach(function(date, idx) {
+                styleDate(date, 'secondary');
+            });
+            $weekdays.eq(weekdayIdx).addClass('primary');
+
+            function matrixIdx(idx) {
+
+                if (idx.length !== 0) {
+                    var rowNumber = Math.floor(idx/COLS);
+                    var colNumber = idx%COLS;
+                    return [rowNumber, colNumber];
+                }
+
+                return -1;
+            }
+
+            function styleDate(idx, cssClass) {
+                var mIdx = matrixIdx(idx);
+                var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
+                elem.addClass(cssClass);
+            }
         };
 
         function monthSelect() {
@@ -163,18 +213,16 @@ function Calendar(options) {
         };
 
         function daySelect() {
-            var date = $(this).text();
-            currentDate.date(date);
+            var text = $(this).text();
+            var colNumber = $(this).index();
+            var rowNumber = $(this).parent().index();
+            var idx = (rowNumber * COLS) + colNumber;
+            currentDate = content[idx];
             updateContent();
             render();
         };
 
-        // If the value of a section variable is a function, it will be called in the context
-        // of the current item in the list on each iteration.
-
-        // I should give classes in here and bind events based on those f.e. 'today'
-
     }(jQuery));
 
-    return { currentDate };
+    return { currentDate, updateContent };
 };
