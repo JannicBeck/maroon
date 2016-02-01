@@ -1,19 +1,43 @@
-function Calendar(options) {
+function maroonCalendar(options) {
 
     const ROWS = 6;
     const COLS = 7;
     var locale = options.locale || 'en';
     moment.locale(locale);
-    var startOfWeek = options.startOfWeek || 0;
     var currentDate = new moment();
+    var startOfWeek = options.startOfWeek || 0;
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
-    var today = currentDate;
+    var today = new moment();
 
     function updateContent() {
         content = generateContent();
     }
+
+    Object.defineProperty(this, 'currentDate', {
+        get: function() {
+            return currentDate;
+        },
+        set: function(date) {
+            currentDate = date;
+            updateContent();
+            render();
+        }
+    });
+
+    Object.defineProperty(this, 'locale', {
+        get: function() {
+            return locale;
+        },
+        set: function(value) {
+            locale = value;
+            moment.locale(locale);
+            currentDate.locale(locale);
+            updateContent();
+            render();
+        }
+    });
 
     // returns a closed interval from start to end
     function closedInterval(start, end) {
@@ -95,7 +119,9 @@ function Calendar(options) {
     };
 
     function equalDates(date, otherDate) {
-        if (date.isSame(otherDate)) {
+        if (date.isSame(otherDate, 'day') &&
+            date.isSame(otherDate, 'month') &&
+            date.isSame(otherDate, 'year')) {
             return true;
         } else {
             return false;
@@ -109,120 +135,115 @@ function Calendar(options) {
         }
     }
 
-    $(function($){
+    var $placeholder = $('#maroonPlaceholder');
+    var $template = $('#maroonDatepicker');
+    var view;
 
-        var $placeholder = $('#calendar-placeholder');
-        var $template = $('#calendar-template');
-        var view;
+    // initialize
+    render();
 
-        // initialize
+    // bind events
+    $placeholder.on('click', '.maroonMonths li', monthSelect);
+    $placeholder.on('click', '.maroonYears li', yearSelect);
+    $placeholder.on('click', '.maroonContent td', daySelect);
+
+    function generateView() {
+        var title = options.title || currentDate.format('dddd Do MMMM YYYY');
+        var viewContent = content.slice();
+        viewContent.forEach(function(date, idx) {
+            viewContent[idx] = date.format('DD');
+        });
+        viewContent = toMatrix(viewContent, ROWS, COLS);
+
+        var weekdays = moment.weekdays();
+        // format weekdays according to startOfWeek parameter
+        var i = 0;
+        while (i < startOfWeek) {
+            weekdays.push(weekdays.shift());
+            i++;
+        }
+        var weekdaysShort = [];
+        var weekdaysMin = [];
+        weekdays.forEach(function (day, idx) {
+            weekdaysShort[idx] = day.substring(0, 3)
+            weekdaysMin[idx] = day.substring(0, 2)
+        });
+
+        var months = moment.months();
+        var year = currentDate.year();
+        var month = months[currentDate.month()];
+
+        return { years, months, weekdays, weekdaysShort,
+                weekdaysMin, currentDate, year, month,
+                content: viewContent, title };
+    };
+
+    // inserts the view into the html using mustache templating
+    function render() {
+        view = generateView();
+        var html = Mustache.render($template.html(), view);
+        Mustache.parse(html);
+        $placeholder.html(html);
+        styleContent();
+    };
+
+    function styleContent() {
+
+        var $content = $('.maroonContent tr');
+        var $weekdays = $('.maroonWeekdays th');
+
+        var todayIdx = searchContent(today, equalDates);
+        var currentDateIdx = searchContent(currentDate, equalDates);
+        var secondaryDateIdx = searchContent(currentDate, nonEqualMonths);
+        var weekdayIdx = getWeekday(currentDate);
+
+        styleDate(todayIdx, 'primary');
+        styleDate(currentDateIdx, 'active');
+        secondaryDateIdx.forEach(function(date, idx) {
+            styleDate(date, 'secondary');
+        });
+        $weekdays.eq(weekdayIdx).addClass('primary');
+
+        function matrixIdx(idx) {
+
+            if (idx.length !== 0) {
+                var rowNumber = Math.floor(idx/COLS);
+                var colNumber = idx%COLS;
+                return [rowNumber, colNumber];
+            }
+
+            return -1;
+        }
+
+        function styleDate(idx, cssClass) {
+            var mIdx = matrixIdx(idx);
+            var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
+            elem.addClass(cssClass);
+        }
+    };
+
+    function monthSelect() {
+        var month = $(this).text();
+        currentDate.month(month);
+        updateContent();
         render();
+    };
 
-        // bind events
-        $placeholder.on('click', '.month-dropdown li', monthSelect);
-        $placeholder.on('click', '.year-dropdown li', yearSelect);
-        $placeholder.on('click', '.calendar-table tbody td', daySelect);
+    function yearSelect() {
+        var year = $(this).text();
+        currentDate.year(year);
+        updateContent();
+        render();
+    };
 
-        function generateView() {
-            var title = options.title || currentDate.format('dddd Do MMMM YYYY');
-            var viewContent = content.slice();
-            viewContent.forEach(function(date, idx) {
-                viewContent[idx] = date.format('DD');
-            });
-            viewContent = toMatrix(viewContent, ROWS, COLS);
+    function daySelect() {
+        var text = $(this).text();
+        var colNumber = $(this).index();
+        var rowNumber = $(this).parent().index();
+        var idx = (rowNumber * COLS) + colNumber;
+        currentDate = content[idx];
+        updateContent();
+        render();
+    };
 
-            var weekdays = moment.weekdays();
-            // format weekdays according to startOfWeek parameter
-            var i = 0;
-            while (i < startOfWeek) {
-                weekdays.push(weekdays.shift());
-                i++;
-            }
-            var weekdaysShort = [];
-            var weekdaysMin = [];
-            weekdays.forEach(function (day, idx) {
-                weekdaysShort[idx] = day.substring(0, 3)
-                weekdaysMin[idx] = day.substring(0, 2)
-            });
-
-            var months = moment.months();
-            var year = currentDate.year();
-            var month = months[currentDate.month()];
-
-            return { years, months, weekdays, weekdaysShort,
-                    weekdaysMin, currentDate, year, month,
-                    content: viewContent, title };
-        };
-
-        // inserts the view into the html using mustache templating
-        function render() {
-            view = generateView();
-            var html = Mustache.render($template.html(), view);
-            Mustache.parse(html);
-            $placeholder.html(html);
-            styleContent();
-        };
-
-        function styleContent() {
-
-            var $content = $('#calendar-content tr');
-            var $weekdays = $('#calendar-weekdays th');
-
-            var todayIdx = searchContent(today, equalDates);
-            var currentDateIdx = searchContent(currentDate, equalDates);
-            var secondaryDateIdx = searchContent(currentDate, nonEqualMonths);
-            var weekdayIdx = getWeekday(currentDate);
-
-            styleDate(todayIdx, 'primary');
-            styleDate(currentDateIdx, 'active');
-            secondaryDateIdx.forEach(function(date, idx) {
-                styleDate(date, 'secondary');
-            });
-            $weekdays.eq(weekdayIdx).addClass('primary');
-
-            function matrixIdx(idx) {
-
-                if (idx.length !== 0) {
-                    var rowNumber = Math.floor(idx/COLS);
-                    var colNumber = idx%COLS;
-                    return [rowNumber, colNumber];
-                }
-
-                return -1;
-            }
-
-            function styleDate(idx, cssClass) {
-                var mIdx = matrixIdx(idx);
-                var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
-                elem.addClass(cssClass);
-            }
-        };
-
-        function monthSelect() {
-            var month = $(this).text();
-            currentDate.month(month);
-            updateContent();
-            render();
-        };
-
-        function yearSelect() {
-            var year = $(this).text();
-            currentDate.year(year);
-            updateContent();
-            render();
-        };
-
-        function daySelect() {
-            var text = $(this).text();
-            var colNumber = $(this).index();
-            var rowNumber = $(this).parent().index();
-            var idx = (rowNumber * COLS) + colNumber;
-            currentDate = content[idx];
-            updateContent();
-            render();
-        };
-
-    }(jQuery));
-
-    return { currentDate, updateContent };
 };
