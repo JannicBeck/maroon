@@ -5,11 +5,13 @@ function maroonCalendar(options) {
     var locale = options.locale || 'en';
     moment.locale(locale);
     var currentDate = new moment();
+    var today = new moment();
     var startOfWeek = options.startOfWeek || 0;
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
+    var placeholder = options.placeholder;
+    var template = options.template;
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
-    var today = new moment();
 
     function updateContent() {
         content = generateContent();
@@ -135,17 +137,16 @@ function maroonCalendar(options) {
         }
     }
 
-    var $placeholder = $('#maroonPlaceholder');
-    var $template = $('#maroonDatepicker');
+
     var view;
 
     // initialize
     render();
 
     // bind events
-    $placeholder.on('click', '.maroonMonths li', monthSelect);
-    $placeholder.on('click', '.maroonYears li', yearSelect);
-    $placeholder.on('click', '.maroonContent td', daySelect);
+    placeholder.on('click', '.maroonMonths li', monthSelect);
+    placeholder.on('click', '.maroonYears li', yearSelect);
+    placeholder.on('click', '.maroonContent td', daySelect);
 
     function generateView() {
         var title = options.title || currentDate.format('dddd Do MMMM YYYY');
@@ -155,7 +156,7 @@ function maroonCalendar(options) {
         });
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
-        var weekdays = moment.weekdays();
+        var weekdays = options.weekdays || moment.weekdays();
         // format weekdays according to startOfWeek parameter
         var i = 0;
         while (i < startOfWeek) {
@@ -169,7 +170,7 @@ function maroonCalendar(options) {
             weekdaysMin[idx] = day.substring(0, 2)
         });
 
-        var months = moment.months();
+        var months = options.months || moment.months();
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
@@ -178,12 +179,10 @@ function maroonCalendar(options) {
                 content: viewContent, title };
     };
 
-    // inserts the view into the html using mustache templating
+    // inserts the view into the html using handlebars template
     function render() {
         view = generateView();
-        var html = Mustache.render($template.html(), view);
-        Mustache.parse(html);
-        $placeholder.html(html);
+        placeholder.html(template(view));
         styleContent();
     };
 
