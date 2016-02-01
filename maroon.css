@@ -1,50 +1,43 @@
-/* Custom default button */
-.btn-default,
-.btn-default:hover,
-.btn-default:focus {
-  color: #333;
-  text-shadow: none;
-/* Prevent inheritence from `body` */
-
-  background-color: #fff;
-  border: 1px solid #fff;
+#calendar-placeholder {
+    position: relative;
 }
 
-.calendar-table tbody td:hover{
-	background-color: #D9EDF7;
+.btn-maroon,
+.btn-maroon:hover,
+.btn-maroon:focus {
+  background-color: transparent;
+  border: 1px solid transparent;
+  margin: 5px 5px 0px 5px;
 }
 
-.calendar-table thead th{
+.maroonTitle {
+}
+
+.maroonMonth{
+}
+
+.maroonYear{
+}
+
+.maroonMonths, .maroonYears{
+  margin: 2px 5px 0px 5px;
+  min-width: 0px;
+}
+
+.maroonYears {
+  max-height: 200px;
+  overflow-x: hidden;
+}
+
+.maroonWeekdays th{
 	font-weight: normal;
 }
 
-.calendar-table thead th.primary{
+.maroonWeekdays th.primary{
 	border-bottom: 1px solid maroon;
 }
 
-.calendar-table tbody td.start{
-  background-color: #DFF0D8;
-}
-
-.calendar-table tbody td.interval{
-  background-color: #F5F5F5;
-}
-
-.calendar-table tbody td.end{
-  background-color: #F2DEDE;
-}
-
-.calendar-table tbody td.secondary{
-  color: #DDD;
-}
-
-.calendar-table tbody td.primary{
-  font-weight: bold;
-  color: maroon;
-}
-
-
-.calendar-table tbody td{
+.maroonContent td{
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -53,13 +46,29 @@
 	cursor: pointer;
 }
 
-.dropdown-toggle{
-  margin: 5px 5px 0px 5px;
+.maroonContent td:hover{
+	background-color: #D9EDF7;
 }
 
-.dropdown-menu{
-  margin: 2px 5px 0px 5px;
-  min-width: 0px;
+.maroonContent td.start{
+  background-color: #DFF0D8;
+}
+
+.maroonContent td.interval{
+  background-color: #F5F5F5;
+}
+
+.maroonContent td.end{
+  background-color: #F2DEDE;
+}
+
+.maroonContent td.secondary{
+  color: #DDD;
+}
+
+.maroonContent td.primary{
+  font-weight: bold;
+  color: maroon;
 }
 
 .popover-footer {
@@ -71,20 +80,4 @@
   background-color: #F7F7F7;
   border-top: 1px solid #EBEBEB;
   border-radius: 0 0 5px 5px;
-}
-
-.popover-title {
-    /*background-color: #484848;*/
-    /*background-color: #303030;
-    color: white;
-    text-align: center;*/
-}
-
-.year-dropdown ul {
-  max-height: 200px;
-  overflow-x: hidden;
-}
-
-#calendar-placeholder {
-    position: relative;
 }
