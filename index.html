@@ -28,15 +28,16 @@
 			locale: 'de',
 			placeholder: $('.maroonPopover'),
 			template: Handlebars.templates['popover'],
+			mode: 'interval'
 			// title: 'My Awesome Datepicker',
 			// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
 			//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
 			//             'Septembro', 'Oktobro', 'Novembro', 'Decembro'],
 			// weekdays: ['Lundo', 'Mardo', 'Merkredo', 'Ĵaŭdo', 'Vendredo', 'Sabato', 'Dimanĉo']
 		};
-		var myCalendar = new maroonCalendar(options);
-		// myCalendar.currentDate = moment("1991-06-02");
-		// myCalendar.locale = 'fr';
+		var myCalendar = maroonCalendar(options);
+		var birthday = moment("1991-06-02");
+		// myCalendar.currentDate(birthday).locale('fr');
 		}(jQuery));
 	</script>
 </body>

@@ -2,6 +2,7 @@ function maroonCalendar(options) {
 
     const ROWS = 6;
     const COLS = 7;
+    var mode = options.mode;
     var locale = options.locale || 'en';
     moment.locale(locale);
     var currentDate = new moment();
@@ -13,33 +14,13 @@ function maroonCalendar(options) {
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
 
+    var startDate;
+    var interval;
+    var endDate;
+
     function updateContent() {
         content = generateContent();
     }
-
-    Object.defineProperty(this, 'currentDate', {
-        get: function() {
-            return currentDate;
-        },
-        set: function(date) {
-            currentDate = date;
-            updateContent();
-            render();
-        }
-    });
-
-    Object.defineProperty(this, 'locale', {
-        get: function() {
-            return locale;
-        },
-        set: function(value) {
-            locale = value;
-            moment.locale(locale);
-            currentDate.locale(locale);
-            updateContent();
-            render();
-        }
-    });
 
     // returns a closed interval from start to end
     function closedInterval(start, end) {
@@ -196,28 +177,47 @@ function maroonCalendar(options) {
         var secondaryDateIdx = searchContent(currentDate, nonEqualMonths);
         var weekdayIdx = getWeekday(currentDate);
 
+        if (startDate) {
+            var startDateIdx = searchContent(startDate, equalDates);
+            styleDate(startDateIdx, 'start');
+        }
+
+        if (endDate) {
+            var endDateIdx = searchContent(endDate, equalDates);
+            styleDate(endDateIdx, 'end');
+        }
+
+        if (interval) {
+            var intervalIdx = [];
+            interval.forEach(function(date) {
+                intervalIdx.push(searchContent(date, equalDates));
+            });
+            intervalIdx.forEach(function(dateIdx) {
+                styleDate(dateIdx, 'interval');
+            });
+        }
+
+
         styleDate(todayIdx, 'primary');
         styleDate(currentDateIdx, 'active');
-        secondaryDateIdx.forEach(function(date, idx) {
-            styleDate(date, 'secondary');
+        secondaryDateIdx.forEach(function(dateIdx, idx) {
+            styleDate(dateIdx, 'secondary');
         });
         $weekdays.eq(weekdayIdx).addClass('primary');
 
         function matrixIdx(idx) {
-
             if (idx.length !== 0) {
                 var rowNumber = Math.floor(idx/COLS);
                 var colNumber = idx%COLS;
                 return [rowNumber, colNumber];
             }
-
             return -1;
         }
 
         function styleDate(idx, cssClass) {
             var mIdx = matrixIdx(idx);
             var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
-            elem.addClass(cssClass);
+            elem.toggleClass(cssClass);
         }
     };
 
@@ -241,8 +241,83 @@ function maroonCalendar(options) {
         var rowNumber = $(this).parent().index();
         var idx = (rowNumber * COLS) + colNumber;
         currentDate = content[idx];
+        if (mode === 'interval') {
+            intervalModule();
+        }
         updateContent();
         render();
+
     };
+
+    function intervalModule() {
+        if (!startDate && !endDate) {
+            startDate = currentDate;
+        } else if (startDate && !endDate) {
+            if (currentDate < startDate) {
+                startDate = currentDate;
+            } else if (currentDate > startDate) {
+                endDate = currentDate;
+                interval = closedDateInterval(startDate, endDate);
+            } else {
+                startDate = undefined;
+                interval = undefined;
+            }
+        } else if (!startDate && endDate) {
+            if (currentDate < endDate) {
+                startDate = currentDate;
+                interval = closedDateInterval(startDate, endDate);
+            } else if (currentDate > endDate) {
+                endDate = currentDate;
+            } else {
+                endDate = undefined;
+                interval = undefined;
+            }
+        } else if (startDate && endDate) {
+            if (currentDate < startDate) {
+                startDate = currentDate;
+                interval = closedDateInterval(startDate, endDate);
+            } else if (currentDate > endDate) {
+                endDate = currentDate;
+                interval = closedDateInterval(startDate, endDate);
+            } else if (currentDate > startDate && currentDate < endDate) {
+                endDate = currentDate;
+                interval = closedDateInterval(startDate, endDate);
+            } else if (currentDate.isSame(startDate, 'year') &&
+                    currentDate.isSame(startDate, 'month') &&
+                    currentDate.isSame(startDate, 'day')) {
+                startDate = undefined;
+                interval = undefined;
+            } else {
+                endDate = undefined;
+                interval = undefined;
+            }
+        }
+    }
+
+    function currentDateMethod(date) {
+        if (!date) {
+            return currentDate;
+        } else {
+            currentDate = date;
+            updateContent();
+            render();
+            return this;
+        }
+    }
+
+    function localeMethod(value) {
+        if (!value) {
+            return locale;
+        } else {
+            locale = value;
+            moment.locale(locale);
+            currentDate.locale(locale);
+            updateContent();
+            render();
+            return this;
+        }
+    }
+
+    return { currentDate: currentDateMethod, locale: localeMethod };
 
 };

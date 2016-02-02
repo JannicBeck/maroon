@@ -1,7 +1,3 @@
-#calendar-placeholder {
-    position: relative;
-}
-
 .btn-maroon,
 .btn-maroon:hover,
 .btn-maroon:focus {
@@ -51,7 +47,7 @@
 }
 
 .maroonContent td.start{
-  background-color: #DFF0D8;
+  background-color: #DFF0D8 !important;
 }
 
 .maroonContent td.interval{
@@ -59,7 +55,7 @@
 }
 
 .maroonContent td.end{
-  background-color: #F2DEDE;
+  background-color: #F2DEDE !important;
 }
 
 .maroonContent td.secondary{
