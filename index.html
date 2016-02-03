@@ -18,6 +18,8 @@
 	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
 	<script src="bower_components/handlebars/handlebars.min.js"></script>
 	<script src="templates/popover.js"></script>
+	<script src="templates/popover-footer.js"></script>
+
 
 	<script>
 		$(function($){
@@ -27,7 +29,7 @@
 			startOfWeek: 1, // 1 means start week on monday
 			locale: 'de',
 			placeholder: $('.maroonPopover'),
-			template: Handlebars.templates['popover'],
+			template: Handlebars.templates['popover-footer'],
 			mode: 'interval'
 			// title: 'My Awesome Datepicker',
 			// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',

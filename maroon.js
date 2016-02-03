@@ -155,9 +155,15 @@ function maroonCalendar(options) {
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
+        function formatDate(date) {
+            if (date) {
+                return date.format('DD.MM.YYYY');
+            }
+        }
+
         return { years, months, weekdays, weekdaysShort,
                 weekdaysMin, currentDate, year, month,
-                content: viewContent, title };
+                content: viewContent, title, startDate: formatDate(startDate), endDate: formatDate(endDate) };
     };
 
     // inserts the view into the html using handlebars template
@@ -242,21 +248,20 @@ function maroonCalendar(options) {
         var idx = (rowNumber * COLS) + colNumber;
         currentDate = content[idx];
         if (mode === 'interval') {
-            intervalModule();
+            intervalMode();
         }
         updateContent();
         render();
-
     };
 
-    function intervalModule() {
+    function intervalMode() {
         if (!startDate && !endDate) {
-            startDate = currentDate;
+            startDate = moment(currentDate);
         } else if (startDate && !endDate) {
             if (currentDate < startDate) {
-                startDate = currentDate;
+                startDate = moment(currentDate);
             } else if (currentDate > startDate) {
-                endDate = currentDate;
+                endDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
             } else {
                 startDate = undefined;
@@ -264,23 +269,23 @@ function maroonCalendar(options) {
             }
         } else if (!startDate && endDate) {
             if (currentDate < endDate) {
-                startDate = currentDate;
+                startDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
             } else if (currentDate > endDate) {
-                endDate = currentDate;
+                endDate = moment(currentDate);
             } else {
                 endDate = undefined;
                 interval = undefined;
             }
         } else if (startDate && endDate) {
             if (currentDate < startDate) {
-                startDate = currentDate;
+                startDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
             } else if (currentDate > endDate) {
-                endDate = currentDate;
+                endDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
             } else if (currentDate > startDate && currentDate < endDate) {
-                endDate = currentDate;
+                endDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
             } else if (currentDate.isSame(startDate, 'year') &&
                     currentDate.isSame(startDate, 'month') &&
