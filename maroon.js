@@ -5,18 +5,32 @@ function maroonCalendar(options) {
     var mode = options.mode;
     var locale = options.locale || 'en';
     moment.locale(locale);
+    var months = options.months || moment.months();
+    var startOfWeek = options.startOfWeek || 0;
+    var weekdays = options.weekdays || moment.weekdays();
+    // format weekdays according to startOfWeek parameter
+    var i = 0;
+    while (i < startOfWeek) {
+        weekdays.push(weekdays.shift());
+        i++;
+    }
+    var weekdaysShort = [];
+    var weekdaysMin = [];
+    weekdays.forEach(function (day, idx) {
+        weekdaysShort[idx] = day.substring(0, 3)
+        weekdaysMin[idx] = day.substring(0, 2)
+    });
     var currentDate = new moment();
     var today = new moment();
-    var startOfWeek = options.startOfWeek || 0;
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
     var placeholder = options.placeholder;
     var template = options.template;
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
-
     var startDate;
     var interval;
     var endDate;
+    var view;
 
     function updateContent() {
         content = generateContent();
@@ -34,7 +48,7 @@ function maroonCalendar(options) {
             i++;
         } while (i <= end);
         return interval;
-    };
+    }
 
     // returns a closed date interval from startDate to endDate
     function closedDateInterval(startDate, endDate) {
@@ -50,7 +64,7 @@ function maroonCalendar(options) {
             date.add(1, 'day');
         }
         return dateInterval;
-    };
+    }
 
     // returns the day of the week according to startOfWeek
     function getWeekday(date) {
@@ -62,7 +76,7 @@ function maroonCalendar(options) {
             i++;
         }
         return dayList[date.day()];
-    };
+    }
 
     // turns an array a into a m x n matrix
     function toMatrix(a, m, n) {
@@ -71,7 +85,7 @@ function maroonCalendar(options) {
             result[i] = a.splice(0, n);
         }
         return result;
-    };
+    }
 
     // straight-line code over functions
     function generateContent() {
@@ -87,7 +101,7 @@ function maroonCalendar(options) {
         endDate.add(cellNumber - 1, 'day');
         var content = closedDateInterval(date, endDate);
         return content;
-    };
+    }
 
     // linear search for a date in the content
     function searchContent(date, condition) {
@@ -99,7 +113,7 @@ function maroonCalendar(options) {
             }
         });
         return result;
-    };
+    }
 
     function equalDates(date, otherDate) {
         if (date.isSame(otherDate, 'day') &&
@@ -110,6 +124,7 @@ function maroonCalendar(options) {
             return false;
         }
     }
+
     function nonEqualMonths(date, otherDate) {
         if (date.isSame(otherDate, 'month')) {
             return false;
@@ -118,8 +133,18 @@ function maroonCalendar(options) {
         }
     }
 
+    function formatDate(date) {
+        if (date) {
+            return date.format('DD.MM.YYYY');
+        }
+    }
 
-    var view;
+    // inserts the view into the html using handlebars template
+    function render() {
+        view = generateView();
+        placeholder.html(template(view));
+        styleContent();
+    }
 
     // initialize
     render();
@@ -137,44 +162,16 @@ function maroonCalendar(options) {
         });
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
-        var weekdays = options.weekdays || moment.weekdays();
-        // format weekdays according to startOfWeek parameter
-        var i = 0;
-        while (i < startOfWeek) {
-            weekdays.push(weekdays.shift());
-            i++;
-        }
-        var weekdaysShort = [];
-        var weekdaysMin = [];
-        weekdays.forEach(function (day, idx) {
-            weekdaysShort[idx] = day.substring(0, 3)
-            weekdaysMin[idx] = day.substring(0, 2)
-        });
-
-        var months = options.months || moment.months();
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
-        function formatDate(date) {
-            if (date) {
-                return date.format('DD.MM.YYYY');
-            }
-        }
-
         return { years, months, weekdays, weekdaysShort,
                 weekdaysMin, currentDate, year, month,
-                content: viewContent, title, startDate: formatDate(startDate), endDate: formatDate(endDate) };
-    };
-
-    // inserts the view into the html using handlebars template
-    function render() {
-        view = generateView();
-        placeholder.html(template(view));
-        styleContent();
-    };
+                content: viewContent, title, startDate: formatDate(startDate),
+                endDate: formatDate(endDate) };
+    }
 
     function styleContent() {
-
         var $content = $('.maroonContent tr');
         var $weekdays = $('.maroonWeekdays th');
 
@@ -203,7 +200,6 @@ function maroonCalendar(options) {
             });
         }
 
-
         styleDate(todayIdx, 'primary');
         styleDate(currentDateIdx, 'active');
         secondaryDateIdx.forEach(function(dateIdx, idx) {
@@ -225,21 +221,21 @@ function maroonCalendar(options) {
             var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
             elem.toggleClass(cssClass);
         }
-    };
+    }
 
     function monthSelect() {
         var month = $(this).text();
         currentDate.month(month);
         updateContent();
         render();
-    };
+    }
 
     function yearSelect() {
         var year = $(this).text();
         currentDate.year(year);
         updateContent();
         render();
-    };
+    }
 
     function daySelect() {
         var text = $(this).text();
@@ -252,7 +248,7 @@ function maroonCalendar(options) {
         }
         updateContent();
         render();
-    };
+    }
 
     function intervalMode() {
         if (!startDate && !endDate) {
