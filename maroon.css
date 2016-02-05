@@ -1,3 +1,7 @@
+.maroonYears::-webkit-scrollbar {
+    display: none;
+}
+
 .btn-maroon,
 .btn-maroon:hover,
 .btn-maroon:focus {
@@ -18,6 +22,15 @@
 .maroonMonths, .maroonYears{
   margin: 2px 5px 0px 5px;
   min-width: 0px;
+}
+
+.maroonMonths li, .maroonYears li {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
 }
 
 .maroonYears {
@@ -76,4 +89,9 @@
   background-color: #F7F7F7;
   border-top: 1px solid #EBEBEB;
   border-radius: 0 0 5px 5px;
+}
+
+.maroonPopover {
+    outline: none;
+    display: block;
 }

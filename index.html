@@ -9,7 +9,10 @@
 </head>
 <body>
 
-	<div class="maroonPopover"></div>
+	<div class="col-xs-1"></div>
+	<div class="maroonPopover col-xs-5"></div>
+	<div class="maroonPopover2 col-xs-6"></div>
+
 
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -21,15 +24,18 @@
 	<script src="templates/popover-footer.js"></script>
 
 	<script>
+
 		$(function(){
+			// $('[data-toggle="popover"]').popover();
+
 			var options = {
 				timespan: [2016, 2028],
 				startOfWeek: 1, // 1 means start week on monday
 				locale: 'de',
 				placeholder: $('.maroonPopover'),
 				template: Handlebars.templates['popover'],
-				// mode: 'interval',
-				// template: Handlebars.templates['popover-footer'],
+				mode: 'interval',
+				template: Handlebars.templates['popover-footer'],
 				// title: 'My Awesome Datepicker',
 				// months: ['Januaro', 'Februaro', 'Marto', 'Aprilo',
 				//             'Majo', 'Junio', 'Julio', 'Aŭgusto',
@@ -38,6 +44,13 @@
 				// weekdays: ['天', '一', '二', '三', '四', '五', '六']
 			};
 			var myCalendar = maroonCalendar(options);
+			var mySecondCalendar = maroonCalendar({
+				timespan: [2016, 2028],
+				startOfWeek: 1, // 1 means start week on monday
+				locale: 'en',
+				placeholder: $('.maroonPopover2'),
+				template: Handlebars.templates['popover']
+			});
 			var birthday = moment("1991-06-02");
 			// myCalendar.currentDate(birthday).locale('fr');
 		}());

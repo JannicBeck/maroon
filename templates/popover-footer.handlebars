@@ -16,11 +16,13 @@
 			<span class='maroonYear'>{{year}}</span>
 			<span class='fa-chevron-circle-down'></span>
 		</button>
-		<ul class='dropdown-menu maroonYears' role='menu'>
-			{{#years}}
-				<li><a>{{.}}</a></li>
-			{{/years}}
-		</ul>
+		<div class='scrolli'>
+			<ul class='dropdown-menu maroonYears' role='menu'>
+				{{#years}}
+					<li><a>{{.}}</a></li>
+				{{/years}}
+			</ul>
+		</div>
 	</div>
 	<div class='popover-content'>
 		<table class='table'>

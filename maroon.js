@@ -1,7 +1,7 @@
 function maroonCalendar(options) {
 
-    const ROWS = 6;
-    const COLS = 7;
+    var ROWS = 6;
+    var COLS = 7;
     var mode = options.mode;
     var locale = options.locale || 'en';
     moment.locale(locale);
@@ -172,8 +172,8 @@ function maroonCalendar(options) {
     }
 
     function styleContent() {
-        var $content = $('.maroonContent tr');
-        var $weekdays = $('.maroonWeekdays th');
+        var $content = placeholder.find('.maroonContent tr');
+        var $weekdays = placeholder.find('.maroonWeekdays th');
 
         var todayIdx = searchContent(today, equalDates);
         var currentDateIdx = searchContent(currentDate, equalDates);
