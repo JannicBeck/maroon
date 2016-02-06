@@ -7,21 +7,19 @@
 .btn-maroon:focus {
   background-color: transparent;
   border: 1px solid transparent;
-  margin: 5px 5px 0px 5px;
+  margin: -5px -10px 0 -10px;
 }
 
 .maroonTitle {
 }
 
-.maroonMonth{
-}
-
-.maroonYear{
+.maroonMonth, .maroonYear{
+  padding: 2px;
 }
 
 .maroonMonths, .maroonYears{
-  margin: 2px 5px 0px 5px;
-  min-width: 0px;
+  margin: 2px -10px 0 -10px;
+  min-width: 0;
 }
 
 .maroonMonths li, .maroonYears li {
@@ -31,11 +29,18 @@
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
+
 }
 
 .maroonYears {
+  min-width: 78px;
   max-height: 200px;
   overflow-x: hidden;
+  text-align: center;
+}
+
+.maroonMonths {
+    min-width: 113px;
 }
 
 .maroonWeekdays th{
@@ -44,6 +49,10 @@
 
 .maroonWeekdays th.primary{
 	border-bottom: 1px solid maroon;
+}
+
+.maroonContent tr {
+    border-bottom: solid 1px #ddd;
 }
 
 .maroonContent td{

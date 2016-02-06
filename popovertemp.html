@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Maroon</title>
+	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="maroon.css">
+</head>
+<body>
+
+	<div class="maroonPopover col-xs-5"></div>
+    <div class="wrapper" style="text-align: center;">
+        <button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%;">Click to toggle popover</button>
+    </div>
+
+	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
+	<script src="bower_components/handlebars/handlebars.min.js"></script>
+	<script src="maroon.js"></script>
+
+	<script>
+		$(function(){
+
+            $.get('templates/popover.handlebars', function(template) {
+                var options = {
+                    timespan: [2016, 2028],
+                    startOfWeek: 1, // 1 means start week on monday
+                    locale: 'de',
+                    placeholder: $('.maroonPopover'),
+                    template: Handlebars.compile(template)
+                };
+                var myCalendar = maroonCalendar(options);
+
+                var selector = '#maroonPopover';
+                var orientation = 'right';
+                $('body').popover({
+                    html: true,
+                    placement: 'auto ' + orientation,
+                    selector: selector,
+                    title: $('.popover-title').html(),
+                    content: $('.popover-content').html(),
+                    // template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                });
+            });
+
+
+		}());
+	</script>
+</body>
+</html>

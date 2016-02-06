@@ -1,56 +1,8 @@
-<div tabindex='0' class='popover' style='display: block; outline: none'>
-	<h3 class='popover-title maroonTitle'>{{title}}</h3>
-	<div class='dropdown month-dropdown pull-left'>
-		<button class='btn btn-default btn-maroon dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
-			<span class='fa-chevron-circle-down'></span>
-			<span class='maroonMonth'>{{month}}</span>
-		</button>
-		<ul class='dropdown-menu maroonMonths' role='menu'>
-			{{#months}}
-			<li><a>{{.}}</a></li>
-			{{/months}}
-		</ul>
+<div class='popover-footer col-xs-12'>
+	<div class=" col-xs-6">
+		<input class='form-control input-sm' type="text" placeholder='Anreise' value={{startDate}}>
 	</div>
-	<div class='dropdown pull-right'>
-		<button class='btn btn-default btn-maroon dropdown-toggle' type='button' data-toggle='dropdown' aria-expanded='true'>
-			<span class='maroonYear'>{{year}}</span>
-			<span class='fa-chevron-circle-down'></span>
-		</button>
-		<div class='scrolli'>
-			<ul class='dropdown-menu maroonYears' role='menu'>
-				{{#years}}
-					<li><a>{{.}}</a></li>
-				{{/years}}
-			</ul>
-		</div>
-	</div>
-	<div class='popover-content'>
-		<table class='table'>
-			<thead>
-				<tr class="maroonWeekdays">
-					{{#weekdaysMin}}
-					<th>{{.}}</th>
-					{{/weekdaysMin}}
-				</tr>
-			</thead>
-
-			<tbody class="maroonContent">
-				{{#content}}
-				<tr>
-					{{#.}}
-					<td>{{.}}</td>
-					{{/.}}
-				</tr>
-				{{/content}}
-			</tbody>
-		</table>
-	</div>
-	<div class='popover-footer col-xs-12'>
-		<div class=" col-xs-6">
-			<input class='form-control input-sm' type="text" placeholder='Anreise' value={{startDate}}>
-		</div>
-		<div class="col-xs-6">
-			<input class='form-control input-sm' type="text" placeholder='Abreise' value={{endDate}}>
-		</div>
+	<div class="col-xs-6">
+		<input class='form-control input-sm' type="text" placeholder='Abreise' value={{endDate}}>
 	</div>
 </div>
