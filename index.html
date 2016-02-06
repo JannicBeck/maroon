@@ -13,6 +13,9 @@
 	<div class="maroonPopover col-xs-5"></div>
 	<div class="maroonPopover2 col-xs-6"></div>
 
+	<!-- <div class="wrapper" style="text-align: center;">
+		<button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%;">Click to toggle popover</button>
+	</div> -->
 
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -22,11 +25,9 @@
 	<script src="maroon.js"></script>
 
 	<script>
+
 		$(function(){
-
-			// function for experementing with template
 			$.get('templates/popover.handlebars', function(template) {
-
 				var options = {
 					timespan: [2016, 2028],
 					startOfWeek: 1, // 1 means start week on monday
@@ -52,12 +53,7 @@
 				});
 				var birthday = moment("1991-06-02");
 				myCalendar.currentDate(birthday).locale('fr');
-
 			});
-
-			// template = Handlebars.templates.popover-footer;
-
-			// $('[data-toggle="popover"]').popover();
 
 
 		}());
