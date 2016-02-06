@@ -1,0 +1,40 @@
+<div class="dropdown pull-left">
+	<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<i class="fa fa-chevron-circle-down"></i>
+		<span class="maroonMonth">{{month}}</span>
+	</button>
+	<ul class="dropdown-menu maroonMonths" role="menu">
+		{{#months}}
+		<li><a>{{.}}</a></li>
+		{{/months}}
+	</ul>
+</div>
+<div class="dropdown pull-right">
+	<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<span class="maroonYear">2019</span>
+		<i class="fa fa-chevron-circle-down"></i>
+	</button>
+	<ul class="dropdown-menu maroonYears" role="menu">
+		{{#years}}
+			<li><a>{{.}}</a></li>
+		{{/years}}
+	</ul>
+</div>
+<table class="table">
+	<thead>
+		<tr class="maroonWeekdays">
+			{{#weekdaysMin}}
+			<th>{{.}}</th>
+			{{/weekdaysMin}}
+		</tr>
+	</thead>
+	<tbody class="maroonContent">
+		{{#content}}
+		<tr>
+			{{#.}}
+			<td>{{.}}</td>
+			{{/.}}
+		</tr>
+		{{/content}}
+	</tbody>
+</table>
