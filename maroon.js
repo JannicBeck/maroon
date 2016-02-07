@@ -78,15 +78,6 @@ function maroonCalendar(options) {
         return dayList[date.day()];
     }
 
-    // turns an array a into a m x n matrix
-    function toMatrix(a, m, n) {
-        var result = [];
-        for (var i = 0; i < m; i++) {
-            result[i] = a.splice(0, n);
-        }
-        return result;
-    }
-
     // straight-line code over functions
     function generateContent() {
         date = currentDate.clone();
@@ -101,22 +92,6 @@ function maroonCalendar(options) {
         endDate.add(cellNumber - 1, 'day');
         var content = closedDateInterval(date, endDate);
         return content;
-    }
-
-    function compareDates(date, otherDate) {
-        if (date.isSame(otherDate, 'day') &&
-            date.isSame(otherDate, 'month') &&
-            date.isSame(otherDate, 'year')) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function formatDate(date) {
-        if (date) {
-            return date.format('DD.MM.YYYY');
-        }
     }
 
     // inserts the view into the html using handlebars template
@@ -139,18 +114,6 @@ function maroonCalendar(options) {
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
-        // use reduce instead of this
-        function toObjectArray(textList, classList) {
-            var result = [];
-            textList.forEach(function(elem, idx) {
-                result.push({
-                    text: textList[idx],
-                    class: classList[idx]
-                });
-            });
-            return result;
-        }
-
         var weekdaysClassList = [];
         weekdaysClassList[getWeekday(currentDate)] = 'primary';
         var viewWeekdaysMin = toObjectArray(weekdaysMin, weekdaysClassList);
@@ -168,7 +131,9 @@ function maroonCalendar(options) {
         viewContent.forEach(function(date, idx) {
             contentClassList[idx] = [];
             viewContent[idx] = date.format('DD');
-            if (compareDates(date, today)) {
+            if (date.isSame(today, 'day') &&
+                date.isSame(today, 'month') &&
+                date.isSame(today, 'year')) {
                 contentClassList[idx].push('primary ');
             }
             if (!date.isSame(currentDate, 'month')) {
@@ -185,6 +150,33 @@ function maroonCalendar(options) {
         viewContent.forEach(function(row, idx) {
             viewContent[idx] = toObjectArray(row, contentClassList[idx]);
         });
+
+        // use reduce instead of this
+        function toObjectArray(textList, classList) {
+            var result = [];
+            textList.forEach(function(elem, idx) {
+                result.push({
+                    text: textList[idx],
+                    class: classList[idx]
+                });
+            });
+            return result;
+        }
+
+        // turns an array a into a m x n matrix
+        function toMatrix(a, m, n) {
+            var result = [];
+            for (var i = 0; i < m; i++) {
+                result[i] = a.splice(0, n);
+            }
+            return result;
+        }
+        
+        function formatDate(date) {
+            if (date) {
+                return date.format('DD.MM.YYYY');
+            }
+        }
 
         return { years: viewYears, months: viewMonths, weekdays, weekdaysShort,
                 weekdaysMin: viewWeekdaysMin, currentDate, year, month,
