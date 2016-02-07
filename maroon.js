@@ -94,20 +94,6 @@ function maroonCalendar(options) {
         return content;
     }
 
-    // inserts the view into the html using handlebars template
-    function render() {
-        view = generateView();
-        placeholder.html(template(view));
-    }
-
-    // initialize
-    render();
-
-    // bind events
-    placeholder.on('click', '.maroonMonths li', monthSelect);
-    placeholder.on('click', '.maroonYears li', yearSelect);
-    placeholder.on('click', '.maroonContent td', daySelect);
-
     function generateView() {
         var title = options.title || currentDate.format('dddd Do MMMM YYYY');
 
@@ -142,6 +128,32 @@ function maroonCalendar(options) {
             if (date.isSame(currentDate)) {
                 contentClassList[idx].push('active ');
             }
+
+            if (mode === 'interval') {
+                if (startDate) {
+                    if (date.isSame(startDate, 'day') &&
+                        date.isSame(startDate, 'month') &&
+                        date.isSame(startDate, 'year')) {
+                        contentClassList[idx].push('start ');
+                    }
+                }
+                if (endDate) {
+                    if (date.isSame(endDate, 'day') &&
+                        date.isSame(endDate, 'month') &&
+                        date.isSame(endDate, 'year')) {
+                        contentClassList[idx].push('end ');
+                    }
+                }
+                if (interval) {
+                    interval.forEach(function(intervalDate) {
+                        if (date.isSame(intervalDate, 'day') &&
+                            date.isSame(intervalDate, 'month') &&
+                            date.isSame(intervalDate, 'year')) {
+                            contentClassList[idx].push('interval ');
+                        }
+                    });
+                }
+            }
         });
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
@@ -171,7 +183,7 @@ function maroonCalendar(options) {
             }
             return result;
         }
-        
+
         function formatDate(date) {
             if (date) {
                 return date.format('DD.MM.YYYY');
@@ -184,6 +196,19 @@ function maroonCalendar(options) {
                 endDate: formatDate(endDate) };
     }
 
+    // inserts the view into the html using handlebars template
+    function render() {
+        view = generateView();
+        placeholder.html(template(view));
+    }
+
+    // initialize
+    render();
+
+    // bind events
+    placeholder.on('click', '.maroonMonths li', monthSelect);
+    placeholder.on('click', '.maroonYears li', yearSelect);
+    placeholder.on('click', '.maroonContent td', daySelect);
 
     function monthSelect() {
         var month = $(this).text();
