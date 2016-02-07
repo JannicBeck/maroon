@@ -22,6 +22,10 @@
   min-width: 0;
 }
 
+.maroonMonths a.primary, .maroonYears a.primary {
+    color: maroon;
+}
+
 .maroonMonths li, .maroonYears li {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
@@ -29,7 +33,6 @@
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
-
 }
 
 .maroonYears {
@@ -103,4 +106,8 @@
 .maroonPopover {
     outline: none;
     display: block;
+}
+
+.test0 {
+  color: red;
 }

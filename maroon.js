@@ -103,33 +103,13 @@ function maroonCalendar(options) {
         return content;
     }
 
-    // linear search for a date in the content
-    function searchContent(date, condition) {
-        var result = [];
-        var len = content.length;
-        content.forEach(function(elem, idx) {
-            if (condition(date, elem)) {
-                result.push(idx);
-            }
-        });
-        return result;
-    }
-
-    function equalDates(date, otherDate) {
+    function compareDates(date, otherDate) {
         if (date.isSame(otherDate, 'day') &&
             date.isSame(otherDate, 'month') &&
             date.isSame(otherDate, 'year')) {
             return true;
         } else {
             return false;
-        }
-    }
-
-    function nonEqualMonths(date, otherDate) {
-        if (date.isSame(otherDate, 'month')) {
-            return false;
-        } else {
-            return true;
         }
     }
 
@@ -143,7 +123,6 @@ function maroonCalendar(options) {
     function render() {
         view = generateView();
         placeholder.html(template(view));
-        styleContent();
     }
 
     // initialize
@@ -156,72 +135,63 @@ function maroonCalendar(options) {
 
     function generateView() {
         var title = options.title || currentDate.format('dddd Do MMMM YYYY');
-        var viewContent = content.slice();
-        viewContent.forEach(function(date, idx) {
-            viewContent[idx] = date.format('DD');
-        });
-        viewContent = toMatrix(viewContent, ROWS, COLS);
 
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
-        return { years, months, weekdays, weekdaysShort,
-                weekdaysMin, currentDate, year, month,
+        // use reduce instead of this
+        function toObjectArray(textList, classList) {
+            var result = [];
+            textList.forEach(function(elem, idx) {
+                result.push({
+                    text: textList[idx],
+                    class: classList[idx]
+                });
+            });
+            return result;
+        }
+
+        var weekdaysClassList = [];
+        weekdaysClassList[getWeekday(currentDate)] = 'primary';
+        var viewWeekdaysMin = toObjectArray(weekdaysMin, weekdaysClassList);
+
+        var monthClassList = [];
+        monthClassList[currentDate.month()] = 'primary';
+        var viewMonths = toObjectArray(months, monthClassList);
+
+        var yearClassList = [];
+        yearClassList[years.indexOf(currentDate.year())] = 'primary';
+        var viewYears = toObjectArray(years, yearClassList);
+
+        var viewContent = content.slice();
+        var contentClassList = [];
+        viewContent.forEach(function(date, idx) {
+            contentClassList[idx] = [];
+            viewContent[idx] = date.format('DD');
+            if (compareDates(date, today)) {
+                contentClassList[idx].push('primary ');
+            }
+            if (!date.isSame(currentDate, 'month')) {
+                contentClassList[idx].push('secondary ');
+            }
+            if (date.isSame(currentDate)) {
+                contentClassList[idx].push('active ');
+            }
+        });
+
+        viewContent = toMatrix(viewContent, ROWS, COLS);
+        contentClassList = toMatrix(contentClassList, ROWS, COLS);
+
+        viewContent.forEach(function(row, idx) {
+            viewContent[idx] = toObjectArray(row, contentClassList[idx]);
+        });
+
+        return { years: viewYears, months: viewMonths, weekdays, weekdaysShort,
+                weekdaysMin: viewWeekdaysMin, currentDate, year, month,
                 content: viewContent, title, startDate: formatDate(startDate),
                 endDate: formatDate(endDate) };
     }
 
-    function styleContent() {
-        var $content = placeholder.find('.maroonContent tr');
-        var $weekdays = placeholder.find('.maroonWeekdays th');
-
-        var todayIdx = searchContent(today, equalDates);
-        var currentDateIdx = searchContent(currentDate, equalDates);
-        var secondaryDateIdx = searchContent(currentDate, nonEqualMonths);
-        var weekdayIdx = getWeekday(currentDate);
-
-        if (startDate) {
-            var startDateIdx = searchContent(startDate, equalDates);
-            styleDate(startDateIdx, 'start');
-        }
-
-        if (endDate) {
-            var endDateIdx = searchContent(endDate, equalDates);
-            styleDate(endDateIdx, 'end');
-        }
-
-        if (interval) {
-            var intervalIdx = [];
-            interval.forEach(function(date) {
-                intervalIdx.push(searchContent(date, equalDates));
-            });
-            intervalIdx.forEach(function(dateIdx) {
-                styleDate(dateIdx, 'interval');
-            });
-        }
-
-        styleDate(todayIdx, 'primary');
-        styleDate(currentDateIdx, 'active');
-        secondaryDateIdx.forEach(function(dateIdx, idx) {
-            styleDate(dateIdx, 'secondary');
-        });
-        $weekdays.eq(weekdayIdx).addClass('primary');
-
-        function matrixIdx(idx) {
-            if (idx.length !== 0) {
-                var rowNumber = Math.floor(idx/COLS);
-                var colNumber = idx%COLS;
-                return [rowNumber, colNumber];
-            }
-            return -1;
-        }
-
-        function styleDate(idx, cssClass) {
-            var mIdx = matrixIdx(idx);
-            var elem = $content.eq(mIdx[0]).children().eq(mIdx[1]);
-            elem.toggleClass(cssClass);
-        }
-    }
 
     function monthSelect() {
         var month = $(this).text();
