@@ -5,21 +5,20 @@ function maroonCalendar(options) {
     var mode = options.mode;
     var locale = options.locale || 'en';
     moment.locale(locale);
-    var months = options.months || moment.months();
+    var months = moment.months();
+
+    var weekdays = moment.weekdays();
+    var weekdaysShort = moment.weekdaysShort();
+    var weekdaysMin = moment.weekdaysMin();
+
     var startOfWeek = options.startOfWeek || 0;
-    var weekdays = options.weekdays || moment.weekdays();
     // format weekdays according to startOfWeek parameter
     var i = 0;
     while (i < startOfWeek) {
         weekdays.push(weekdays.shift());
         i++;
     }
-    var weekdaysShort = [];
-    var weekdaysMin = [];
-    weekdays.forEach(function (day, idx) {
-        weekdaysShort[idx] = day.substring(0, 3)
-        weekdaysMin[idx] = day.substring(0, 2)
-    });
+
     var currentDate = new moment();
     var today = new moment();
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
@@ -208,11 +207,13 @@ function maroonCalendar(options) {
     // bind events
     placeholder.on('click', '.maroonMonths li', monthSelect);
     placeholder.on('click', '.maroonYears li', yearSelect);
-    placeholder.on('click', '.maroonContent td', daySelect);
+    placeholder.on('click', 'td', daySelect);
 
     function monthSelect() {
         var month = $(this).text();
+        console.log(month);
         currentDate.month(month);
+        console.log(currentDate.month());
         updateContent();
         render();
     }
@@ -300,6 +301,10 @@ function maroonCalendar(options) {
             locale = value;
             moment.locale(locale);
             currentDate.locale(locale);
+            months = moment.months();
+            weekdays = moment.weekdays();
+            weekdaysShort = moment.weekdaysShort();
+            weekdaysMin = moment.weekdaysMin();
             updateContent();
             render();
             return this;

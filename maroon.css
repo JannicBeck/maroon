@@ -104,10 +104,5 @@
 }
 
 .maroonPopover {
-    outline: none;
     display: block;
-}
-
-.test0 {
-  color: red;
 }
