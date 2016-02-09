@@ -1,31 +1,36 @@
-maroonCalendar.prototype.daySelect = function(timestamp) {
-    var date = moment(timestamp);
-    // if (mode === 'interval') {
-    //     intervalMode();
-    // }
-    // this.currentDate(date);
-    console.log(currentDate);
-}
+function maroonCalendar(options, name) {
 
-maroonCalendar.prototype.monthSelect = function(month) {
-    var date = moment(this.currentDate().month(month));
-    this.currentDate(date);
-}
+    // instances have to be global scoped and other shit
+    maroonCalendar.prototype.daySelect = function(timestamp) {
+        moment.locale(this.locale());
+        var date = moment(timestamp);
+        // if (mode === 'interval') {
+        //     intervalMode();
+        // }
+        this.currentDate(date);
+        // I need to find a way to reference the instance here
+    }
 
-maroonCalendar.prototype.yearSelect = function(year) {
-    var date = moment(this.currentDate().year(year));
-    this.currentDate(date);
-}
+    maroonCalendar.prototype.monthSelect = function(month) {
+        var date = moment(this.currentDate());
+        date.month(month);
+        this.currentDate(date);
+        render();
+    }
 
-var currentDate = new moment();
-
-function maroonCalendar(options) {
+    maroonCalendar.prototype.yearSelect = function(year) {
+        var date = moment(this.currentDate());
+        date.year(year);
+        this.currentDate(date);
+        render();
+    }
 
     var ROWS = 6;
     var COLS = 7;
     var mode = options.mode;
     var locale = options.locale || 'en';
     moment.locale(locale);
+    var currentDate = new moment();
     var months = moment.months();
 
     var weekdays = moment.weekdays();
@@ -189,7 +194,7 @@ function maroonCalendar(options) {
 
         return { years: viewYears, months: viewMonths, weekdays, weekdaysShort,
                 weekdaysMin: viewWeekdaysMin, currentDate, year, month,
-                content: viewContent, title };
+                content: viewContent, title, calName: name};
     }
 
     // inserts the view into the html using handlebars template
@@ -199,10 +204,9 @@ function maroonCalendar(options) {
         placeholder[0].innerHTML = template(view);
     }
 
-    // initialize
     render();
 
-    function currentDateMethod(date) {
+    this.currentDate = function(date) {
         if (!date) {
             return currentDate;
         } else {
@@ -212,7 +216,7 @@ function maroonCalendar(options) {
         }
     }
 
-    function localeMethod(value) {
+    this.locale = function (value) {
         if (!value) {
             return locale;
         } else {
@@ -227,7 +231,5 @@ function maroonCalendar(options) {
             return this;
         }
     }
-
-    return { currentDate: currentDateMethod, locale: localeMethod };
 
 }

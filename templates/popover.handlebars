@@ -9,7 +9,7 @@
 			</button>
 			<ul class="dropdown-menu maroonMonths" role="menu">
 				{{#months}}
-				<li><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
+				<li onclick="{{../calName}}.monthSelect('{{text}}')"><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
 				{{/months}}
 			</ul>
 		</div>
@@ -20,7 +20,7 @@
 			</button>
 			<ul class="dropdown-menu maroonYears" role="menu">
 				{{#years}}
-					<li><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
+					<li onclick="{{../calName}}.yearSelect('{{text}}')"><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
 				{{/years}}
 			</ul>
 		</div>
@@ -36,7 +36,7 @@
 				{{#content}}
 				<tr>
 					{{#.}}
-					<td class="{{#class}}{{.}}{{/class}}" onclick="maroonCalendar.prototype.daySelect({{date}})">{{text}}</td>
+					<td class="{{#class}}{{.}}{{/class}}" onclick="{{../../calName}}.daySelect({{date}})">{{text}}</td>
 					{{/.}}
 				</tr>
 				{{/content}}
