@@ -79,7 +79,7 @@ function maroonCalendar(options) {
 
     // straight-line code over functions
     function generateContent() {
-        date = currentDate.clone();
+        var date = currentDate.clone();
         // get start of month according to startOfWeek
         date.date(1);
         // 0 means start week on sunday, 1 monday ...
@@ -162,6 +162,12 @@ function maroonCalendar(options) {
             viewContent[idx] = toObjectArray(row, contentClassList[idx]);
         });
 
+        viewContent.forEach(function(row, j) {
+            row.forEach(function(obj, i) {
+                obj.date = content[i+j*COLS];
+            });
+        });
+
         // use reduce instead of this
         function toObjectArray(textList, classList) {
             var result = [];
@@ -197,44 +203,36 @@ function maroonCalendar(options) {
 
     // inserts the view into the html using handlebars template
     function render() {
+        updateContent();
         view = generateView();
-        placeholder.html(template(view));
+        placeholder[0].innerHTML = template(view);
+
+        var maroonMonths = document.querySelectorAll(".maroonMonths li");
+        var maroonYears = document.querySelectorAll(".maroonYears li");
+
+        addEvents(maroonMonths, 'click', monthSelect);
+        addEvents(maroonYears, 'click', yearSelect);
+
+        function addEvents(list, event, callback) {
+            for (var i = 0; i < list.length; i++) {
+                list[i].addEventListener(event, callback);
+            }
+        }
+
     }
 
     // initialize
     render();
 
-    // bind events
-    placeholder.on('click', '.maroonMonths li', monthSelect);
-    placeholder.on('click', '.maroonYears li', yearSelect);
-    placeholder.on('click', 'td', daySelect);
-
-    function monthSelect() {
-        var month = $(this).text();
-        console.log(month);
+    function monthSelect(node) {
+        var month = node.target.innerHTML;
         currentDate.month(month);
-        console.log(currentDate.month());
-        updateContent();
         render();
     }
 
-    function yearSelect() {
-        var year = $(this).text();
+    function yearSelect(node) {
+        var year = node.target.innerHTML;
         currentDate.year(year);
-        updateContent();
-        render();
-    }
-
-    function daySelect() {
-        var text = $(this).text();
-        var colNumber = $(this).index();
-        var rowNumber = $(this).parent().index();
-        var idx = (rowNumber * COLS) + colNumber;
-        currentDate = content[idx];
-        if (mode === 'interval') {
-            intervalMode();
-        }
-        updateContent();
         render();
     }
 
@@ -288,7 +286,9 @@ function maroonCalendar(options) {
             return currentDate;
         } else {
             currentDate = date;
-            updateContent();
+            // if (mode === 'interval') {
+            //     intervalMode();
+            // }
             render();
             return this;
         }
@@ -305,7 +305,6 @@ function maroonCalendar(options) {
             weekdays = moment.weekdays();
             weekdaysShort = moment.weekdaysShort();
             weekdaysMin = moment.weekdaysMin();
-            updateContent();
             render();
             return this;
         }
