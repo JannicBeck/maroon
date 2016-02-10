@@ -164,7 +164,7 @@ function maroonCalendar(options) {
 
         viewContent.forEach(function(row, j) {
             row.forEach(function(obj, i) {
-                obj.date = content[i+j*COLS];
+                obj.date = content[i+j*COLS].format('X');
             });
         });
 
@@ -201,38 +201,37 @@ function maroonCalendar(options) {
                 endDate: formatDate(endDate) };
     }
 
+    placeholder.on('click', '.maroonMonths li', monthSelect);
+    placeholder.on('click', '.maroonYears li', yearSelect);
+    placeholder.on('click', '.maroonContent td', daySelect);
+
     // inserts the view into the html using handlebars template
     function render() {
         updateContent();
         view = generateView();
         placeholder[0].innerHTML = template(view);
 
-        var maroonMonths = document.querySelectorAll(".maroonMonths li");
-        var maroonYears = document.querySelectorAll(".maroonYears li");
-
-        addEvents(maroonMonths, 'click', monthSelect);
-        addEvents(maroonYears, 'click', yearSelect);
-
-        function addEvents(list, event, callback) {
-            for (var i = 0; i < list.length; i++) {
-                list[i].addEventListener(event, callback);
-            }
-        }
-
     }
 
     // initialize
     render();
 
-    function monthSelect(node) {
-        var month = node.target.innerHTML;
+    function monthSelect(e) {
+        var month = $(this).text();
         currentDate.month(month);
         render();
     }
 
-    function yearSelect(node) {
-        var year = node.target.innerHTML;
+    function yearSelect(e) {
+        var year = $(this).text();
         currentDate.year(year);
+        render();
+    }
+
+    function daySelect(e) {
+        var timestamp = $(this).attr('id');
+        var date = moment.unix(timestamp).locale(locale);
+        currentDate = date;
         render();
     }
 
