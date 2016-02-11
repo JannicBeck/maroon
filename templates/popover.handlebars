@@ -9,7 +9,7 @@
 			</button>
 			<ul class="dropdown-menu maroonMonths" role="menu">
 				{{#months}}
-				<li><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
+				<li><a class="{{cssClass}}">{{month}}</a></li>
 				{{/months}}
 			</ul>
 		</div>
@@ -20,7 +20,7 @@
 			</button>
 			<ul class="dropdown-menu maroonYears" role="menu">
 				{{#years}}
-					<li><a class="{{#class}}{{.}}{{/class}}">{{text}}</a></li>
+					<li><a class="{{cssClass}}">{{year}}</a></li>
 				{{/years}}
 			</ul>
 		</div>
@@ -28,7 +28,7 @@
 			<thead>
 				<tr class="maroonWeekdays">
 					{{#weekdaysMin}}
-					<th class="{{#class}}{{.}}{{/class}}">{{text}}</th>
+					<th class="{{cssClass}}">{{weekday}}</th>
 					{{/weekdaysMin}}
 				</tr>
 			</thead>
@@ -36,7 +36,7 @@
 				{{#content}}
 				<tr>
 					{{#.}}
-					<td class="{{#class}}{{.}}{{/class}}" id="{{date}}">{{text}}</td>
+					<td class="{{cssClass}}" id="{{unixDate}}">{{date}}</td>
 					{{/.}}
 				</tr>
 				{{/content}}

@@ -77,6 +77,17 @@ function maroonCalendar(options) {
         return dayList[date.day()];
     }
 
+    function compareDates(date, otherDate) {
+        if( date.isSame(otherDate, 'day') &&
+            date.isSame(otherDate, 'month') &&
+            date.isSame(otherDate, 'year')) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // straight-line code over functions
     function generateContent() {
         var date = currentDate.clone();
@@ -99,86 +110,64 @@ function maroonCalendar(options) {
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
-        var weekdaysClassList = [];
-        weekdaysClassList[getWeekday(currentDate)] = 'primary';
-        var viewWeekdaysMin = toObjectArray(weekdaysMin, weekdaysClassList);
+        var viewWeekdaysMin = weekdaysMin.reduce(function(result, weekday, idx) {
+            result[idx] = { weekday: weekday,
+                            cssClass: 'maroonWeekday '}
+            return result;
+        }, []);
+        viewWeekdaysMin[getWeekday(currentDate)].cssClass += 'primary ';
 
-        var monthClassList = [];
-        monthClassList[currentDate.month()] = 'primary';
-        var viewMonths = toObjectArray(months, monthClassList);
+        var viewMonths = months.reduce(function(result, month, idx) {
+            result[idx] = { month: month,
+                            cssClass: 'maroonMonth '};
+            return result;
+        }, []);
+        viewMonths[currentDate.month()].cssClass += 'primary ';
 
-        var yearClassList = [];
-        yearClassList[years.indexOf(currentDate.year())] = 'primary';
-        var viewYears = toObjectArray(years, yearClassList);
+        var viewYears = years.reduce(function(result, year, idx) {
+            result[idx] = { year: year,
+                            cssClass: 'maroonYear '};
+            return result;
+        }, []);
+        viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
 
-        var viewContent = content.slice();
-        var contentClassList = [];
-        viewContent.forEach(function(date, idx) {
-            contentClassList[idx] = [];
-            viewContent[idx] = date.format('DD');
-            if (date.isSame(today, 'day') &&
-                date.isSame(today, 'month') &&
-                date.isSame(today, 'year')) {
-                contentClassList[idx].push('primary ');
+        var viewContent = content.reduce(function(result, date, idx) {
+            var cssClass = 'maroonDate ';
+            if (compareDates(date, today)) {
+                cssClass += 'primary ';
             }
             if (!date.isSame(currentDate, 'month')) {
-                contentClassList[idx].push('secondary ');
+                cssClass += 'secondary ';
             }
-            if (date.isSame(currentDate)) {
-                contentClassList[idx].push('active ');
+            if (compareDates(date, currentDate)) {
+                cssClass += 'active ';
             }
-
             if (mode === 'interval') {
                 if (startDate) {
-                    if (date.isSame(startDate, 'day') &&
-                        date.isSame(startDate, 'month') &&
-                        date.isSame(startDate, 'year')) {
-                        contentClassList[idx].push('start ');
+                    if (compareDates(date, startDate)) {
+                        cssClass += 'start ';
                     }
                 }
                 if (endDate) {
-                    if (date.isSame(endDate, 'day') &&
-                        date.isSame(endDate, 'month') &&
-                        date.isSame(endDate, 'year')) {
-                        contentClassList[idx].push('end ');
+                    if (compareDates(date, endDate)) {
+                        cssClass += 'end ';
                     }
                 }
                 if (interval) {
                     interval.forEach(function(intervalDate) {
-                        if (date.isSame(intervalDate, 'day') &&
-                            date.isSame(intervalDate, 'month') &&
-                            date.isSame(intervalDate, 'year')) {
-                            contentClassList[idx].push('interval ');
+                        if (compareDates(date, intervalDate)) {
+                            cssClass += 'interval ';
                         }
                     });
                 }
             }
-        });
+            result[idx] = { date: date.format('DD'),
+                             unixDate: date.format('X'),
+                             cssClass: cssClass };
+            return result;
+        }, content.slice());
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
-        contentClassList = toMatrix(contentClassList, ROWS, COLS);
-
-        viewContent.forEach(function(row, idx) {
-            viewContent[idx] = toObjectArray(row, contentClassList[idx]);
-        });
-
-        viewContent.forEach(function(row, j) {
-            row.forEach(function(obj, i) {
-                obj.date = content[i+j*COLS].format('X');
-            });
-        });
-
-        // use reduce instead of this
-        function toObjectArray(textList, classList) {
-            var result = [];
-            textList.forEach(function(elem, idx) {
-                result.push({
-                    text: textList[idx],
-                    class: classList[idx]
-                });
-            });
-            return result;
-        }
 
         // turns an array a into a m x n matrix
         function toMatrix(a, m, n) {
@@ -268,9 +257,7 @@ function maroonCalendar(options) {
             } else if (currentDate > startDate && currentDate < endDate) {
                 endDate = moment(currentDate);
                 interval = closedDateInterval(startDate, endDate);
-            } else if (currentDate.isSame(startDate, 'year') &&
-                    currentDate.isSame(startDate, 'month') &&
-                    currentDate.isSame(startDate, 'day')) {
+            } else if (compareDates(currentDate, startDate)) {
                 startDate = undefined;
                 interval = undefined;
             } else {
