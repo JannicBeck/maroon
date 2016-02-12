@@ -31,23 +31,23 @@
 				var options = {
 					timespan: [2016, 2028],
 					startOfWeek: 0, // 1 means start week on monday
-					// locale: 'de',
+					locale: 'de',
 					placeholder: $('.maroonPopover'),
 					template: Handlebars.compile(template),
-					// intervalMode: false,
+					intervalMode: true,
 					// template: Handlebars.templates['popover-footer'],
 					// title: 'My Awesome Datepicker'
 				};
 				var myCalendar = maroonCalendar(options);
-				// var mySecondCalendar = maroonCalendar({
-				// 	timespan: [2016, 2020],
-				// 	startOfWeek: 1, // 1 means start week on monday
-				// 	locale: 'en',
-				// 	placeholder: $('.maroonPopover2'),
-				// 	template: Handlebars.compile(template)
-				// });
+				var mySecondCalendar = maroonCalendar({
+					timespan: [2016, 2020],
+					startOfWeek: 1, // 1 means start week on monday
+					locale: 'en',
+					placeholder: $('.maroonPopover2'),
+					template: Handlebars.compile(template)
+				});
 				var birthday = moment("1991-06-02");
-				// myCalendar.currentDate(birthday).locale('fr');
+				myCalendar.currentDate(birthday).locale('fr');
 			});
 
 		}());

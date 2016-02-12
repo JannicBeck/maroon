@@ -3,7 +3,9 @@ function maroonCalendar(options) {
     var ROWS = 6;
     var COLS = 7;
     var intervalMode = options.intervalMode || false;
+
     var locale = options.locale || 'en';
+
     moment.locale(locale);
     var months = moment.months();
 
@@ -131,7 +133,13 @@ function maroonCalendar(options) {
                             cssClass: 'maroonYear '};
             return result;
         }, []);
-        viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
+
+        try {
+            viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
+        } catch (error) {
+            console.error("current year could'nt be highlighted because " +
+                          "it is not present in the specified timespan", error);
+        }
 
         var viewContent = content.reduce(function(result, date, idx) {
             var cssClass = 'maroonDate ';
@@ -288,6 +296,7 @@ function maroonCalendar(options) {
             locale = value;
             moment.locale(locale);
             currentDate.locale(locale);
+            today.locale(locale);
             months = moment.months();
             weekdays = moment.weekdays();
             weekdaysShort = moment.weekdaysShort();
