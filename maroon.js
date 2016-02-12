@@ -2,7 +2,7 @@ function maroonCalendar(options) {
 
     var ROWS = 6;
     var COLS = 7;
-    var mode = options.mode;
+    var intervalMode = options.intervalMode || false;
     var locale = options.locale || 'en';
     moment.locale(locale);
     var months = moment.months();
@@ -16,6 +16,8 @@ function maroonCalendar(options) {
     var i = 0;
     while (i < startOfWeek) {
         weekdays.push(weekdays.shift());
+        weekdaysShort.push(weekdaysShort.shift());
+        weekdaysMin.push(weekdaysMin.shift());
         i++;
     }
 
@@ -140,9 +142,9 @@ function maroonCalendar(options) {
                 cssClass += 'secondary ';
             }
             if (compareDates(date, currentDate)) {
-                cssClass += 'active ';
+                cssClass += 'current ';
             }
-            if (mode === 'interval') {
+            if (intervalMode) {
                 if (startDate) {
                     if (compareDates(date, startDate)) {
                         cssClass += 'start ';
@@ -165,7 +167,7 @@ function maroonCalendar(options) {
                              unixDate: date.format('X'),
                              cssClass: cssClass };
             return result;
-        }, content.slice());
+        }, []);
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
@@ -190,16 +192,15 @@ function maroonCalendar(options) {
                 endDate: formatDate(endDate) };
     }
 
-    placeholder.on('click', '.maroonMonths li', monthSelect);
-    placeholder.on('click', '.maroonYears li', yearSelect);
-    placeholder.on('click', '.maroonContent td', daySelect);
+    placeholder.on('click', '.maroonMonth', monthSelect);
+    placeholder.on('click', '.maroonYear', yearSelect);
+    placeholder.on('click', '.maroonDate', daySelect);
 
     // inserts the view into the html using handlebars template
     function render() {
         updateContent();
         view = generateView();
-        placeholder[0].innerHTML = template(view);
-
+        placeholder.html(template(view));
     }
 
     // initialize
@@ -221,10 +222,13 @@ function maroonCalendar(options) {
         var timestamp = $(this).attr('id');
         var date = moment.unix(timestamp).locale(locale);
         currentDate = date;
+        if (intervalMode) {
+            activateIntervalMode();
+        }
         render();
     }
 
-    function intervalMode() {
+    function activateIntervalMode() {
         if (!startDate && !endDate) {
             startDate = moment(currentDate);
         } else if (startDate && !endDate) {
@@ -272,9 +276,6 @@ function maroonCalendar(options) {
             return currentDate;
         } else {
             currentDate = date;
-            // if (mode === 'interval') {
-            //     intervalMode();
-            // }
             render();
             return this;
         }

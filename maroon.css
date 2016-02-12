@@ -1,7 +1,4 @@
-.maroonYears::-webkit-scrollbar {
-    display: none;
-}
-
+/* custom buttons */
 .btn-maroon,
 .btn-maroon:hover,
 .btn-maroon:focus {
@@ -13,17 +10,13 @@
 .maroonTitle {
 }
 
-.maroonMonth, .maroonYear{
-  padding: 2px;
-}
-
 .maroonMonths, .maroonYears{
   margin: 2px -10px 0 -10px;
   min-width: 0;
 }
 
 .maroonMonths a.primary, .maroonYears a.primary {
-    color: maroon;
+
 }
 
 .maroonMonths li, .maroonYears li {
@@ -55,10 +48,10 @@
 }
 
 .maroonContent tr {
-    border-bottom: solid 1px #ddd;
+    border-bottom: solid 1px #DDD;
 }
 
-.maroonContent td{
+.maroonDate{
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -67,27 +60,31 @@
 	cursor: pointer;
 }
 
-.maroonContent td:hover{
+.maroonDate:hover{
 	background-color: #D9EDF7;
 }
 
-.maroonContent td.start{
+.maroonDate.current{
+	background-color: #F5F5F5;
+}
+
+.maroonDate.start{
   background-color: #DFF0D8 !important;
 }
 
-.maroonContent td.interval{
+.maroonDate.interval{
   background-color: #F5F5F5;
 }
 
-.maroonContent td.end{
+.maroonDate.end{
   background-color: #F2DEDE !important;
 }
 
-.maroonContent td.secondary{
+.maroonDate.secondary{
   color: #DDD;
 }
 
-.maroonContent td.primary{
+.maroonDate.primary{
   font-weight: bold;
   color: maroon;
 }

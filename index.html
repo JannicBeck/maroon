@@ -30,11 +30,11 @@
 			$.get('templates/popover.handlebars', function(template) {
 				var options = {
 					timespan: [2016, 2028],
-					startOfWeek: 1, // 1 means start week on monday
-					locale: 'de',
+					startOfWeek: 0, // 1 means start week on monday
+					// locale: 'de',
 					placeholder: $('.maroonPopover'),
 					template: Handlebars.compile(template),
-					mode: 'interval',
+					// intervalMode: false,
 					// template: Handlebars.templates['popover-footer'],
 					// title: 'My Awesome Datepicker'
 				};
