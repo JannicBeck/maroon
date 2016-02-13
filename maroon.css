@@ -47,7 +47,7 @@
 	border-bottom: 1px solid maroon;
 }
 
-.maroonContent tr {
+.maroonContent tr:last-child {
     border-bottom: solid 1px #DDD;
 }
 

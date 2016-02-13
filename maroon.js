@@ -174,8 +174,8 @@ function maroonCalendar(options) {
                     });
                 }
             }
-            result[idx] = { date: date.format('DD'),
-                             unixDate: date.format('X'),
+            result[idx] = { day: date.format('DD'),
+                             date: date.format('YYYY-MM-DD'),
                              cssClass: cssClass };
             return result;
         }, []);
@@ -231,8 +231,8 @@ function maroonCalendar(options) {
     }
 
     function daySelect(e) {
-        var timestamp = $(this).attr('id');
-        var date = moment.unix(timestamp).locale(locale);
+        var value = $(this).find('time').attr('datetime');
+        var date = moment(value).locale(locale);
         currentDate = date;
         if (intervalMode) {
             activateIntervalMode();

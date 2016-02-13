@@ -36,7 +36,13 @@
 				{{#content}}
 				<tr>
 					{{#.}}
-					<td class="{{cssClass}}" id="{{unixDate}}">{{date}}</td>
+					{{!-- <td class="{{cssClass}}" datetime="{{unixDate}}" id="{{unixDate}}">{{date}}</td> --}}
+						{{!-- don't use unix date here but YYYY-MM-DD --}}
+					<td class="{{cssClass}}">
+						<time datetime="{{date}}">
+							{{day}}
+						</time>
+					</td>
 					{{/.}}
 				</tr>
 				{{/content}}
