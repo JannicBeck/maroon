@@ -5,6 +5,7 @@ function maroonCalendar(options) {
     var intervalMode = options.intervalMode || false;
 
     var locale = options.locale || 'en';
+    var startOfWeek = options.startOfWeek || 0;
 
     moment.locale(locale);
     var months = moment.months();
@@ -12,15 +13,17 @@ function maroonCalendar(options) {
     var weekdays = moment.weekdays();
     var weekdaysShort = moment.weekdaysShort();
     var weekdaysMin = moment.weekdaysMin();
+    formatWeekdays();
 
-    var startOfWeek = options.startOfWeek || 0;
     // format weekdays according to startOfWeek parameter
-    var i = 0;
-    while (i < startOfWeek) {
-        weekdays.push(weekdays.shift());
-        weekdaysShort.push(weekdaysShort.shift());
-        weekdaysMin.push(weekdaysMin.shift());
-        i++;
+    function formatWeekdays() {
+        var i = 0;
+        while (i < startOfWeek) {
+            weekdays.push(weekdays.shift());
+            weekdaysShort.push(weekdaysShort.shift());
+            weekdaysMin.push(weekdaysMin.shift());
+            i++;
+        }
     }
 
     var currentDate = new moment();
@@ -200,11 +203,12 @@ function maroonCalendar(options) {
                 endDate: formatDate(endDate) };
     }
 
+    // bind events
     placeholder.on('click', '.maroonMonth', monthSelect);
     placeholder.on('click', '.maroonYear', yearSelect);
     placeholder.on('click', '.maroonDate', daySelect);
 
-    // inserts the view into the html using handlebars template
+    // inserts the view into the html using handlebars templating engine
     function render() {
         updateContent();
         view = generateView();
@@ -301,6 +305,7 @@ function maroonCalendar(options) {
             weekdays = moment.weekdays();
             weekdaysShort = moment.weekdaysShort();
             weekdaysMin = moment.weekdaysMin();
+            formatWeekdays();
             render();
             return this;
         }
