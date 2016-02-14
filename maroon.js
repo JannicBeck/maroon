@@ -141,7 +141,7 @@ function maroonCalendar(options) {
             viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
         } catch (error) {
             console.error("current year could'nt be highlighted because " +
-                          "it is not present in the specified timespan", error);
+                          "it is not present in the specified timespan");
         }
 
         var viewContent = content.reduce(function(result, date, idx) {
