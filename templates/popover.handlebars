@@ -5,47 +5,43 @@
 		<div class="dropdown pull-left">
 			<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 				<i class="fa fa-chevron-circle-down"></i>
-				<span class="maroonCurrentMonth">{{month}}</span>
+				<span class="maroonCurrentMonth">{{currentMonth}}</span>
 			</button>
 			<ul class="dropdown-menu maroonMonths" role="menu">
-				{{#months}}
-				<li><a class="{{cssClass}}">{{month}}</a></li>
-				{{/months}}
+				{{#each months as |month|}}
+				<li><a>{{month}}</a></li>
+				{{/each}}
 			</ul>
 		</div>
 		<div class="dropdown pull-right">
 			<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-				<span class="maroonCurrentYear">{{year}}</span>
+				<span class="maroonCurrentYear">{{currentYear}}</span>
 				<i class="fa fa-chevron-circle-down"></i>
 			</button>
 			<ul class="dropdown-menu maroonYears" role="menu">
-				{{#years}}
-					<li><a class="{{cssClass}}">{{year}}</a></li>
-				{{/years}}
+				{{#each years as |year|}}
+					<li><a>{{year}}</a></li>
+				{{/each}}
 			</ul>
 		</div>
 		<table class="table">
 			<thead>
 				<tr class="maroonWeekdays">
-					{{#weekdaysMin}}
-					<th class="{{cssClass}}">{{weekday}}</th>
-					{{/weekdaysMin}}
+					{{#each weekdaysMin as |weekday|}}
+					<th>{{weekday}}</th>
+					{{/each}}
 				</tr>
 			</thead>
 			<tbody class="maroonContent">
-				{{#content}}
+				{{#each content as |week|}}
 				<tr>
-					{{#.}}
-					{{!-- <td class="{{cssClass}}" datetime="{{unixDate}}" id="{{unixDate}}">{{date}}</td> --}}
-						{{!-- don't use unix date here but YYYY-MM-DD --}}
-					<td class="{{cssClass}}">
-						<time datetime="{{date}}">
-							{{day}}
-						</time>
+					{{#each week as |date|}}
+					<td>
+						{{{date}}}
 					</td>
-					{{/.}}
+					{{/each}}
 				</tr>
-				{{/content}}
+				{{/each}}
 			</tbody>
 		</table>
 	</div>

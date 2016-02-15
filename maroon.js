@@ -6,37 +6,25 @@ function maroonCalendar(options) {
 
     var locale = options.locale || 'en';
     var startOfWeek = options.startOfWeek || 0;
-
     moment.locale(locale);
     var months = moment.months();
-
     var weekdays = moment.weekdays();
     var weekdaysShort = moment.weekdaysShort();
     var weekdaysMin = moment.weekdaysMin();
     formatWeekdays();
 
-    // format weekdays according to startOfWeek parameter
-    function formatWeekdays() {
-        var i = 0;
-        while (i < startOfWeek) {
-            weekdays.push(weekdays.shift());
-            weekdaysShort.push(weekdaysShort.shift());
-            weekdaysMin.push(weekdaysMin.shift());
-            i++;
-        }
-    }
-
     var currentDate = new moment();
     var today = new moment();
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
-    var placeholder = options.placeholder;
-    var template = options.template;
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
+
+    var placeholder = options.placeholder;
+    var template = options.template;
+
     var startDate;
     var interval;
     var endDate;
-    var view;
 
     function updateContent() {
         content = generateContent();
@@ -70,6 +58,17 @@ function maroonCalendar(options) {
             date.add(1, 'day');
         }
         return dateInterval;
+    }
+
+    // format weekdays according to startOfWeek parameter
+    function formatWeekdays() {
+        var i = 0;
+        while (i < startOfWeek) {
+            weekdays.push(weekdays.shift());
+            weekdaysShort.push(weekdaysShort.shift());
+            weekdaysMin.push(weekdaysMin.shift());
+            i++;
+        }
     }
 
     // returns the day of the week according to startOfWeek
@@ -111,18 +110,23 @@ function maroonCalendar(options) {
         return content;
     }
 
+    // attention: under heavy construction, please put your helmet on for your own safety
     function generateView() {
         var title = options.title || currentDate.format('dddd Do MMMM YYYY');
 
         var year = currentDate.year();
         var month = months[currentDate.month()];
 
-        var viewWeekdaysMin = weekdaysMin.reduce(function(result, weekday, idx) {
-            result[idx] = { weekday: weekday,
-                            cssClass: 'maroonWeekday '}
-            return result;
-        }, []);
-        viewWeekdaysMin[getWeekday(currentDate)].cssClass += 'primary ';
+        var $viewWeekdays = weekdays.map(function(weekday) {
+            var $weekday = $('<p></p>');
+            $weekday.html(weekday);
+            return $weekday;
+        });
+        $viewWeekdays[getWeekday(currentDate)].addClass('primary');
+        
+        var viewWeekdays = $viewWeekdays.map(function($weekday) {
+            return $weekday.prop('outerHTML');
+        });
 
         var viewMonths = months.reduce(function(result, month, idx) {
             result[idx] = { month: month,
@@ -139,46 +143,51 @@ function maroonCalendar(options) {
 
         try {
             viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
-        } catch (error) {
-            console.error("current year could'nt be highlighted because " +
-                          "it is not present in the specified timespan");
+        } finally {
+            // do nothing
         }
 
-        var viewContent = content.reduce(function(result, date, idx) {
-            var cssClass = 'maroonDate ';
-            if (compareDates(date, today)) {
-                cssClass += 'primary ';
-            }
-            if (!date.isSame(currentDate, 'month')) {
-                cssClass += 'secondary ';
-            }
-            if (compareDates(date, currentDate)) {
-                cssClass += 'current ';
-            }
-            if (intervalMode) {
-                if (startDate) {
-                    if (compareDates(date, startDate)) {
-                        cssClass += 'start ';
-                    }
-                }
-                if (endDate) {
-                    if (compareDates(date, endDate)) {
-                        cssClass += 'end ';
-                    }
-                }
-                if (interval) {
-                    interval.forEach(function(intervalDate) {
-                        if (compareDates(date, intervalDate)) {
-                            cssClass += 'interval ';
-                        }
-                    });
-                }
-            }
-            result[idx] = { day: date.format('DD'),
-                             date: date.format('YYYY-MM-DD'),
-                             cssClass: cssClass };
-            return result;
-        }, []);
+        var viewContent = content.map(function(date) {
+            var cssClass = '';
+            var timeElement = $('<time></time>');
+            timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
+            timeElement.html(date.format('DD'));
+            timeElement.addClass(cssClass);
+            var dateElement = timeElement.prop('outerHTML');
+            return dateElement;
+        });
+
+        // get index of today viewContent[idx].addClass('primary')
+
+        //     var cssClass = '';
+        //     if (compareDates(date, today)) {
+        //         cssClass += 'primary ';
+        //     }
+        //     if (!date.isSame(currentDate, 'month')) {
+        //         cssClass += 'secondary ';
+        //     }
+        //     if (compareDates(date, currentDate)) {
+        //         cssClass += 'current ';
+        //     }
+        //     if (intervalMode) {
+        //         if (startDate) {
+        //             if (compareDates(date, startDate)) {
+        //                 cssClass += 'start ';
+        //             }
+        //         }
+        //         if (endDate) {
+        //             if (compareDates(date, endDate)) {
+        //                 cssClass += 'end ';
+        //             }
+        //         }
+        //         if (interval) {
+        //             interval.forEach(function(intervalDate) {
+        //                 if (compareDates(date, intervalDate)) {
+        //                     cssClass += 'interval ';
+        //                 }
+        //             });
+        //         }
+        //     }
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
@@ -198,7 +207,7 @@ function maroonCalendar(options) {
         }
 
         return { years: viewYears, months: viewMonths, weekdays, weekdaysShort,
-                weekdaysMin: viewWeekdaysMin, currentDate, year, month,
+                weekdaysMin: viewWeekdaysMin, currentDate, currentYear: year, currentMonth: month,
                 content: viewContent, title, startDate: formatDate(startDate),
                 endDate: formatDate(endDate) };
     }
@@ -211,8 +220,11 @@ function maroonCalendar(options) {
     // inserts the view into the html using handlebars templating engine
     function render() {
         updateContent();
-        view = generateView();
+        var view = generateView();
         placeholder.html(template(view));
+
+        // does this slow the app down significantly?
+        styleCalendar();
     }
 
     // initialize
@@ -238,6 +250,20 @@ function maroonCalendar(options) {
             activateIntervalMode();
         }
         render();
+    }
+
+    function styleCalendar() {
+        // I need a different selector here because I don't want to select month, year and days
+        var $timeElements = placeholder.find('time');
+        $timeElements.each(function() {
+            var $node = $(this);
+            var $parent = $node.parent();
+            var nodeClass = $node.attr('class');
+            $parent.addClass('maroonDate ');
+            if (nodeClass) {
+                $parent.addClass(nodeClass);
+            }
+        });
     }
 
     function activateIntervalMode() {
@@ -293,6 +319,7 @@ function maroonCalendar(options) {
         }
     }
 
+    // this is ugly find a cleaner solution
     function localeMethod(value) {
         if (!value) {
             return locale;

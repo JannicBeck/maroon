@@ -27,6 +27,8 @@
 	<script>
 
 		$(function(){
+			// maybe I can use the popover.js bootstrap? init empty popover and replace the content
+
 			$.get('templates/popover.handlebars', function(template) {
 				var options = {
 					timespan: [2016, 2028],
@@ -34,20 +36,20 @@
 					locale: 'de',
 					placeholder: $('.maroonPopover'),
 					template: Handlebars.compile(template),
-					intervalMode: true,
+					// intervalMode: true,
 					// template: Handlebars.templates['popover-footer'],
 					// title: 'My Awesome Datepicker'
 				};
 				var myCalendar = maroonCalendar(options);
-				var mySecondCalendar = maroonCalendar({
-					timespan: [2016, 2020],
-					startOfWeek: 1, // 1 means start week on monday
-					locale: 'en',
-					placeholder: $('.maroonPopover2'),
-					template: Handlebars.compile(template)
-				});
-				var birthday = moment("1991-06-02");
-				myCalendar.currentDate(birthday).locale('fr');
+				// var mySecondCalendar = maroonCalendar({
+				// 	timespan: [2016, 2020],
+				// 	startOfWeek: 1, // 1 means start week on monday
+				// 	locale: 'en',
+				// 	placeholder: $('.maroonPopover2'),
+				// 	template: Handlebars.compile(template)
+				// });
+				// var birthday = moment("1991-06-02");
+				// myCalendar.currentDate(birthday).locale('fr');
 			});
 
 		}());
