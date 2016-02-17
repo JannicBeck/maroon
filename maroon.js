@@ -1,114 +1,37 @@
 function maroonCalendar(options) {
 
-    var ROWS = 6;
-    var COLS = 7;
-    var intervalMode = options.intervalMode || false;
-
-    var locale = options.locale || 'en';
-    var startOfWeek = options.startOfWeek || 0;
-    moment.locale(locale);
-    var months = moment.months();
-    var weekdays = moment.weekdays();
-    var weekdaysShort = moment.weekdaysShort();
-    var weekdaysMin = moment.weekdaysMin();
-    formatWeekdays();
-
-    var currentDate = new moment();
-    var today = new moment();
-    var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
-    var years = closedInterval(timespan[0], timespan[1]);
-    var content = generateContent();
-
+    // MODEL ---------------------------------------------------------------------------------------
     var placeholder = options.placeholder;
     var template = options.template;
+    var locale = options.locale || 'en';
+    moment.locale(locale);
+    var intervalMode = options.intervalMode || false;
+    var startOfWeek = options.startOfWeek || 0;
+    var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
 
+    var ROWS = 6;
+    var COLS = 7;
+    var months = moment.months();
+    var weekdays = moment.weekdays();
+    var weekdaysMin = moment.weekdaysMin();
+    formatWeekdays();
+    var currentDate = new moment();
+    var today = new moment();
+    var years = closedInterval(timespan[0], timespan[1]);
+    var content = generateContent();
     var startDate;
     var interval;
     var endDate;
 
-    function updateContent() {
-        content = generateContent();
+    // inserts the view into the html using handlebars templating engine
+    function render() {
+        var view = generateView();
+        placeholder.html(template(view));
+        styleCalendar();
     }
 
-    // returns a closed interval from start to end
-    function closedInterval(start, end) {
-        if (start > end) {
-            return [];
-        }
-        var interval = [];
-        var i = start;
-        do {
-            interval[i - start] = i;
-            i++;
-        } while (i <= end);
-        return interval;
-    }
-
-    // returns a closed date interval from startDate to endDate
-    function closedDateInterval(startDate, endDate) {
-        if (startDate > endDate) {
-            return [];
-        }
-        var dateInterval = [];
-        var date = startDate.clone();
-
-        while (date <= endDate) {
-            dateInterval.push(date);
-            date = date.clone();
-            date.add(1, 'day');
-        }
-        return dateInterval;
-    }
-
-    // format weekdays according to startOfWeek parameter
-    function formatWeekdays() {
-        var i = 0;
-        while (i < startOfWeek) {
-            weekdays.push(weekdays.shift());
-            weekdaysShort.push(weekdaysShort.shift());
-            weekdaysMin.push(weekdaysMin.shift());
-            i++;
-        }
-    }
-
-    // returns the day of the week according to startOfWeek
-    function getWeekday(date) {
-        var dayList = closedInterval(0, 6);
-        // reorder dayList according to startOfWeek
-        var i = 0;
-        while (i < startOfWeek) {
-            dayList.unshift(dayList.pop());
-            i++;
-        }
-        return dayList[date.day()];
-    }
-
-    function compareDates(date, otherDate) {
-        if( date.isSame(otherDate, 'day') &&
-            date.isSame(otherDate, 'month') &&
-            date.isSame(otherDate, 'year')) {
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // straight-line code over functions
-    function generateContent() {
-        var date = currentDate.clone();
-        // get start of month according to startOfWeek
-        date.date(1);
-        // 0 means start week on sunday, 1 monday ...
-        var startOfMonth = getWeekday(date);
-        var startOfContent = -startOfMonth + 1;
-        date.date(startOfContent);
-        var cellNumber = ROWS * COLS;
-        var endDate = date.clone();
-        endDate.add(cellNumber - 1, 'day');
-        var content = closedDateInterval(date, endDate);
-        return content;
-    }
+    // initialize
+    render();
 
     // attention: under heavy construction, please put your helmet on for your own safety
     function generateView() {
@@ -118,8 +41,19 @@ function maroonCalendar(options) {
         var currentMonth = months[currentDate.month()];
 
         var viewWeekdays = generateViewWeekdays(weekdays);
-        var viewWeekdaysShort = generateViewWeekdays(weekdaysShort);
         var viewWeekdaysMin = generateViewWeekdays(weekdaysMin);
+        function generateViewWeekdays(weekdays) {
+            var viewWeekdays = weekdays.map(function(weekday, idx) {
+                var $weekday = $('<span></span>');
+                $weekday.html(weekday);
+                $weekday.addClass('maroonWeekday');
+                if (getWeekday(currentDate) === idx) {
+                    $weekday.addClass('primary');
+                }
+                return $weekday.prop('outerHTML');
+            });
+            return viewWeekdays;
+        }
 
         var viewMonths = months.map(function(month, idx) {
             var timeElement = $('<time></time>');
@@ -181,82 +115,24 @@ function maroonCalendar(options) {
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
-        // turns an array a into a m x n matrix
-        function toMatrix(a, m, n) {
-            var result = [];
-            for (var i = 0; i < m; i++) {
-                result[i] = a.splice(0, n);
-            }
-            return result;
-        }
-
-        function generateViewWeekdays(weekdays) {
-            var viewWeekdays = weekdays.map(function(weekday, idx) {
-                var $weekday = $('<span></span>');
-                $weekday.html(weekday);
-                $weekday.addClass('maroonWeekday');
-                if (getWeekday(currentDate) === idx) {
-                    $weekday.addClass('primary');
-                }
-                return $weekday.prop('outerHTML');
-            });
-            return viewWeekdays;
-        }
-
-        function formatDate(date) {
-            if (date) {
-                return date.format('DD.MM.YYYY');
-            }
-        }
-
-        return { years: viewYears, months: viewMonths, weekdaysShort: viewWeekdaysShort,
+        return { years: viewYears, months: viewMonths,
                 weekdaysMin: viewWeekdaysMin, weekdays: viewWeekdays, currentDate,
                 currentYear, currentMonth, content: viewContent, title,
                 startDate: formatDate(startDate), endDate: formatDate(endDate) };
     }
+    // ---------------------------------------------------------------------------------------------
 
-    // bind events
-    placeholder.on('click', '.maroonMonth', monthSelect);
-    placeholder.on('click', '.maroonYear', yearSelect);
-    placeholder.on('click', '.maroonDate', daySelect);
 
-    // inserts the view into the html using handlebars templating engine
-    function render() {
-        updateContent();
-        var view = generateView();
-        placeholder.html(template(view));
 
-        // does this slow the app down significantly?
-        styleCalendar();
-    }
 
-    // initialize
-    render();
 
-    function monthSelect(e) {
-        var month = $(this).text();
-        currentDate.month(month);
-        render();
-    }
-
-    function yearSelect(e) {
-        var year = $(this).text();
-        currentDate.year(year);
-        render();
-    }
-
-    function daySelect(e) {
-        var value = $(this).find('time').attr('datetime');
-        var date = moment(value).locale(locale);
-        currentDate = date;
-        if (intervalMode) {
-            activateIntervalMode();
-        }
+    // CONTROLLER ----------------------------------------------------------------------------------
+    function updateContent() {
+        content = generateContent();
         render();
     }
 
     function styleCalendar() {
-
         styleParent('.maroonInnerYear', 'maroonYear');
         styleParent('.maroonInnerMonth', 'maroonMonth');
         styleParent('.maroonInnerDate', 'maroonDate');
@@ -277,7 +153,148 @@ function maroonCalendar(options) {
                 }
             });
         }
+    }
+    // ---------------------------------------------------------------------------------------------
 
+
+
+
+
+
+
+    // VIEW ----------------------------------------------------------------------------------------
+    // bind events
+    placeholder.on('click', '.maroonMonth', monthSelect);
+    placeholder.on('click', '.maroonYear', yearSelect);
+    placeholder.on('click', '.maroonDate', daySelect);
+
+    function monthSelect(e) {
+        var month = $(this).text();
+
+        // update the model (send to controller?)
+        currentDate.month(month);
+        updateContent();
+    }
+
+    function yearSelect(e) {
+        var year = $(this).text();
+
+        // update the model (send to controller?)
+        currentDate.year(year);
+        updateContent();
+    }
+
+    function daySelect(e) {
+        var value = $(this).find('time').attr('datetime');
+        var date = moment(value).locale(locale);
+
+        // update the model (send to controller?)
+        currentDate = date;
+        if (intervalMode) {
+            activateIntervalMode();
+        }
+        updateContent();
+    }
+    // ---------------------------------------------------------------------------------------------
+
+
+
+
+
+
+    // HELPERS -------------------------------------------------------------------------------------
+    // returns a closed interval from start to end
+    function closedInterval(start, end) {
+        if (start > end) {
+            return [];
+        }
+        var interval = [];
+        var i = start;
+        do {
+            interval[i - start] = i;
+            i++;
+        } while (i <= end);
+        return interval;
+    }
+
+    // returns a closed date interval from startDate to endDate
+    function closedDateInterval(startDate, endDate) {
+        if (startDate > endDate) {
+            return [];
+        }
+        var dateInterval = [];
+        var date = startDate.clone();
+
+        while (date <= endDate) {
+            dateInterval.push(date);
+            date = date.clone();
+            date.add(1, 'day');
+        }
+        return dateInterval;
+    }
+
+    // format weekdays according to startOfWeek parameter
+    function formatWeekdays() {
+        var i = 0;
+        while (i < startOfWeek) {
+            weekdays.push(weekdays.shift());
+            weekdaysMin.push(weekdaysMin.shift());
+            i++;
+        }
+    }
+
+    // returns the day of the week according to startOfWeek
+    function getWeekday(date) {
+        var dayList = closedInterval(0, 6);
+        // reorder dayList according to startOfWeek
+        var i = 0;
+        while (i < startOfWeek) {
+            dayList.unshift(dayList.pop());
+            i++;
+        }
+        return dayList[date.day()];
+    }
+
+    function compareDates(date, otherDate) {
+        if( date.isSame(otherDate, 'day') &&
+            date.isSame(otherDate, 'month') &&
+            date.isSame(otherDate, 'year')) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // generates a 6*7 array with date objects as elements
+    function generateContent() {
+        var date = currentDate.clone();
+        // get start of month according to startOfWeek
+        date.date(1);
+        // 0 means start week on sunday, 1 monday ...
+        var startOfMonth = getWeekday(date);
+        var startOfContent = -startOfMonth + 1;
+        date.date(startOfContent);
+        var cellNumber = ROWS * COLS;
+        var endDate = date.clone();
+        endDate.add(cellNumber - 1, 'day');
+        var content = closedDateInterval(date, endDate);
+        return content;
+    }
+
+    // turns an array a into a m x n matrix
+    function toMatrix(a, m, n) {
+        var result = [];
+        for (var i = 0; i < m; i++) {
+            result[i] = a.splice(0, n);
+        }
+        return result;
+    }
+
+    function formatDate(date) {
+        if (date) {
+            return date.format('DD.MM.YYYY');
+        }
     }
 
     function activateIntervalMode() {
@@ -322,36 +339,10 @@ function maroonCalendar(options) {
             }
         }
     }
+    // ---------------------------------------------------------------------------------------------
 
-    function currentDateMethod(date) {
-        if (!date) {
-            return currentDate;
-        } else {
-            currentDate = date;
-            render();
-            return this;
-        }
-    }
 
-    // this is ugly find a cleaner solution
-    function localeMethod(value) {
-        if (!value) {
-            return locale;
-        } else {
-            locale = value;
-            moment.locale(locale);
-            currentDate.locale(locale);
-            today.locale(locale);
-            months = moment.months();
-            weekdays = moment.weekdays();
-            weekdaysShort = moment.weekdaysShort();
-            weekdaysMin = moment.weekdaysMin();
-            formatWeekdays();
-            render();
-            return this;
-        }
-    }
 
-    return { currentDate: currentDateMethod, locale: localeMethod };
+    return { currentDate, locale };
 
 };
