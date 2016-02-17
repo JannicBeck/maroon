@@ -29,7 +29,6 @@ function maroonCalendar(options) {
     // initialize
     render();
 
-    // attention: under heavy construction, please put your helmet on for your own safety
     function generateView() {
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
@@ -74,11 +73,6 @@ function maroonCalendar(options) {
                 weekdays, weekdaysMin, currentDate,
                 currentYear, currentMonth, content: viewContent, title };
     }
-    // ---------------------------------------------------------------------------------------------
-
-
-
-
 
     // CONTROLLER ----------------------------------------------------------------------------------
     function updateContent() {
@@ -104,13 +98,6 @@ function maroonCalendar(options) {
             });
         }
     }
-    // ---------------------------------------------------------------------------------------------
-
-
-
-
-
-
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
@@ -145,12 +132,6 @@ function maroonCalendar(options) {
         }
         updateContent();
     }
-    // ---------------------------------------------------------------------------------------------
-
-
-
-
-
 
     // HELPERS -------------------------------------------------------------------------------------
     // returns a closed interval from start to end
@@ -200,7 +181,7 @@ function maroonCalendar(options) {
         date.date(1);
         // 0 means start week on sunday, 1 monday ...
         var startOfMonth = date.weekday();
-        var startOfContent = -startOfMonth + 1;
+        var startOfContent = -startOfMonth;
         date.date(startOfContent);
         var cellNumber = ROWS * COLS;
         var endDate = date.clone();
@@ -217,10 +198,6 @@ function maroonCalendar(options) {
         }
         return result;
     }
-    // ---------------------------------------------------------------------------------------------
-
-
 
     return { currentDate, locale };
-
 };
