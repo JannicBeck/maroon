@@ -9,7 +9,7 @@
 			</button>
 			<ul class="dropdown-menu maroonMonths" role="menu">
 				{{#each months as |month|}}
-				<li><a>{{{month}}}</a></li>
+					{{{month}}}
 				{{/each}}
 			</ul>
 		</div>
@@ -20,7 +20,7 @@
 			</button>
 			<ul class="dropdown-menu maroonYears" role="menu">
 				{{#each years as |year|}}
-					<li><a>{{{year}}}</a></li>
+					{{{year}}}
 				{{/each}}
 			</ul>
 		</div>
@@ -36,9 +36,7 @@
 				{{#each content as |week|}}
 				<tr>
 					{{#each week as |date|}}
-					<td>
 						{{{date}}}
-					</td>
 					{{/each}}
 				</tr>
 				{{/each}}

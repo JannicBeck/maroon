@@ -23,7 +23,6 @@ function maroonCalendar(options) {
     function render() {
         var view = generateView();
         placeholder.html(template(view));
-        styleCalendar();
     }
 
     // initialize
@@ -37,34 +36,41 @@ function maroonCalendar(options) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
             timeElement.html(month);
-            timeElement.addClass('maroonInnerMonth');
-            return timeElement.prop('outerHTML');
+            var listElement = $('<li></li>');
+            var linkElement = $('<a></a>');
+            linkElement.addClass('maroonMonth');
+            var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            return monthElement;
         });
 
         var viewYears = years.map(function(year, idx) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', currentDate.format('YYYY'));
             timeElement.html(year);
-            timeElement.addClass('maroonInnerYear');
-            return timeElement.prop('outerHTML');
+            var listElement = $('<li></li>');
+            var linkElement = $('<a></a>');
+            linkElement.addClass('maroonYear');
+            var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            return yearElement;
         });
 
         var viewContent = content.map(function(date) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
             timeElement.html(date.format('DD'));
-            timeElement.addClass('maroonInnerDate');
+            var tableElement = $('<td></td>');
+            tableElement.addClass('maroonDate');
             if (compareDates(date, today)) {
-                timeElement.addClass('primary');
+                tableElement.addClass('primary');
             }
             if (!date.isSame(currentDate, 'month')) {
-                timeElement.addClass('secondary');
+                tableElement.addClass('secondary');
             }
             if (compareDates(date, currentDate)) {
-                timeElement.addClass('current');
+                tableElement.addClass('current');
             }
-
-            return timeElement.prop('outerHTML');
+            var dateElement = tableElement.append(timeElement).prop('outerHTML');
+            return dateElement;
         });
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
@@ -80,24 +86,6 @@ function maroonCalendar(options) {
         render();
     }
 
-    function styleCalendar() {
-        styleParent('.maroonInnerYear', 'maroonYear');
-        styleParent('.maroonInnerMonth', 'maroonMonth');
-        styleParent('.maroonInnerDate', 'maroonDate');
-
-        function styleParent(childClass, cssClass) {
-            var $child = placeholder.find(childClass);
-            $child.each(function() {
-                var $node = $(this);
-                var $parent = $node.parent();
-                var nodeClass = $node.attr('class');
-                $parent.addClass(cssClass);
-                if (nodeClass) {
-                    $parent.addClass(nodeClass);
-                }
-            });
-        }
-    }
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
@@ -107,16 +95,12 @@ function maroonCalendar(options) {
 
     function monthSelect(e) {
         var month = $(this).text();
-
-        // update the model (send to controller?)
         currentDate.month(month);
         updateContent();
     }
 
     function yearSelect(e) {
         var year = $(this).text();
-
-        // update the model (send to controller?)
         currentDate.year(year);
         updateContent();
     }
@@ -124,8 +108,6 @@ function maroonCalendar(options) {
     function daySelect(e) {
         var value = $(this).find('time').attr('datetime');
         var date = moment(value).locale(locale);
-
-        // update the model (send to controller?)
         currentDate = date;
         if (intervalMode) {
             activateIntervalMode();
@@ -164,6 +146,7 @@ function maroonCalendar(options) {
         return dateInterval;
     }
 
+    // compares two dates without the time portion
     function compareDates(date, otherDate) {
         if( date.isSame(otherDate, 'day') &&
             date.isSame(otherDate, 'month') &&
