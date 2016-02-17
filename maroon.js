@@ -114,80 +114,70 @@ function maroonCalendar(options) {
     function generateView() {
         var title = options.title || currentDate.format('dddd Do MMMM YYYY');
 
-        var year = currentDate.year();
-        var month = months[currentDate.month()];
+        var currentYear = currentDate.year();
+        var currentMonth = months[currentDate.month()];
 
-        var $viewWeekdays = weekdays.map(function(weekday) {
-            var $weekday = $('<p></p>');
-            $weekday.html(weekday);
-            return $weekday;
+        var viewWeekdays = generateViewWeekdays(weekdays);
+        var viewWeekdaysShort = generateViewWeekdays(weekdaysShort);
+        var viewWeekdaysMin = generateViewWeekdays(weekdaysMin);
+
+        var viewMonths = months.map(function(month, idx) {
+            var timeElement = $('<time></time>');
+            timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
+            timeElement.html(month);
+            timeElement.addClass('maroonInnerMonth');
+            if (currentDate.month() === idx) {
+                timeElement.addClass('primary');
+            }
+            return timeElement.prop('outerHTML');
         });
-        $viewWeekdays[getWeekday(currentDate)].addClass('primary');
-        
-        var viewWeekdays = $viewWeekdays.map(function($weekday) {
-            return $weekday.prop('outerHTML');
+
+        var viewYears = years.map(function(year, idx) {
+            var timeElement = $('<time></time>');
+            timeElement.attr('dateTime', currentDate.format('YYYY'));
+            timeElement.html(year);
+            timeElement.addClass('maroonInnerYear');
+            if (years.indexOf(currentDate.year()) === idx) {
+                timeElement.addClass('primary');
+            }
+            return timeElement.prop('outerHTML');
         });
-
-        var viewMonths = months.reduce(function(result, month, idx) {
-            result[idx] = { month: month,
-                            cssClass: 'maroonMonth '};
-            return result;
-        }, []);
-        viewMonths[currentDate.month()].cssClass += 'primary ';
-
-        var viewYears = years.reduce(function(result, year, idx) {
-            result[idx] = { year: year,
-                            cssClass: 'maroonYear '};
-            return result;
-        }, []);
-
-        try {
-            viewYears[years.indexOf(currentDate.year())].cssClass += 'primary ';
-        } finally {
-            // do nothing
-        }
 
         var viewContent = content.map(function(date) {
-            var cssClass = '';
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
             timeElement.html(date.format('DD'));
-            timeElement.addClass(cssClass);
-            var dateElement = timeElement.prop('outerHTML');
-            return dateElement;
+            timeElement.addClass('maroonInnerDate');
+            if (compareDates(date, today)) {
+                timeElement.addClass('primary');
+            }
+            if (!date.isSame(currentDate, 'month')) {
+                timeElement.addClass('secondary');
+            }
+            if (compareDates(date, currentDate)) {
+                timeElement.addClass('current');
+            }
+            if (intervalMode) {
+                if (startDate) {
+                    if (compareDates(date, startDate)) {
+                        timeElement.addClass('start');
+                    }
+                }
+                if (endDate) {
+                    if (compareDates(date, endDate)) {
+                        timeElement.addClass('end');
+                    }
+                }
+                if (interval) {
+                    interval.forEach(function(intervalDate) {
+                        if (compareDates(date, intervalDate)) {
+                            timeElement.addClass('interval');
+                        }
+                    });
+                }
+            }
+            return timeElement.prop('outerHTML');
         });
-
-        // get index of today viewContent[idx].addClass('primary')
-
-        //     var cssClass = '';
-        //     if (compareDates(date, today)) {
-        //         cssClass += 'primary ';
-        //     }
-        //     if (!date.isSame(currentDate, 'month')) {
-        //         cssClass += 'secondary ';
-        //     }
-        //     if (compareDates(date, currentDate)) {
-        //         cssClass += 'current ';
-        //     }
-        //     if (intervalMode) {
-        //         if (startDate) {
-        //             if (compareDates(date, startDate)) {
-        //                 cssClass += 'start ';
-        //             }
-        //         }
-        //         if (endDate) {
-        //             if (compareDates(date, endDate)) {
-        //                 cssClass += 'end ';
-        //             }
-        //         }
-        //         if (interval) {
-        //             interval.forEach(function(intervalDate) {
-        //                 if (compareDates(date, intervalDate)) {
-        //                     cssClass += 'interval ';
-        //                 }
-        //             });
-        //         }
-        //     }
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
@@ -200,16 +190,29 @@ function maroonCalendar(options) {
             return result;
         }
 
+        function generateViewWeekdays(weekdays) {
+            var viewWeekdays = weekdays.map(function(weekday, idx) {
+                var $weekday = $('<span></span>');
+                $weekday.html(weekday);
+                $weekday.addClass('maroonWeekday');
+                if (getWeekday(currentDate) === idx) {
+                    $weekday.addClass('primary');
+                }
+                return $weekday.prop('outerHTML');
+            });
+            return viewWeekdays;
+        }
+
         function formatDate(date) {
             if (date) {
                 return date.format('DD.MM.YYYY');
             }
         }
 
-        return { years: viewYears, months: viewMonths, weekdays, weekdaysShort,
-                weekdaysMin: viewWeekdaysMin, currentDate, currentYear: year, currentMonth: month,
-                content: viewContent, title, startDate: formatDate(startDate),
-                endDate: formatDate(endDate) };
+        return { years: viewYears, months: viewMonths, weekdaysShort: viewWeekdaysShort,
+                weekdaysMin: viewWeekdaysMin, weekdays: viewWeekdays, currentDate,
+                currentYear, currentMonth, content: viewContent, title,
+                startDate: formatDate(startDate), endDate: formatDate(endDate) };
     }
 
     // bind events
@@ -253,17 +256,28 @@ function maroonCalendar(options) {
     }
 
     function styleCalendar() {
-        // I need a different selector here because I don't want to select month, year and days
-        var $timeElements = placeholder.find('time');
-        $timeElements.each(function() {
-            var $node = $(this);
-            var $parent = $node.parent();
-            var nodeClass = $node.attr('class');
-            $parent.addClass('maroonDate ');
-            if (nodeClass) {
-                $parent.addClass(nodeClass);
-            }
-        });
+
+        styleParent('.maroonInnerYear', 'maroonYear');
+        styleParent('.maroonInnerMonth', 'maroonMonth');
+        styleParent('.maroonInnerDate', 'maroonDate');
+
+        var $weekdayElements = placeholder.find('.maroonWeekday');
+        var $currentWeekday = $weekdayElements.eq(getWeekday(currentDate));
+        $currentWeekday.parent().addClass('primary');
+
+        function styleParent(childClass, cssClass) {
+            var $child = placeholder.find(childClass);
+            $child.each(function() {
+                var $node = $(this);
+                var $parent = $node.parent();
+                var nodeClass = $node.attr('class');
+                $parent.addClass(cssClass);
+                if (nodeClass) {
+                    $parent.addClass(nodeClass);
+                }
+            });
+        }
+
     }
 
     function activateIntervalMode() {
