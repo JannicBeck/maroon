@@ -15,10 +15,6 @@
   min-width: 0;
 }
 
-.maroonMonths a.primary, .maroonYears a.primary {
-    /*color: maroon;*/
-}
-
 .maroonMonths li, .maroonYears li {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
@@ -43,10 +39,6 @@
 	font-weight: normal;
 }
 
-.maroonWeekdays th.primary{
-	border-bottom: 1px solid maroon;
-}
-
 .maroonContent tr:last-child {
     border-bottom: solid 1px #DDD;
 }
@@ -66,18 +58,6 @@
 
 .maroonDate.current{
 	background-color: #F5F5F5;
-}
-
-.maroonDate.start{
-  background-color: #DFF0D8 !important;
-}
-
-.maroonDate.interval{
-  background-color: #F5F5F5;
-}
-
-.maroonDate.end{
-  background-color: #F2DEDE !important;
 }
 
 .maroonDate.secondary{
