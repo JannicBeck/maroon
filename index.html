@@ -28,17 +28,21 @@
 
 		$(function(){
 			// maybe I can use the popover.js bootstrap? init empty popover and replace the content
-
 			$.get('templates/popover.handlebars', function(template) {
+				template = Handlebars.compile(template);
 				var options = {
-					timespan: [2016, 2028],
+					timespan: [2016, 2020],
 					locale: 'de',
-					placeholder: $('.maroonPopover'),
-					template: Handlebars.compile(template),
+					template: template,
 					// template: Handlebars.templates['popover-footer'],
 					// title: 'My Awesome Datepicker'
 				};
 				var myCalendar = maroonCalendar(options);
+				function render(view) {
+					$('.maroonPopover').html(template(view));
+				}
+				myCalendar.setRender(render);
+				render(myCalendar.view);
 				// var mySecondCalendar = maroonCalendar({
 				// 	timespan: [2016, 2020],
 				// 	locale: 'en',

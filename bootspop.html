@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Maroon</title>
+	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="maroon.css">
+</head>
+<body>
+
+    <div class="maroonPopover" style="text-align: center;">
+        <button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%;">
+            Click to toggle Calendar-popover
+        </button>
+    </div>
+
+	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
+	<script src="bower_components/handlebars/handlebars.min.js"></script>
+	<script src="maroon.js"></script>
+
+	<script>
+		$(function(){
+
+			$.get('templates/popover.handlebars', function(template) {
+
+				template = Handlebars.compile(template);
+				var calendarOptions = {
+					title: 'my Awesome Calendar',
+					timespan: [2016, 2020],
+					locale: 'de',
+					wrapper: $('.maroonPopover'),
+					template: template
+				};
+				var myCalendar = maroonCalendar(calendarOptions);
+
+	            var maroonPopover = $('#maroonPopover');
+				var popoverOptions = {
+					html: true,
+					content: template(myCalendar.view),
+					title: myCalendar.view.title
+				};
+				maroonPopover.popover(popoverOptions);
+
+				maroonPopover.on('shown.bs.popover', function () {
+					var container = $('.maroonPopover').find('.popover-content');
+					function render(view) {
+						container.html(template(view));
+					}
+					render(myCalendar.view);
+					myCalendar.setRender(render);
+				});
+
+			});
+
+
+		}());
+	</script>
+</body>
+</html>

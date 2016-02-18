@@ -2,8 +2,8 @@ function maroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
-    var placeholder = options.placeholder;
     var template = options.template;
+    var placeholder = options.placeholder;
     var locale = options.locale || 'en';
     moment.locale(locale);
     var intervalMode = options.intervalMode || false;
@@ -18,16 +18,27 @@ function maroonCalendar(options) {
     var today = new moment();
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
+    var view = generateView();
+    // var render;
 
-    // inserts the view into the html using handlebars templating engine
-    function render() {
-        var view = generateView();
-        placeholder.html(template(view));
+
+
+    // generates a 6*7 array with date objects as elements
+    function generateContent() {
+        var date = currentDate.clone();
+        date.date(1);
+        // 0 means start week on sunday, 1 monday ...
+        var startOfMonth = date.weekday();
+        var startOfContent = -startOfMonth;
+        date.date(startOfContent);
+        var cellNumber = ROWS * COLS;
+        var endDate = date.clone();
+        endDate.add(cellNumber - 1, 'day');
+        var content = closedDateInterval(date, endDate);
+        return content;
     }
 
-    // initialize
-    render();
-
+    // VIEWMODEL ---------------------------------------------------------------------------------------
     function generateView() {
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
@@ -83,15 +94,24 @@ function maroonCalendar(options) {
     // CONTROLLER ----------------------------------------------------------------------------------
     function updateContent() {
         content = generateContent();
-        render();
+        view = generateView();
+        render(view);
     }
 
+    function setRender(fun) {
+        render = fun;
+    }
+
+    // inserts the view into the html using handlebars templating engine
+    function render() {
+        placeholder.html(template(view));
+    }
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
-    placeholder.on('click', '.maroonMonth', monthSelect);
-    placeholder.on('click', '.maroonYear', yearSelect);
-    placeholder.on('click', '.maroonDate', daySelect);
+    $(document).on('click', '.maroonMonth', monthSelect);
+    $(document).on('click', '.maroonYear', yearSelect);
+    $(document).on('click', '.maroonDate', daySelect);
 
     function monthSelect(e) {
         var month = $(this).text();
@@ -158,21 +178,6 @@ function maroonCalendar(options) {
         }
     }
 
-    // generates a 6*7 array with date objects as elements
-    function generateContent() {
-        var date = currentDate.clone();
-        date.date(1);
-        // 0 means start week on sunday, 1 monday ...
-        var startOfMonth = date.weekday();
-        var startOfContent = -startOfMonth;
-        date.date(startOfContent);
-        var cellNumber = ROWS * COLS;
-        var endDate = date.clone();
-        endDate.add(cellNumber - 1, 'day');
-        var content = closedDateInterval(date, endDate);
-        return content;
-    }
-
     // turns an array a into a m x n matrix
     function toMatrix(a, m, n) {
         var result = [];
@@ -182,5 +187,5 @@ function maroonCalendar(options) {
         return result;
     }
 
-    return { currentDate, locale };
+    return { currentDate, locale, view, setRender };
 };

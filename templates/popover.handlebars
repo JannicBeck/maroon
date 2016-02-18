@@ -1,46 +1,40 @@
-<div tabindex="0" class="popover maroonPopover" role="tooltip">
-	<div class="arrow"></div>
-	<h3 class="popover-title maroonTitle">{{title}}</h3>
-	<div class="popover-content">
-		<div class="dropdown pull-left">
-			<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-				<i class="fa fa-chevron-circle-down"></i>
-				<span class="maroonCurrentMonth">{{currentMonth}}</span>
-			</button>
-			<ul class="dropdown-menu maroonMonths" role="menu">
-				{{#each months as |month|}}
-					{{{month}}}
-				{{/each}}
-			</ul>
-		</div>
-		<div class="dropdown pull-right">
-			<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-				<span class="maroonCurrentYear">{{currentYear}}</span>
-				<i class="fa fa-chevron-circle-down"></i>
-			</button>
-			<ul class="dropdown-menu maroonYears" role="menu">
-				{{#each years as |year|}}
-					{{{year}}}
-				{{/each}}
-			</ul>
-		</div>
-		<table class="table">
-			<thead>
-				<tr class="maroonWeekdays">
-					{{#each weekdaysMin as |weekday|}}
-					<th>{{{weekday}}}</th>
-					{{/each}}
-				</tr>
-			</thead>
-			<tbody class="maroonContent">
-				{{#each content as |week|}}
-				<tr>
-					{{#each week as |date|}}
-						{{{date}}}
-					{{/each}}
-				</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
+<div class="dropdown pull-left">
+	<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<i class="fa fa-chevron-circle-down"></i>
+		<span>{{currentMonth}}</span>
+	</button>
+	<ul class="dropdown-menu maroonMonths" role="menu">
+		{{#each months as |month|}}
+			{{{month}}}
+		{{/each}}
+	</ul>
 </div>
+<div class="dropdown pull-right">
+	<button class="btn btn-default btn-maroon dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<span>{{currentYear}}</span>
+		<i class="fa fa-chevron-circle-down"></i>
+	</button>
+	<ul class="dropdown-menu maroonYears" role="menu">
+		{{#each years as |year|}}
+			{{{year}}}
+		{{/each}}
+	</ul>
+</div>
+<table class="table">
+	<thead>
+		<tr class="maroonWeekdays">
+			{{#each weekdaysMin as |weekday|}}
+			<th>{{{weekday}}}</th>
+			{{/each}}
+		</tr>
+	</thead>
+	<tbody class="maroonContent">
+		{{#each content as |week|}}
+		<tr>
+			{{#each week as |date|}}
+				{{{date}}}
+			{{/each}}
+		</tr>
+		{{/each}}
+	</tbody>
+</table>

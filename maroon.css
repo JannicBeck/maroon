@@ -7,9 +7,6 @@
   margin: -5px -10px 0 -10px;
 }
 
-.maroonTitle {
-}
-
 .maroonMonths, .maroonYears{
   margin: 2px -10px 0 -10px;
   min-width: 0;
@@ -26,9 +23,6 @@
 
 .maroonYears {
   min-width: 78px;
-  max-height: 200px;
-  overflow-x: hidden;
-  text-align: center;
 }
 
 .maroonMonths {
@@ -37,6 +31,7 @@
 
 .maroonWeekdays th{
 	font-weight: normal;
+    text-align: center;
 }
 
 .maroonContent tr:last-child {
@@ -50,6 +45,7 @@
 	-ms-user-select: none;
 	user-select: none;
 	cursor: pointer;
+    text-align: center;
 }
 
 .maroonDate:hover{
@@ -69,18 +65,7 @@
   color: maroon;
 }
 
-.popover-footer {
-  margin-top: -20px;
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  background-color: #F7F7F7;
-  border-top: 1px solid #EBEBEB;
-  border-radius: 0 0 5px 5px;
-}
-
-.maroonPopover {
+/*.maroonPopover {
     display: block;
     outline: none;
-}
+}*/
