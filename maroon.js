@@ -19,22 +19,16 @@ function maroonCalendar(options) {
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
     var view = generateView();
-    // var render;
-
-
 
     // generates a 6*7 array with date objects as elements
     function generateContent() {
-        var date = currentDate.clone();
-        date.date(1);
-        // 0 means start week on sunday, 1 monday ...
-        var startOfMonth = date.weekday();
-        var startOfContent = -startOfMonth;
-        date.date(startOfContent);
+        var startDate = currentDate.clone();
+        startDate.startOf('month');
+        startDate.subtract(startDate.day(), 'days');
+        var endDate = startDate.clone();
         var cellNumber = ROWS * COLS;
-        var endDate = date.clone();
-        endDate.add(cellNumber - 1, 'day');
-        var content = closedDateInterval(date, endDate);
+        endDate.add(cellNumber - 1, 'days');
+        var content = closedDateInterval(startDate, endDate);
         return content;
     }
 
