@@ -1,3 +1,4 @@
+/*change these to whatsapp style blinking*/
 /* custom buttons */
 .btn-maroon,
 .btn-maroon:hover,
@@ -6,6 +7,7 @@
   border: 1px solid transparent;
   margin: -5px -10px 0 -10px;
 }
+
 
 .maroonMonths, .maroonYears{
   margin: 2px -10px 0 -10px;
@@ -64,8 +66,3 @@
   font-weight: bold;
   color: maroon;
 }
-
-/*.maroonPopover {
-    display: block;
-    outline: none;
-}*/

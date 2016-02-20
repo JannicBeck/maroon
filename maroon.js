@@ -2,13 +2,9 @@ function maroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
-    var template = options.template;
-    var placeholder = options.placeholder;
     var locale = options.locale || 'en';
     moment.locale(locale);
-    var intervalMode = options.intervalMode || false;
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
-
     var ROWS = 6;
     var COLS = 7;
     var months = moment.months();
@@ -33,6 +29,7 @@ function maroonCalendar(options) {
     }
 
     // VIEWMODEL ---------------------------------------------------------------------------------------
+    // translates the model into an abstraction of the view
     function generateView() {
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
@@ -65,13 +62,13 @@ function maroonCalendar(options) {
             timeElement.html(date.format('DD'));
             var tableElement = $('<td></td>');
             tableElement.addClass('maroonDate');
-            if (compareDates(date, today)) {
+            if (equalDates(date, today)) {
                 tableElement.addClass('primary');
             }
             if (!date.isSame(currentDate, 'month')) {
                 tableElement.addClass('secondary');
             }
-            if (compareDates(date, currentDate)) {
+            if (equalDates(date, currentDate)) {
                 tableElement.addClass('current');
             }
             var dateElement = tableElement.append(timeElement).prop('outerHTML');
@@ -80,53 +77,60 @@ function maroonCalendar(options) {
 
         viewContent = toMatrix(viewContent, ROWS, COLS);
 
-        return { years: viewYears, months: viewMonths,
-                weekdays, weekdaysMin, currentDate,
-                currentYear, currentMonth, content: viewContent, title };
+        return { years: viewYears, months: viewMonths, content: viewContent,
+                weekdays, weekdaysMin, currentDate, currentYear, currentMonth, title };
+    }
+
+    // inserts the viewModel into the placeholders html using handlebars templating engine
+    function render() {
+        placeholder.html(template(view));
     }
 
     // CONTROLLER ----------------------------------------------------------------------------------
-    function updateContent() {
+    function updateCalendar() {
         content = generateContent();
         view = generateView();
         render(view);
     }
 
-    function setRender(fun) {
-        render = fun;
+    // this function will be called in updateCalendar instead of regenerating the whole view
+    // everytime the calendar updates
+    function updateView() {
+
     }
 
-    // inserts the view into the html using handlebars templating engine
-    function render() {
-        placeholder.html(template(view));
+    // this will be replaced with proper getter and setters
+    // which will manipulate the model
+    function setPlaceholder(element) {
+        placeholder = element;
     }
 
     // VIEW ----------------------------------------------------------------------------------------
+    var template = options.template;
+    var placeholder = options.placeholder;
+
     // bind events
-    $(document).on('click', '.maroonMonth', monthSelect);
-    $(document).on('click', '.maroonYear', yearSelect);
-    $(document).on('click', '.maroonDate', daySelect);
+    placeholder.on('click', '.maroonMonth', monthSelect);
+    placeholder.on('click', '.maroonYear', yearSelect);
+    placeholder.on('click', '.maroonDate', daySelect);
 
     function monthSelect(e) {
         var month = $(this).text();
         currentDate.month(month);
-        updateContent();
+        updateCalendar();
     }
 
     function yearSelect(e) {
         var year = $(this).text();
         currentDate.year(year);
-        updateContent();
+        updateCalendar();
     }
 
     function daySelect(e) {
         var value = $(this).find('time').attr('datetime');
         var date = moment(value).locale(locale);
         currentDate = date;
-        if (intervalMode) {
-            activateIntervalMode();
-        }
-        updateContent();
+        updateCalendar();
     }
 
     // HELPERS -------------------------------------------------------------------------------------
@@ -161,7 +165,7 @@ function maroonCalendar(options) {
     }
 
     // compares two dates without the time portion
-    function compareDates(date, otherDate) {
+    function equalDates(date, otherDate) {
         if( date.isSame(otherDate, 'day') &&
             date.isSame(otherDate, 'month') &&
             date.isSame(otherDate, 'year')) {
@@ -181,5 +185,5 @@ function maroonCalendar(options) {
         return result;
     }
 
-    return { currentDate, locale, view, setRender };
+    return { locale, view, setPlaceholder, render };
 };

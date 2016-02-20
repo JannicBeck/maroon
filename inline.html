@@ -6,12 +6,17 @@
 	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="maroon.css">
+	<style media="screen">
+		span { font-size: 25px; color: maroon }
+	</style>
 </head>
 <body>
 
-	<div class="col-xs-1"></div>
-	<div class="maroonPopover col-xs-5"></div>
-	<div class="maroonPopover2 col-xs-6"></div>
+
+	<div class="wrapper" style="text-align: center;">
+		<div class="maroonPopover col-xs-6" style="padding:50px;"></div>
+		<div class="maroonPopoverSecond col-xs-6"  style="padding:50px;"></div>
+	</div>
 
 	<!-- <div class="wrapper" style="text-align: center;">
 		<button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%;">Click to toggle popover</button>
@@ -27,30 +32,35 @@
 	<script>
 
 		$(function(){
-			// maybe I can use the popover.js bootstrap? init empty popover and replace the content
-			$.get('templates/popover.handlebars', function(template) {
+
+			// this will be replaced with precompiled templates in the final version
+			$.get('templates/inline.handlebars', function(template) {
 				template = Handlebars.compile(template);
+
+				// options of the maroonCalendar object
 				var options = {
+					// title: 'My Awesome Calendar',
 					timespan: [2016, 2020],
 					locale: 'de',
+					placeholder: $('.maroonPopover'),
 					template: template,
-					// template: Handlebars.templates['popover-footer'],
-					// title: 'My Awesome Datepicker'
+					// template: Handlebars.templates['popover']
 				};
+
+				// create a new instance of the maroonCalendar
 				var myCalendar = maroonCalendar(options);
-				function render(view) {
-					$('.maroonPopover').html(template(view));
-				}
-				myCalendar.setRender(render);
-				render(myCalendar.view);
-				// var mySecondCalendar = maroonCalendar({
-				// 	timespan: [2016, 2020],
-				// 	locale: 'en',
-				// 	placeholder: $('.maroonPopover2'),
-				// 	template: Handlebars.compile(template)
-				// });
-				// var birthday = moment("1991-06-02");
-				// myCalendar.currentDate(birthday).locale('fr');
+				// render the calendar instance into the specified placeholder
+				myCalendar.render();
+
+				// instantiate a second calendar
+				var mySecondCalendar = maroonCalendar({
+					timespan: [2016, 2025],
+					placeholder: $('.maroonPopoverSecond'),
+					template: template
+				});
+				// render the calendar instance into the specified placeholder
+				mySecondCalendar.render();
+
 			});
 
 		}());

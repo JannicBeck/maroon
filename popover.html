@@ -9,9 +9,9 @@
 </head>
 <body>
 
-    <div class="maroonPopover" style="text-align: center;">
-        <button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%;">
-            Click to toggle Calendar-popover
+    <div class="wrapper" style="text-align: center;">
+        <button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%; outline: none;">
+			<i class="fa fa-calendar"></i>
         </button>
     </div>
 
@@ -25,33 +25,43 @@
 	<script>
 		$(function(){
 
+			// this will be replaced with precompiled templates in the final version
 			$.get('templates/popover.handlebars', function(template) {
-
 				template = Handlebars.compile(template);
+
+				// use the parent of the popover element as placeholder
+				var wrapper = $('.wrapper');
 				var calendarOptions = {
 					title: 'my Awesome Calendar',
 					timespan: [2016, 2020],
+					placeholder: wrapper,
 					locale: 'de',
-					wrapper: $('.maroonPopover'),
 					template: template
 				};
+				// instantiate calendar
 				var myCalendar = maroonCalendar(calendarOptions);
 
-	            var maroonPopover = $('#maroonPopover');
+				// STATIC CONTENT - this code is needed to initialize the popover with static content
+				// bootstrap popover options see
+				// http://getbootstrap.com/javascript/#popovers for more information
 				var popoverOptions = {
+					animation: false,
 					html: true,
+					placement: 'auto right',
+					// render the view into the content of the popover
 					content: template(myCalendar.view),
 					title: myCalendar.view.title
 				};
-				maroonPopover.popover(popoverOptions);
+				// instantiate the bootstrap popover
+				var maroonPopover = $('#maroonPopover').popover(popoverOptions);
 
+				// DYNAMIC CONTENT - this extra code is needed to make the popover dynamic
+				// bootstrap generates a new div for the popover inside the wrapper once the
+				// popover is shown and deletes it if its closed
+				// so we have to change our placeholder to that generated div
 				maroonPopover.on('shown.bs.popover', function () {
-					var container = $('.maroonPopover').find('.popover-content');
-					function render(view) {
-						container.html(template(view));
-					}
-					render(myCalendar.view);
-					myCalendar.setRender(render);
+					var container = wrapper.find('.popover-content');
+					myCalendar.setPlaceholder(container);
 				});
 
 			});
