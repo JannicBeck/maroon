@@ -30,31 +30,32 @@ function maroonCalendar(options) {
 
     // VIEWMODEL ---------------------------------------------------------------------------------------
     // translates the model into an abstraction of the view
+    var viewMonths = months.map(function(month, idx) {
+        var timeElement = $('<time></time>');
+        timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
+        timeElement.html(month);
+        var listElement = $('<li></li>');
+        var linkElement = $('<a></a>');
+        linkElement.addClass('maroonMonth');
+        var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+        return monthElement;
+    });
+
+    var viewYears = years.map(function(year, idx) {
+        var timeElement = $('<time></time>');
+        timeElement.attr('dateTime', currentDate.format('YYYY'));
+        timeElement.html(year);
+        var listElement = $('<li></li>');
+        var linkElement = $('<a></a>');
+        linkElement.addClass('maroonYear');
+        var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+        return yearElement;
+    });
+
     function generateView() {
+
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
-
-        var viewMonths = months.map(function(month, idx) {
-            var timeElement = $('<time></time>');
-            timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
-            timeElement.html(month);
-            var listElement = $('<li></li>');
-            var linkElement = $('<a></a>');
-            linkElement.addClass('maroonMonth');
-            var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
-            return monthElement;
-        });
-
-        var viewYears = years.map(function(year, idx) {
-            var timeElement = $('<time></time>');
-            timeElement.attr('dateTime', currentDate.format('YYYY'));
-            timeElement.html(year);
-            var listElement = $('<li></li>');
-            var linkElement = $('<a></a>');
-            linkElement.addClass('maroonYear');
-            var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
-            return yearElement;
-        });
 
         var viewContent = content.map(function(date) {
             var timeElement = $('<time></time>');
@@ -81,7 +82,7 @@ function maroonCalendar(options) {
                 weekdays, weekdaysMin, currentDate, currentYear, currentMonth, title };
     }
 
-    // inserts the viewModel into the placeholders html using handlebars templating engine
+    // inserts the view into the placeholders html using handlebars templating engine
     function render() {
         placeholder.html(template(view));
     }
