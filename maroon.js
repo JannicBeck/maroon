@@ -186,5 +186,25 @@ function maroonCalendar(options) {
         return result;
     }
 
+    // a function to search for a date in the calendar content
+    // I might want to return the index instead of true/false
+    // since this function will serve for disabling dates
+    function binaryDateSearch(a, x) {
+        var length = a.length;
+        if (length === 0) {
+            return false;
+        } else {
+            var m = Math.floor(length/2);
+            var y = a[m];
+            if (equalDates(x, y)) {
+                return true;
+            } else if (x < y) {
+                return binaryDateSearch(a.slice(0, m), x);
+            } else {
+                return binaryDateSearch(a.slice(m + 1), x);
+            }
+        }
+    }
+
     return { locale, view, setPlaceholder, render };
 };
