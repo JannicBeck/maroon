@@ -63,13 +63,13 @@ function maroonCalendar(options) {
             timeElement.html(date.format('DD'));
             var tableElement = $('<td></td>');
             tableElement.addClass('maroonDate');
-            if (equalDates(date, today)) {
+            if (toISOString(date) === toISOString(today)) {
                 tableElement.addClass('primary');
             }
             if (!date.isSame(currentDate, 'month')) {
                 tableElement.addClass('secondary');
             }
-            if (equalDates(date, currentDate)) {
+            if (toISOString(date) === toISOString(currentDate)) {
                 tableElement.addClass('current');
             }
             var dateElement = tableElement.append(timeElement).prop('outerHTML');
@@ -165,18 +165,6 @@ function maroonCalendar(options) {
         return dateInterval;
     }
 
-    // compares two dates without the time portion
-    function equalDates(date, otherDate) {
-        if( date.isSame(otherDate, 'day') &&
-            date.isSame(otherDate, 'month') &&
-            date.isSame(otherDate, 'year')) {
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // turns an array a into a m x n matrix
     function toMatrix(a, m, n) {
         var result = [];
@@ -186,24 +174,14 @@ function maroonCalendar(options) {
         return result;
     }
 
-    // a function to search for a date in the calendar content
-    // I might want to return the index instead of true/false
-    // since this function will serve for disabling dates
-    function binaryDateSearch(a, x) {
-        var length = a.length;
-        if (length === 0) {
-            return false;
-        } else {
-            var m = Math.floor(length/2);
-            var y = a[m];
-            if (equalDates(x, y)) {
-                return true;
-            } else if (x < y) {
-                return binaryDateSearch(a.slice(0, m), x);
-            } else {
-                return binaryDateSearch(a.slice(m + 1), x);
-            }
-        }
+    // returns the index of the date in the content
+    function searchContent(date) {
+        return content.map(toISOString).indexOf(toISOString(date));
+    }
+
+    // equals moments toISOString method but without the time portion
+    function toISOString(date) {
+        return date.format('YYYY-MM-DD');
     }
 
     return { locale, view, setPlaceholder, render };
