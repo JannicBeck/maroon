@@ -2,6 +2,8 @@ function maroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
+    var template = options.template;
+    var placeholder = options.placeholder;
     var locale = options.locale || 'en';
     moment.locale(locale);
     var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
@@ -30,39 +32,46 @@ function maroonCalendar(options) {
 
     // VIEWMODEL ---------------------------------------------------------------------------------------
     // translates the model into an abstraction of the view
-    var viewMonths = months.map(function(month, idx) {
-        var timeElement = $('<time></time>');
-        timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
-        timeElement.html(month);
-        var listElement = $('<li></li>');
-        var linkElement = $('<a></a>');
-        linkElement.addClass('maroonMonth');
-        var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
-        return monthElement;
-    });
-
-    var viewYears = years.map(function(year, idx) {
-        var timeElement = $('<time></time>');
-        timeElement.attr('dateTime', currentDate.format('YYYY'));
-        timeElement.html(year);
-        var listElement = $('<li></li>');
-        var linkElement = $('<a></a>');
-        linkElement.addClass('maroonYear');
-        var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
-        return yearElement;
-    });
-
     function generateView() {
+        var viewMonths = months.map(function(month, idx) {
+            var timeElement = $('<time></time>');
+            timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
+            timeElement.html(month);
+            var listElement = $('<li></li>');
+            var linkElement = $('<a></a>');
+            linkElement.addClass('maroonMonth');
+            var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            return monthElement;
+        });
+
+        var viewYears = years.map(function(year, idx) {
+            var timeElement = $('<time></time>');
+            timeElement.attr('dateTime', currentDate.format('YYYY'));
+            timeElement.html(year);
+            var listElement = $('<li></li>');
+            var linkElement = $('<a></a>');
+            linkElement.addClass('maroonYear');
+            var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            return yearElement;
+        });
 
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
+        var viewContent = generateViewContent();
 
+        return { years: viewYears, months: viewMonths, content: viewContent,
+                weekdays, weekdaysMin, currentDate, currentYear, currentMonth, title };
+    }
+
+    function generateViewContent() {
         var viewContent = content.map(function(date) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
             timeElement.html(date.format('DD'));
             var tableElement = $('<td></td>');
             tableElement.addClass('maroonDate');
+
+            // styling
             if (toISOString(date) === toISOString(today)) {
                 tableElement.addClass('primary');
             }
@@ -72,32 +81,32 @@ function maroonCalendar(options) {
             if (toISOString(date) === toISOString(currentDate)) {
                 tableElement.addClass('current');
             }
+
             var dateElement = tableElement.append(timeElement).prop('outerHTML');
             return dateElement;
         });
-
         viewContent = toMatrix(viewContent, ROWS, COLS);
-
-        return { years: viewYears, months: viewMonths, content: viewContent,
-                weekdays, weekdaysMin, currentDate, currentYear, currentMonth, title };
-    }
-
-    // inserts the view into the placeholders html using handlebars templating engine
-    function render() {
-        placeholder.html(template(view));
+        return viewContent;
     }
 
     // CONTROLLER ----------------------------------------------------------------------------------
     function updateCalendar() {
         content = generateContent();
-        view = generateView();
+        updateView();
         render(view);
     }
 
     // this function will be called in updateCalendar instead of regenerating the whole view
     // everytime the calendar updates
     function updateView() {
+        view.content = generateViewContent();
+        view.currentYear = currentDate.year();
+        view.currentMonth = months[currentDate.month()];
+    }
 
+    // inserts the view into the placeholders html using handlebars templating engine
+    function render() {
+        placeholder.html(template(view));
     }
 
     // this will be replaced with proper getter and setters
@@ -107,9 +116,6 @@ function maroonCalendar(options) {
     }
 
     // VIEW ----------------------------------------------------------------------------------------
-    var template = options.template;
-    var placeholder = options.placeholder;
-
     // bind events
     placeholder.on('click', '.maroonMonth', monthSelect);
     placeholder.on('click', '.maroonYear', yearSelect);
