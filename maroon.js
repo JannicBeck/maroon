@@ -33,34 +33,40 @@ function maroonCalendar(options) {
     // VIEWMODEL ---------------------------------------------------------------------------------------
     // translates the model into an abstraction of the view
     function generateView() {
+        var currentYear = currentDate.year();
+        var currentMonth = months[currentDate.month()];
+        var viewContent = generateViewContent();
+        var viewYears = generateViewYears();
+        var viewMonths = generateViewMonths();
+
+        return { years: viewYears, months: viewMonths, content: viewContent, weekdays, weekdaysMin,
+            currentDate, currentYear, currentMonth, title };
+    }
+
+    function generateViewMonths() {
         var viewMonths = months.map(function(month, idx) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
             timeElement.html(month);
-            var listElement = $('<li></li>');
             var linkElement = $('<a></a>');
             linkElement.addClass('maroonMonth');
-            var monthElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            var monthElement = linkElement.append(timeElement).prop('outerHTML');
             return monthElement;
         });
+        return viewMonths;
+    }
 
+    function generateViewYears() {
         var viewYears = years.map(function(year, idx) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', currentDate.format('YYYY'));
             timeElement.html(year);
-            var listElement = $('<li></li>');
             var linkElement = $('<a></a>');
             linkElement.addClass('maroonYear');
-            var yearElement = listElement.append(linkElement.append(timeElement)).prop('outerHTML');
+            var yearElement = linkElement.append(timeElement).prop('outerHTML');
             return yearElement;
         });
-
-        var currentYear = currentDate.year();
-        var currentMonth = months[currentDate.month()];
-        var viewContent = generateViewContent();
-
-        return { years: viewYears, months: viewMonths, content: viewContent,
-                weekdays, weekdaysMin, currentDate, currentYear, currentMonth, title };
+        return viewYears;
     }
 
     function generateViewContent() {
@@ -71,14 +77,14 @@ function maroonCalendar(options) {
             var tableElement = $('<td></td>');
             tableElement.addClass('maroonDate');
 
-            // styling
-            if (toISOString(date) === toISOString(today)) {
+            // style content
+            if (date.isSame(today, 'day')) {
                 tableElement.addClass('primary');
             }
             if (!date.isSame(currentDate, 'month')) {
                 tableElement.addClass('secondary');
             }
-            if (toISOString(date) === toISOString(currentDate)) {
+            if (date.isSame(today, 'currentDate')) {
                 tableElement.addClass('current');
             }
 
@@ -109,10 +115,16 @@ function maroonCalendar(options) {
         placeholder.html(template(view));
     }
 
-    // this will be replaced with proper getter and setters
-    // which will manipulate the model
-    function setPlaceholder(element) {
-        placeholder = element;
+    function setLocale(value) {
+        locale = value;
+        moment.locale(locale);
+        currentDate.locale(locale);
+        today.locale(locale);
+        months = moment.months();
+        weekdays = moment.weekdays();
+        weekdaysMin = moment.weekdaysMin();
+        generateView();
+        render();
     }
 
     // VIEW ----------------------------------------------------------------------------------------
@@ -182,13 +194,44 @@ function maroonCalendar(options) {
 
     // returns the index of the date in the content
     function searchContent(date) {
-        return content.map(toISOString).indexOf(toISOString(date));
+        return content.map(function(calendarDate) {
+            return calendarDate.format('YYYY-MM-DD');
+        }).indexOf(date.format('YYYY-MM-DD'));
     }
 
-    // equals moments toISOString method but without the time portion
-    function toISOString(date) {
-        return date.format('YYYY-MM-DD');
-    }
+    // getters and setters
+    var calendarObject = {};
 
-    return { locale, view, setPlaceholder, render };
+    Object.defineProperty(calendarObject, 'placeholder', {
+        get: function() {
+            return placeholder;
+        },
+        set: function(value) {
+            placeholder = value;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'locale', {
+        get: function() {
+            return locale;
+        },
+        set: setLocale
+    });
+
+    Object.defineProperty(calendarObject, 'view', {
+        get: function() {
+            return view;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'render', {
+        get: function() {
+            return render;
+        },
+        set: function(fun) {
+            render = fun;
+        }
+    });
+    return calendarObject;
+
 };
