@@ -84,7 +84,7 @@ function maroonCalendar(options) {
             if (!date.isSame(currentDate, 'month')) {
                 tableElement.addClass('secondary');
             }
-            if (date.isSame(today, 'currentDate')) {
+            if (date.isSame(currentDate, 'day')) {
                 tableElement.addClass('current');
             }
 
