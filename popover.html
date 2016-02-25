@@ -5,7 +5,7 @@
 	<title>Maroon</title>
 	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="maroon.css">
+	<link rel="stylesheet" href="css/maroonPopover.css">
 </head>
 <body>
 
@@ -61,7 +61,7 @@
 				// so we have to change our placeholder to that generated div
 				maroonPopover.on('shown.bs.popover', function () {
 					var container = wrapper.find('.popover-content');
-					myCalendar.setPlaceholder(container);
+					myCalendar.placeholder = container;
 				});
 
 			});

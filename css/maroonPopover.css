@@ -8,19 +8,18 @@
   margin: -5px -10px 0 -10px;
 }
 
-
 .maroonMonths, .maroonYears{
   margin: 2px -10px 0 -10px;
   min-width: 0;
 }
 
 .maroonMonths li, .maroonYears li {
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    cursor: pointer;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
 }
 
 .maroonYears {
@@ -28,34 +27,34 @@
 }
 
 .maroonMonths {
-    min-width: 113px;
+  min-width: 113px;
 }
 
 .maroonWeekdays th{
-	font-weight: normal;
-    text-align: center;
+  font-weight: normal;
+  text-align: center;
 }
 
 .maroonContent tr:last-child {
-    border-bottom: solid 1px #DDD;
+  border-bottom: solid 1px #DDD;
 }
 
 .maroonDate{
-	-moz-user-select: -moz-none;
-	-khtml-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-    text-align: center;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  text-align: center;
 }
 
 .maroonDate:hover{
-	background-color: #D9EDF7;
+  background-color: #D9EDF7;
 }
 
 .maroonDate.current{
-	background-color: #F5F5F5;
+  background-color: #F5F5F5;
 }
 
 .maroonDate.secondary{
