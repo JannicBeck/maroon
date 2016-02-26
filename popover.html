@@ -10,7 +10,7 @@
 <body>
 
     <div class="wrapper" style="text-align: center;">
-        <button id="maroonPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%; outline: none;">
+        <button id="myPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%; outline: none;">
 			<i class="fa fa-calendar"></i>
         </button>
     </div>
@@ -53,13 +53,13 @@
 					title: myCalendar.view.title
 				};
 				// instantiate the bootstrap popover
-				var maroonPopover = $('#maroonPopover').popover(popoverOptions);
+				var myPopover = $('#myPopover').popover(popoverOptions);
 
 				// DYNAMIC CONTENT - this extra code is needed to make the popover dynamic
 				// bootstrap generates a new div for the popover inside the wrapper once the
 				// popover is shown and deletes it if its closed
 				// so we have to change our placeholder to that generated div
-				maroonPopover.on('shown.bs.popover', function () {
+				myPopover.on('shown.bs.popover', function () {
 					var container = wrapper.find('.popover-content');
 					myCalendar.placeholder = container;
 				});

@@ -38,9 +38,10 @@ function maroonCalendar(options) {
         var viewContent = generateViewContent();
         var viewYears = generateViewYears();
         var viewMonths = generateViewMonths();
+        var viewCurrentDate = currentDate.format('DD.MM.YYYY');
 
         return { years: viewYears, months: viewMonths, content: viewContent, weekdays, weekdaysMin,
-            currentDate, currentYear, currentMonth, title };
+            currentDate: viewCurrentDate, currentYear, currentMonth, title };
     }
 
     function generateViewMonths() {
@@ -104,10 +105,13 @@ function maroonCalendar(options) {
 
     // this function will be called in updateCalendar instead of regenerating the whole view
     // everytime the calendar updates
+    // such boilerplate
     function updateView() {
         view.content = generateViewContent();
         view.currentYear = currentDate.year();
         view.currentMonth = months[currentDate.month()];
+        view.currentDate = currentDate.format('DD.MM.YYYY');
+
     }
 
     // inserts the view into the placeholders html using handlebars templating engine
@@ -115,17 +119,6 @@ function maroonCalendar(options) {
         placeholder.html(template(view));
     }
 
-    function setLocale(value) {
-        locale = value;
-        moment.locale(locale);
-        currentDate.locale(locale);
-        today.locale(locale);
-        months = moment.months();
-        weekdays = moment.weekdays();
-        weekdaysMin = moment.weekdaysMin();
-        generateView();
-        render();
-    }
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
@@ -147,7 +140,7 @@ function maroonCalendar(options) {
 
     function daySelect(e) {
         var value = $(this).find('time').attr('datetime');
-        var date = moment(value).locale(locale);
+        var date = moment(value);
         currentDate = date;
         updateCalendar();
     }
@@ -211,27 +204,12 @@ function maroonCalendar(options) {
         }
     });
 
-    Object.defineProperty(calendarObject, 'locale', {
-        get: function() {
-            return locale;
-        },
-        set: setLocale
-    });
-
     Object.defineProperty(calendarObject, 'view', {
         get: function() {
             return view;
         }
     });
 
-    Object.defineProperty(calendarObject, 'render', {
-        get: function() {
-            return render;
-        },
-        set: function(fun) {
-            render = fun;
-        }
-    });
     return calendarObject;
 
 };
