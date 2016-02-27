@@ -3,6 +3,7 @@ function maroonCalendar(options) {
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
     var template = options.template;
+    var onUpdated = options.onUpdated || $.noop;
     var placeholder = options.placeholder;
     var locale = options.locale || 'en';
     moment.locale(locale);
@@ -101,6 +102,7 @@ function maroonCalendar(options) {
         content = generateContent();
         updateView();
         render(view);
+        onUpdated(view);
     }
 
     // this function will be called in updateCalendar instead of regenerating the whole view
@@ -111,7 +113,6 @@ function maroonCalendar(options) {
         view.currentYear = currentDate.year();
         view.currentMonth = months[currentDate.month()];
         view.currentDate = currentDate.format('DD.MM.YYYY');
-
     }
 
     // inserts the view into the placeholders html using handlebars templating engine

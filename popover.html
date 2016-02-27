@@ -9,6 +9,9 @@
 </head>
 <body>
 
+	<input id="myInputField" type="input" name="name" value="">
+
+
     <div class="wrapper" style="text-align: center;">
         <button id="myPopover" type="button" class="btn btn-default" data-toggle="popover" style="position: absolute; top: 50%; outline: none;">
 			<i class="fa fa-calendar"></i>
@@ -36,7 +39,8 @@
 					timespan: [2016, 2020],
 					placeholder: wrapper,
 					locale: 'de',
-					template: template
+					template: template,
+					onUpdated: function(view) { $('#myInputField').val(view.currentDate); }
 				};
 				// instantiate calendar
 				var myCalendar = maroonCalendar(calendarOptions);
