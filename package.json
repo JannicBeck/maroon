@@ -1,8 +1,16 @@
 {
   "name": "maroon",
   "version": "0.0.1",
+  "description": "A revolutionary Calendar written in JavaScript",
+  "main": "maroon.js",
+  "scripts": {
+    "test": "node test.js && zuul --ui tape --local 9966 -- test.js",
+    "ci": "node test.js"
+  },
+  "author": "Jannic Beck <jannicbeck@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
-    "chai": "1.10.0",
-    "mocha": "2.1.0"
+    "tape": "^4.4.0",
+    "zuul": "^3.9.0"
   }
 }

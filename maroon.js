@@ -1,4 +1,4 @@
-function maroonCalendar(options) {
+function MaroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
@@ -41,8 +41,8 @@ function maroonCalendar(options) {
         var viewMonths = generateViewMonths();
         var viewCurrentDate = currentDate.format('DD.MM.YYYY');
 
-        return { years: viewYears, months: viewMonths, content: viewContent, weekdays, weekdaysMin,
-            currentDate: viewCurrentDate, currentYear, currentMonth, title };
+        return { years: viewYears, months: viewMonths, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
+            currentDate: viewCurrentDate, currentYear: currentYear, currentMonth: currentMonth, title: title };
     }
 
     function generateViewMonths() {
@@ -151,14 +151,15 @@ function maroonCalendar(options) {
     function closedInterval(start, end) {
         if (start > end) {
             return [];
+        } else {
+            var interval = [];
+            var i = start;
+            do {
+                interval[i - start] = i;
+                i++;
+            } while (i <= end);
+            return interval;    
         }
-        var interval = [];
-        var i = start;
-        do {
-            interval[i - start] = i;
-            i++;
-        } while (i <= end);
-        return interval;
     }
 
     // returns a closed date interval from startDate to endDate
@@ -213,4 +214,22 @@ function maroonCalendar(options) {
 
     return calendarObject;
 
-};
+}
+
+// HELPERS -------------------------------------------------------------------------------------
+// THESE WILL BE DELETED AND TESTED VIA GRUNT AS PRIVATE FUNCTIONS
+module.exports = closedInterval;
+
+function closedInterval(start, end) {
+    if (start > end) {
+        return [];
+    } else {
+        var interval = [];
+        var i = start;
+        do {
+            interval[i - start] = i;
+            i++;
+        } while (i <= end);
+        return interval;
+    }
+}
