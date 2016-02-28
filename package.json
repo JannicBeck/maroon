@@ -4,12 +4,15 @@
   "description": "A revolutionary Calendar written in JavaScript",
   "main": "maroon.js",
   "scripts": {
+    "postinstall": "npm test",
     "test": "node test.js && zuul --ui tape --local 9966 -- test.js",
+    "test-headless": "zuul --ui tape --phantom -- test.js",
     "ci": "node test.js"
   },
   "author": "Jannic Beck <jannicbeck@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "phantomjs": "^2.1.3",
     "tape": "^4.4.0",
     "zuul": "^3.9.0"
   }
