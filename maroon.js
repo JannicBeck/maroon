@@ -158,7 +158,7 @@ function MaroonCalendar(options) {
                 interval[i - start] = i;
                 i++;
             } while (i <= end);
-            return interval;    
+            return interval;
         }
     }
 
@@ -214,22 +214,4 @@ function MaroonCalendar(options) {
 
     return calendarObject;
 
-}
-
-// HELPERS -------------------------------------------------------------------------------------
-// THESE WILL BE DELETED AND TESTED VIA GRUNT AS PRIVATE FUNCTIONS
-module.exports = closedInterval;
-
-function closedInterval(start, end) {
-    if (start > end) {
-        return [];
-    } else {
-        var interval = [];
-        var i = start;
-        do {
-            interval[i - start] = i;
-            i++;
-        } while (i <= end);
-        return interval;
-    }
 }

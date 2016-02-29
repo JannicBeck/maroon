@@ -1,0 +1,15 @@
+name: maroon
+ui: tape
+browsers:
+  - name: firefox
+    version: 30..latest
+  - name: chrome
+    version: 30..beta
+  - name: safari
+    version: latest
+scripts:
+  - "../bower_components/jquery/dist/jquery.min.js"
+  - "../bower_components/bootstrap/dist/js/bootstrap.min.js"
+  - "../bower_components/moment/min/moment-with-locales.min.js"
+  - "../bower_components/handlebars/handlebars.min.js"
+  - "../maroon.js"

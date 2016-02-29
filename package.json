@@ -5,9 +5,10 @@
   "main": "maroon.js",
   "scripts": {
     "postinstall": "npm test",
-    "test": "node test.js && zuul --ui tape --local 9966 -- test.js",
-    "test-headless": "zuul --ui tape --phantom -- test.js",
-    "ci": "node test.js"
+    "test": "node ./test/test.js",
+    "test-headless": "./node_modules/zuul/bin/zuul --phantom -- ./test/test.js",
+    "test-local": "./node_modules/zuul/bin/zuul --local 9000 -- ./test/*.js",
+    "ci": "node ./test/test.js && npm run test-headless"
   },
   "author": "Jannic Beck <jannicbeck@gmail.com>",
   "license": "MIT",
