@@ -7,6 +7,8 @@ browsers:
     version: 30..beta
   - name: safari
     version: latest
+  - name: ie
+    version: 6..latest
 scripts:
   - "../bower_components/jquery/dist/jquery.min.js"
   - "../bower_components/bootstrap/dist/js/bootstrap.min.js"
