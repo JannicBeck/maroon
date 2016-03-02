@@ -1,3 +1,5 @@
+var helpers = require('./helpers/helpers.js');
+module.exports = MaroonCalendar;
 function MaroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
@@ -15,7 +17,7 @@ function MaroonCalendar(options) {
     var weekdaysMin = moment.weekdaysMin();
     var currentDate = new moment();
     var today = new moment();
-    var years = closedInterval(timespan[0], timespan[1]);
+    var years = helpers.closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
     var view = generateView();
 
@@ -27,7 +29,7 @@ function MaroonCalendar(options) {
         var endDate = startDate.clone();
         var cellNumber = ROWS * COLS;
         endDate.add(cellNumber - 1, 'days');
-        var content = closedDateInterval(startDate, endDate);
+        var content = helpers.closedDateInterval(startDate, endDate);
         return content;
     }
 
@@ -93,7 +95,7 @@ function MaroonCalendar(options) {
             var dateElement = tableElement.append(timeElement).prop('outerHTML');
             return dateElement;
         });
-        viewContent = toMatrix(viewContent, ROWS, COLS);
+        viewContent = helpers.toMatrix(viewContent, ROWS, COLS);
         return viewContent;
     }
 
@@ -144,54 +146,6 @@ function MaroonCalendar(options) {
         var date = moment(value);
         currentDate = date;
         updateCalendar();
-    }
-
-    // HELPERS -------------------------------------------------------------------------------------
-    // returns a closed interval from start to end
-    function closedInterval(start, end) {
-        if (start > end) {
-            return [];
-        } else {
-            var interval = [];
-            var i = start;
-            do {
-                interval[i - start] = i;
-                i++;
-            } while (i <= end);
-            return interval;
-        }
-    }
-
-    // returns a closed date interval from startDate to endDate
-    function closedDateInterval(startDate, endDate) {
-        if (startDate > endDate) {
-            return [];
-        }
-        var dateInterval = [];
-        var date = startDate.clone();
-
-        while (date <= endDate) {
-            dateInterval.push(date);
-            date = date.clone();
-            date.add(1, 'day');
-        }
-        return dateInterval;
-    }
-
-    // turns an array a into a m x n matrix
-    function toMatrix(a, m, n) {
-        var result = [];
-        for (var i = 0; i < m; i++) {
-            result[i] = a.splice(0, n);
-        }
-        return result;
-    }
-
-    // returns the index of the date in the content
-    function searchContent(date) {
-        return content.map(function(calendarDate) {
-            return calendarDate.format('YYYY-MM-DD');
-        }).indexOf(date.format('YYYY-MM-DD'));
     }
 
     // getters and setters
