@@ -1,5 +1,5 @@
-var helpers = require('./helpers/helpers.js');
-module.exports = MaroonCalendar;
+// var helpers = require('./helpers/js');
+// module.exports = MaroonCalendar;
 function MaroonCalendar(options) {
 
     // MODEL ---------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ function MaroonCalendar(options) {
     var weekdaysMin = moment.weekdaysMin();
     var currentDate = new moment();
     var today = new moment();
-    var years = helpers.closedInterval(timespan[0], timespan[1]);
+    var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
     var view = generateView();
 
@@ -29,7 +29,7 @@ function MaroonCalendar(options) {
         var endDate = startDate.clone();
         var cellNumber = ROWS * COLS;
         endDate.add(cellNumber - 1, 'days');
-        var content = helpers.closedDateInterval(startDate, endDate);
+        var content = closedDateInterval(startDate, endDate);
         return content;
     }
 
@@ -39,42 +39,14 @@ function MaroonCalendar(options) {
         var currentYear = currentDate.year();
         var currentMonth = months[currentDate.month()];
         var viewContent = generateViewContent();
-        var viewYears = generateViewYears();
-        var viewMonths = generateViewMonths();
         var viewCurrentDate = currentDate.format('DD.MM.YYYY');
 
-        return { years: viewYears, months: viewMonths, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
+        return { years: years, months: months, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
             currentDate: viewCurrentDate, currentYear: currentYear, currentMonth: currentMonth, title: title };
     }
 
-    function generateViewMonths() {
-        var viewMonths = months.map(function(month, idx) {
-            var timeElement = $('<time></time>');
-            timeElement.attr('dateTime', currentDate.format('YYYY-MM'));
-            timeElement.html(month);
-            var linkElement = $('<a></a>');
-            linkElement.addClass('maroonMonth');
-            var monthElement = linkElement.append(timeElement).prop('outerHTML');
-            return monthElement;
-        });
-        return viewMonths;
-    }
-
-    function generateViewYears() {
-        var viewYears = years.map(function(year, idx) {
-            var timeElement = $('<time></time>');
-            timeElement.attr('dateTime', currentDate.format('YYYY'));
-            timeElement.html(year);
-            var linkElement = $('<a></a>');
-            linkElement.addClass('maroonYear');
-            var yearElement = linkElement.append(timeElement).prop('outerHTML');
-            return yearElement;
-        });
-        return viewYears;
-    }
-
     function generateViewContent() {
-        var viewContent = content.map(function(date) {
+        var viewContent = content.map(function (date) {
             var timeElement = $('<time></time>');
             timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
             timeElement.html(date.format('DD'));
@@ -95,7 +67,7 @@ function MaroonCalendar(options) {
             var dateElement = tableElement.append(timeElement).prop('outerHTML');
             return dateElement;
         });
-        viewContent = helpers.toMatrix(viewContent, ROWS, COLS);
+        viewContent = toMatrix(viewContent, ROWS, COLS);
         return viewContent;
     }
 
@@ -125,8 +97,6 @@ function MaroonCalendar(options) {
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
-    placeholder.on('click', '.maroonMonth', monthSelect);
-    placeholder.on('click', '.maroonYear', yearSelect);
     placeholder.on('click', '.maroonDate', daySelect);
 
     function monthSelect(e) {
@@ -148,21 +118,80 @@ function MaroonCalendar(options) {
         updateCalendar();
     }
 
+    // returns a closed interval from start to end
+    function closedInterval(start, end) {
+        if (start > end) {
+            return [];
+        } else {
+            var interval = [];
+            var i = start;
+            do {
+                interval[i - start] = i;
+                i++;
+            } while (i <= end);
+            return interval;
+        }
+    }
+
+    // returns a closed date interval from startDate to endDate
+    function closedDateInterval(startDate, endDate) {
+        if (startDate > endDate) {
+            return [];
+        }
+        var dateInterval = [];
+        var date = startDate.clone();
+
+        while (date <= endDate) {
+            dateInterval.push(date);
+            date = date.clone();
+            date.add(1, 'day');
+        }
+        return dateInterval;
+    }
+
+    // turns an array a into a m x n matrix
+    function toMatrix(a, m, n) {
+        var result = [];
+        for (var i = 0; i < m; i++) {
+            result[i] = a.splice(0, n);
+        }
+        return result;
+    }
+
+    // returns the index a date in an array of date objects
+    function searchDateArray(date, a) {
+        return a.map(function (arrayDate) {
+            return arrayDate.format('YYYY-MM-DD');
+        }).indexOf(date.format('YYYY-MM-DD'));
+    }
+
     // getters and setters
     var calendarObject = {};
 
     Object.defineProperty(calendarObject, 'placeholder', {
-        get: function() {
+        get: function () {
             return placeholder;
         },
-        set: function(value) {
+        set: function (value) {
             placeholder = value;
         }
     });
 
     Object.defineProperty(calendarObject, 'view', {
-        get: function() {
+        get: function () {
             return view;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'monthSelect', {
+        get: function () {
+            return monthSelect;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'yearSelect', {
+        get: function () {
+            return yearSelect;
         }
     });
 

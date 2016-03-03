@@ -1,23 +1,30 @@
 var MaroonCalendar = require('./maroon.js');
+var $ = require('jquery');
 
-$(function(){
-
+$(function (){
     // this will be replaced with precompiled templates in the final version
-    $.get('templates/popover.handlebars', function(template) {
+    $.get('templates/popover.handlebars', function (template) {
         template = Handlebars.compile(template);
 
-        // use the parent of the popover element as placeholder
+        // use the wrapper of the popover element as placeholder
         var wrapper = $('.wrapper');
+
         var calendarOptions = {
             title: 'my Awesome Calendar',
             timespan: [2016, 2020],
             placeholder: wrapper,
             locale: 'de',
             template: template,
-            onUpdated: function(view) { $('#myInputField').val(view.currentDate); }
+            onUpdated: function (view) {
+                $('#myInputField').val(view.currentDate);
+            }
         };
         // instantiate calendar
         var myCalendar = MaroonCalendar(calendarOptions);
+
+        // bind events
+        wrapper.on('click', '.maroonMonths a', myCalendar.monthSelect);
+        wrapper.on('click', '.maroonYears a', myCalendar.yearSelect);
 
         // STATIC CONTENT - this code is needed to initialize the popover with static content
         // bootstrap popover options see
@@ -39,10 +46,9 @@ $(function(){
         // so we have to change our placeholder to that generated div
         myPopover.on('shown.bs.popover', function () {
             var container = wrapper.find('.popover-content');
+
             myCalendar.placeholder = container;
         });
 
     });
-
-
 }());
