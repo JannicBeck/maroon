@@ -29,12 +29,13 @@
 		</tr>
 	</thead>
 	<tbody class="maroonContent">
-		{{#each content as |week|}}
+		{{#each content as |row|}}
 		<tr>
-			{{#each week as |date|}}
-				{{{date}}}
+			{{#each row as |cell|}}
+				<td class="{{cell.cssClass}}"><time datetime="{{cell.isoDate}}">{{cell.date}}</time></td>
 			{{/each}}
 		</tr>
 		{{/each}}
+
 	</tbody>
 </table>

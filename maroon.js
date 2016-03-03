@@ -46,27 +46,24 @@ function MaroonCalendar(options) {
     }
 
     function generateViewContent() {
-        var viewContent = content.map(function (date) {
-            var timeElement = $('<time></time>');
-            timeElement.attr('dateTime', date.format('YYYY-MM-DD'));
-            timeElement.html(date.format('DD'));
-            var tableElement = $('<td></td>');
-            tableElement.addClass('maroonDate');
 
-            // style content
+        var viewContent = content.reduce(function(result, date, idx) {
+            var cssClass = '';
             if (date.isSame(today, 'day')) {
-                tableElement.addClass('primary');
+               cssClass += 'primary ';
             }
             if (!date.isSame(currentDate, 'month')) {
-                tableElement.addClass('secondary');
+               cssClass += 'secondary ';
             }
             if (date.isSame(currentDate, 'day')) {
-                tableElement.addClass('current');
+               cssClass += 'current ';
             }
+            result[idx] = { date: date.format('DD'),
+                            isoDate: date.format('YYYY-MM-DD'),
+                            cssClass: cssClass };
+            return result;
+        }, []);
 
-            var dateElement = tableElement.append(timeElement).prop('outerHTML');
-            return dateElement;
-        });
         viewContent = toMatrix(viewContent, ROWS, COLS);
         return viewContent;
     }
@@ -97,7 +94,6 @@ function MaroonCalendar(options) {
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
-    placeholder.on('click', '.maroonDate', daySelect);
 
     function monthSelect(e) {
         var month = $(this).text();
@@ -192,6 +188,12 @@ function MaroonCalendar(options) {
     Object.defineProperty(calendarObject, 'yearSelect', {
         get: function () {
             return yearSelect;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'daySelect', {
+        get: function () {
+            return daySelect;
         }
     });
 
