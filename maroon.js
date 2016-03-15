@@ -5,7 +5,6 @@ function MaroonCalendar (options) {
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
     var template = options.template;
-    var onUpdated = options.onUpdated || $.noop;
     var placeholder = options.placeholder;
     var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
@@ -110,12 +109,35 @@ function MaroonCalendar (options) {
         content = generateContent();
         view = generateView();
         render(view);
-        onUpdated(view);
+        updatedCallback(view);
     }
 
     // inserts the view into the placeholders html using handlebars templating engine
     function render () {
         placeholder.html(template(view));
+    }
+
+    var updatedCallback = function () {};
+    var daySelectCallback = function () {};
+    var monthSelectCallback = function () {};
+    var yearSelectCallback = function () {};
+
+    function on (eventName, callback) {
+        if (eventName === 'updated') {
+            updatedCallback = callback;
+        } else if (eventName === 'daySelect') {
+            daySelectCallback = callback;
+        } else if (eventName === 'monthSelect') {
+            monthSelectCallback = callback;
+        } else if (eventName === 'yearSelect') {
+            yearSelectCallback = callback;
+        } else {
+            console.error('unknown event name! Valid event names are: \n' +
+                        'updatedView\n' +
+                        'daySelect\n' +
+                        'monthSelect\n' +
+                        'yearSelect\n');
+        }
     }
 
     // VIEW ----------------------------------------------------------------------------------------
@@ -125,12 +147,14 @@ function MaroonCalendar (options) {
         var month = $(this).text();
         currentDate.month(month);
         updateCalendar();
+        monthSelectCallback(month);
     }
 
     function yearSelect (e) {
         var year = $(this).text();
         currentDate.year(year);
         updateCalendar();
+        yearSelectCallback(year);
     }
 
     function daySelect (e) {
@@ -138,6 +162,7 @@ function MaroonCalendar (options) {
         var date = moment(value);
         currentDate = date;
         updateCalendar();
+        daySelectCallback(date);
     }
 
     // returns a closed interval from start to end
@@ -220,6 +245,12 @@ function MaroonCalendar (options) {
     Object.defineProperty(calendarObject, 'daySelect', {
         get: function () {
             return daySelect;
+        }
+    });
+
+    Object.defineProperty(calendarObject, 'on', {
+        get: function () {
+            return on;
         }
     });
 

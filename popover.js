@@ -14,13 +14,15 @@ $(function (){
             timespan: [2016, 2020],
             placeholder: wrapper,
             locale: 'de',
-            template: template,
-            onUpdated: function (view) {
-                $('#myInputField').val(view.currentDate);
-            }
+            template: template
         };
         // instantiate calendar
         var myCalendar = MaroonCalendar(calendarOptions);
+
+        // update an input field everytime the calendar is updated
+        myCalendar.on('updated', function (view) {
+            $('#myInputField').val(view.currentDate);
+        });
 
         // bind events
         wrapper.on('click', '.maroonMonths a', myCalendar.monthSelect);
