@@ -5,7 +5,7 @@
 	</button>
 	<ul class="dropdown-menu maroonMonths" role="menu">
 		{{#each months as |month|}}
-			<li><a>{{month}}</a></li>
+			<li class="{{month.cssClass}}"><a><time datetime="{{month.isoMonth}}">{{month.month}}</time></a></li>
 		{{/each}}
 	</ul>
 </div>
@@ -16,7 +16,7 @@
 	</button>
 	<ul class="dropdown-menu maroonYears" role="menu">
 		{{#each years as |year|}}
-			<li><a>{{year}}</a></li>
+			<li class="{{year.cssClass}}"><a>{{year.year}}</a></li>
 		{{/each}}
 	</ul>
 </div>
@@ -29,10 +29,10 @@
 		</tr>
 	</thead>
 	<tbody class="maroonContent">
-		{{#each content as |row|}}
+		{{#each content as |week|}}
 		<tr>
-			{{#each row as |cell|}}
-				<td class="{{cell.cssClass}}"><time datetime="{{cell.isoDate}}">{{cell.date}}</time></td>
+			{{#each week as |date|}}
+				<td class="{{date.cssClass}}"><time datetime="{{date.isoDate}}">{{date.date}}</time></td>
 			{{/each}}
 		</tr>
 		{{/each}}

@@ -1,15 +1,15 @@
 // var helpers = require('./helpers/js');
 // module.exports = MaroonCalendar;
-function MaroonCalendar(options) {
+function MaroonCalendar (options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
     var template = options.template;
     var onUpdated = options.onUpdated || $.noop;
     var placeholder = options.placeholder;
+    var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
     moment.locale(locale);
-    var timespan = options.timespan || [currentDate.year(), currentDate.clone().add(5, 'year')];
     var ROWS = 6;
     var COLS = 7;
     var months = moment.months();
@@ -22,7 +22,7 @@ function MaroonCalendar(options) {
     var view = generateView();
 
     // generates a 6*7 array with date objects as elements
-    function generateContent() {
+    function generateContent () {
         var startDate = currentDate.clone();
         startDate.startOf('month');
         startDate.subtract(startDate.day(), 'days');
@@ -35,79 +35,105 @@ function MaroonCalendar(options) {
 
     // VIEWMODEL ---------------------------------------------------------------------------------------
     // translates the model into an abstraction of the view
-    function generateView() {
+    function generateView () {
         var currentYear = currentDate.year();
+        var viewYears = generateViewYears();
         var currentMonth = months[currentDate.month()];
+        var viewMonths = generateViewMonths();
         var viewContent = generateViewContent();
         var viewCurrentDate = currentDate.format('DD.MM.YYYY');
 
-        return { years: years, months: months, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
+        function generateViewYears () {
+            var todaysYear = today.year();
+            var viewYears = years.reduce(function (result, year, idx) {
+                var cssClass = '';
+                if (year == todaysYear) {
+                   cssClass += 'primary ';
+                }
+                if (year == currentYear) {
+                   cssClass += 'current ';
+                }
+                result[idx] = { year: year,
+                                cssClass: cssClass };
+                return result;
+            }, []);
+            return viewYears;
+        }
+
+        function generateViewMonths () {
+            var todaysMonth = months[today.month()];
+            var viewMonths = months.reduce(function (result, month, idx) {
+                var cssClass = '';
+                if (month === todaysMonth) {
+                   cssClass += 'primary ';
+                }
+                if (month === currentMonth) {
+                   cssClass += 'current ';
+                }
+                result[idx] = { month: month,
+                                isoMonth: currentYear + '-' + ("0" + (idx + 1)).slice(-2),
+                                cssClass: cssClass };
+                return result;
+            }, []);
+            return viewMonths;
+        }
+
+        function generateViewContent () {
+            var viewContent = content.reduce(function (result, date, idx) {
+                var cssClass = '';
+                if (date.isSame(today, 'day')) {
+                   cssClass += 'primary ';
+                }
+                if (!date.isSame(currentDate, 'month')) {
+                   cssClass += 'secondary ';
+                }
+                if (date.isSame(currentDate, 'day')) {
+                   cssClass += 'current ';
+                }
+                result[idx] = { date: date.format('DD'),
+                                isoDate: date.format('YYYY-MM-DD'),
+                                cssClass: cssClass };
+                return result;
+            }, []);
+
+            viewContent = toMatrix(viewContent, ROWS, COLS);
+            return viewContent;
+        }
+
+        return { years: viewYears, months: viewMonths, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
             currentDate: viewCurrentDate, currentYear: currentYear, currentMonth: currentMonth, title: title };
     }
 
-    function generateViewContent() {
-
-        var viewContent = content.reduce(function(result, date, idx) {
-            var cssClass = '';
-            if (date.isSame(today, 'day')) {
-               cssClass += 'primary ';
-            }
-            if (!date.isSame(currentDate, 'month')) {
-               cssClass += 'secondary ';
-            }
-            if (date.isSame(currentDate, 'day')) {
-               cssClass += 'current ';
-            }
-            result[idx] = { date: date.format('DD'),
-                            isoDate: date.format('YYYY-MM-DD'),
-                            cssClass: cssClass };
-            return result;
-        }, []);
-
-        viewContent = toMatrix(viewContent, ROWS, COLS);
-        return viewContent;
-    }
 
     // CONTROLLER ----------------------------------------------------------------------------------
-    function updateCalendar() {
+    function updateCalendar () {
         content = generateContent();
-        updateView();
+        view = generateView();
         render(view);
         onUpdated(view);
     }
 
-    // this function will be called in updateCalendar instead of regenerating the whole view
-    // everytime the calendar updates
-    // such boilerplate
-    function updateView() {
-        view.content = generateViewContent();
-        view.currentYear = currentDate.year();
-        view.currentMonth = months[currentDate.month()];
-        view.currentDate = currentDate.format('DD.MM.YYYY');
-    }
-
     // inserts the view into the placeholders html using handlebars templating engine
-    function render() {
+    function render () {
         placeholder.html(template(view));
     }
-
 
     // VIEW ----------------------------------------------------------------------------------------
     // bind events
 
-    function monthSelect(e) {
+    function monthSelect (e) {
         var month = $(this).text();
         currentDate.month(month);
         updateCalendar();
     }
 
-    function yearSelect(e) {
+    function yearSelect (e) {
         var year = $(this).text();
         currentDate.year(year);
         updateCalendar();
     }
 
-    function daySelect(e) {
+    function daySelect (e) {
         var value = $(this).find('time').attr('datetime');
         var date = moment(value);
         currentDate = date;
@@ -115,7 +141,7 @@ function MaroonCalendar(options) {
     }
 
     // returns a closed interval from start to end
-    function closedInterval(start, end) {
+    function closedInterval (start, end) {
         if (start > end) {
             return [];
         } else {
@@ -130,7 +156,7 @@ function MaroonCalendar(options) {
     }
 
     // returns a closed date interval from startDate to endDate
-    function closedDateInterval(startDate, endDate) {
+    function closedDateInterval (startDate, endDate) {
         if (startDate > endDate) {
             return [];
         }
@@ -146,7 +172,7 @@ function MaroonCalendar(options) {
     }
 
     // turns an array a into a m x n matrix
-    function toMatrix(a, m, n) {
+    function toMatrix (a, m, n) {
         var result = [];
         for (var i = 0; i < m; i++) {
             result[i] = a.splice(0, n);
@@ -155,7 +181,7 @@ function MaroonCalendar(options) {
     }
 
     // returns the index a date in an array of date objects
-    function searchDateArray(date, a) {
+    function searchDateArray (date, a) {
         return a.map(function (arrayDate) {
             return arrayDate.format('YYYY-MM-DD');
         }).indexOf(date.format('YYYY-MM-DD'));
