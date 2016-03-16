@@ -9,7 +9,8 @@
   	<thead>
   		<tr class="maroonWeekdays">
   			{{#each weekdays as |weekday|}}
-  				<th class="{{weekday.cssClass}}">{{weekday.weekday}}</th>
+  				<th class="hidden-xs {{weekday.cssClass}}">{{weekday.weekday}}</th>
+                <th class="visible-xs {{weekday.cssClass}}">{{weekday.weekdayMin}}</th>
   			{{/each}}
   		</tr>
   	</thead>
