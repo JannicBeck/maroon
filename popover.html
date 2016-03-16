@@ -44,8 +44,10 @@
 			// instantiate calendar
 			var myCalendar = MaroonCalendar(calendarOptions);
 
-			// update an input field everytime the calendar is updated
+			// update an input field thats not part of the template
+			// everytime the calendar is updated
 			myCalendar.on('updated', function (view) {
+				wrapper.html(template(view));
 				$('#myInputField').val(view.currentDate);
 			});
 
@@ -74,8 +76,9 @@
 			// so we have to change our placeholder to that generated div
 			myPopover.on('shown.bs.popover', function () {
 				var container = wrapper.find('.popover-content');
-
-				myCalendar.placeholder = container;
+				myCalendar.on('updated', function (view) {
+					container.html(template(view));
+				});
 			});
 
 		});

@@ -5,7 +5,6 @@ function MaroonCalendar (options) {
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
     var template = options.template;
-    var placeholder = options.placeholder;
     var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
     moment.locale(locale);
@@ -108,19 +107,13 @@ function MaroonCalendar (options) {
     function updateCalendar () {
         content = generateContent();
         view = generateView();
-        render(view);
         updatedCallback(view);
     }
 
-    // inserts the view into the placeholders html using handlebars templating engine
-    function render () {
-        placeholder.html(template(view));
-    }
-
-    var updatedCallback = function () {};
-    var daySelectCallback = function () {};
-    var monthSelectCallback = function () {};
-    var yearSelectCallback = function () {};
+    function updatedCallback (view) {};
+    function daySelectCallback (date) {};
+    function monthSelectCallback (month) {};
+    function yearSelectCallback (year) {};
 
     function on (eventName, callback) {
         if (eventName === 'updated') {
@@ -141,7 +134,7 @@ function MaroonCalendar (options) {
     }
 
     // VIEW ----------------------------------------------------------------------------------------
-    // bind events
+    // events
 
     function monthSelect (e) {
         var month = $(this).text();
@@ -214,15 +207,6 @@ function MaroonCalendar (options) {
 
     // getters and setters
     var calendarObject = {};
-
-    Object.defineProperty(calendarObject, 'placeholder', {
-        get: function () {
-            return placeholder;
-        },
-        set: function (value) {
-            placeholder = value;
-        }
-    });
 
     Object.defineProperty(calendarObject, 'view', {
         get: function () {

@@ -1,3 +1,5 @@
+// THIS MODULE WILL REPLACE THE INLINE SCRIPT TAG IN POPOVER.HTML
+
 var MaroonCalendar = require('./maroon.js');
 var $ = require('jquery');
 
