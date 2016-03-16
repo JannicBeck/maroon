@@ -35,6 +35,10 @@
   text-align: center;
 }
 
+.maroonWeekdays th.current {
+    border-bottom: 1px solid maroon;
+}
+
 .maroonContent tr:last-child {
   border-bottom: solid 1px #DDD;
 }

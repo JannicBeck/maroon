@@ -39,6 +39,28 @@ function MaroonCalendar (options) {
         var viewMonths = generateViewMonths();
         var viewContent = generateViewContent();
         var viewCurrentDate = currentDate.format('DD.MM.YYYY');
+        var viewWeekdays = generateViewWeekdays();
+
+        function generateViewWeekdays () {
+            var currentDay = weekdays[currentDate.day()];
+            var todaysDay = weekdays[today.day()];
+
+            var viewWeekdays = weekdays.reduce(function (result, weekday, idx) {
+                var cssClass = '';
+                var weekdayMin = weekdaysMin[idx];
+                if (weekday === todaysDay) {
+                   cssClass += 'primary ';
+                }
+                if (weekday === currentDay) {
+                   cssClass += 'current ';
+                }
+                result[idx] = { weekday: weekday,
+                                weekdayMin: weekdayMin,
+                                cssClass: cssClass };
+                return result;
+            }, []);
+            return viewWeekdays;
+        }
 
         function generateViewYears () {
             var todaysYear = today.year();
@@ -97,7 +119,7 @@ function MaroonCalendar (options) {
             return viewContent;
         }
 
-        return { years: viewYears, months: viewMonths, content: viewContent, weekdays: weekdays, weekdaysMin: weekdaysMin,
+        return { years: viewYears, months: viewMonths, content: viewContent, weekdays: viewWeekdays,
             currentDate: viewCurrentDate, currentYear: currentYear, currentMonth: currentMonth, title: title };
     }
 
@@ -133,8 +155,8 @@ function MaroonCalendar (options) {
     }
 
     // VIEW ----------------------------------------------------------------------------------------
-    // events
 
+    // events
     function monthSelect (e) {
         var month = $(this).text();
         currentDate.month(month);
@@ -156,6 +178,8 @@ function MaroonCalendar (options) {
         updateCalendar();
         daySelectCallback(date);
     }
+
+    // HELPERS -------------------------------------------------------------------------------------
 
     // returns a closed interval from start to end
     function closedInterval (start, end) {

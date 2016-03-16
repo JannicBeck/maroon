@@ -1,0 +1,66 @@
+.maroonTitle {
+    text-align: center;
+}
+
+.maroonMonths button.primary {
+    color: maroon;
+}
+
+.maroonYears button.primary {
+    color: maroon;
+}
+
+.maroonMonths button.current {
+    background-color: #F5F5F5;
+}
+
+.maroonYears button.current {
+    background-color: #F5F5F5;
+}
+
+.maroonMonths button:hover {
+    background-color: #D9EDF7;
+}
+
+.maroonYears button:hover {
+    background-color: #D9EDF7;
+}
+
+.maroonWeekdays th {
+  font-weight: normal;
+  text-align: center;
+}
+
+.maroonWeekdays th.current {
+    border-bottom: 1px solid maroon;
+}
+
+.maroonWeekdays th.primary {
+}
+
+.maroonContent td {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.maroonContent td:hover {
+  background-color: #D9EDF7;
+}
+
+.maroonContent td.current {
+  background-color: #F5F5F5;
+}
+
+.maroonContent td.secondary {
+  color: #DDD;
+}
+
+.maroonContent td.primary {
+  font-weight: bold;
+  color: maroon;
+}

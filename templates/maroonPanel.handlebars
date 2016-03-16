@@ -1,0 +1,43 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title maroonTitle">{{title}}</h3>
+  </div>
+
+  <div class="panel-body">
+
+  <table class="table">
+  	<thead>
+  		<tr class="maroonWeekdays">
+  			{{#each weekdays as |weekday|}}
+  				<th class="{{weekday.cssClass}}">{{weekday.weekday}}</th>
+  			{{/each}}
+  		</tr>
+  	</thead>
+  	<tbody class="maroonContent">
+  		{{#each content as |week|}}
+  		<tr>
+  			{{#each week as |date|}}
+  				<td class="{{date.cssClass}}"><time datetime="{{date.isoDate}}">{{date.date}}</time></td>
+  			{{/each}}
+  		</tr>
+  		{{/each}}
+  	</tbody>
+  </table>
+  </div>
+
+  <div class="panel-footer">
+      <div class="btn-toolbar" role="toolbar">
+          <div class="btn-group maroonMonths pull-left" role="group">
+              {{#each months as |month|}}
+                  <button type="button" class="btn btn-default {{month.cssClass}}"><time datetime="{{month.isoMonth}}">{{month.month}}</time></button>
+              {{/each}}
+          </div>
+
+          <div class="btn-group maroonYears pull-right" role="group">
+              {{#each years as |year|}}
+                  <button type="button" class="btn btn-default {{year.cssClass}}">{{year.year}}</button>
+              {{/each}}
+          </div>
+      </div>
+  </div>
+</div>

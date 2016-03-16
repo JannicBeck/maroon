@@ -23,8 +23,8 @@
 <table class="table">
 	<thead>
 		<tr class="maroonWeekdays">
-			{{#each weekdaysMin as |weekday|}}
-				<th>{{weekday}}</th>
+			{{#each weekdays as |weekday|}}
+				<th class="{{weekday.cssClass}}">{{weekday.weekdayMin}}</th>
 			{{/each}}
 		</tr>
 	</thead>
