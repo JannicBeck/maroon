@@ -4,7 +4,6 @@ function MaroonCalendar (options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
-    var template = options.template;
     var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
     moment.locale(locale);
