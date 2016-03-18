@@ -1,5 +1,3 @@
-// var helpers = require('./helpers/js');
-// module.exports = MaroonCalendar;
 function MaroonCalendar (options) {
 
     // MODEL ---------------------------------------------------------------------------------------
@@ -131,10 +129,10 @@ function MaroonCalendar (options) {
         updatedCallback(view);
     }
 
-    function updatedCallback (view) {};
-    function daySelectCallback (date) {};
-    function monthSelectCallback (month) {};
-    function yearSelectCallback (year) {};
+    var updatedCallback = function (view) {};
+    var daySelectCallback = function (date) {};
+    var monthSelectCallback = function (month) {};
+    var yearSelectCallback = function (year) {};
 
     function on (eventName, callback) {
         if (eventName === 'updated') {
