@@ -2,6 +2,7 @@ function MaroonCalendar (options) {
 
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
+    var happenings = options.happenings || [];
     var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
     moment.locale(locale);
@@ -96,7 +97,9 @@ function MaroonCalendar (options) {
         }
 
         function generateViewContent () {
+
             var viewContent = content.reduce(function (result, date, idx) {
+
                 var cssClass = '';
                 if (date.isSame(today, 'day')) {
                    cssClass += 'primary ';
@@ -109,9 +112,19 @@ function MaroonCalendar (options) {
                 }
                 result[idx] = { date: date.format('DD'),
                                 isoDate: date.format('YYYY-MM-DD'),
+                                happening: {},
                                 cssClass: cssClass };
                 return result;
             }, []);
+
+            happenings.forEach(function (happening) {
+                var idx = searchDate(happening.date, content);
+                // if happening was found in current content
+                if (idx != -1) {
+                    // add the happening to the view content
+                    viewContent[idx].happening = happening;
+                }
+            });
 
             viewContent = toMatrix(viewContent, ROWS, COLS);
             return viewContent;
@@ -177,6 +190,19 @@ function MaroonCalendar (options) {
         daySelectCallback(date);
     }
 
+    function registerHappening (a) {
+
+        if (a instanceof Array) {
+            a.forEach(function (happening) {
+                happenings.push(happening);
+            });
+        } else {
+            happenings.push(a);
+        }
+
+        updateCalendar();
+    }
+
     // HELPERS -------------------------------------------------------------------------------------
 
     // returns a closed interval from start to end
@@ -220,45 +246,21 @@ function MaroonCalendar (options) {
     }
 
     // returns the index a date in an array of date objects
-    function searchDateArray (date, a) {
+    function searchDate (date, a) {
         return a.map(function (arrayDate) {
             return arrayDate.format('YYYY-MM-DD');
         }).indexOf(date.format('YYYY-MM-DD'));
     }
 
-    // getters and setters
-    var calendarObject = {};
-
-    Object.defineProperty(calendarObject, 'view', {
-        get: function () {
-            return view;
-        }
-    });
-
-    Object.defineProperty(calendarObject, 'monthSelect', {
-        get: function () {
-            return monthSelect;
-        }
-    });
-
-    Object.defineProperty(calendarObject, 'yearSelect', {
-        get: function () {
-            return yearSelect;
-        }
-    });
-
-    Object.defineProperty(calendarObject, 'daySelect', {
-        get: function () {
-            return daySelect;
-        }
-    });
-
-    Object.defineProperty(calendarObject, 'on', {
-        get: function () {
-            return on;
-        }
-    });
-
-    return calendarObject;
+    return {
+        view: view,
+        actions: {
+            yearSelect: yearSelect,
+            monthSelect: monthSelect,
+            daySelect: daySelect,
+            on: on
+        },
+        registerHappening: registerHappening
+    };
 
 }

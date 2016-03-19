@@ -42,9 +42,9 @@
 			var popoverWrapper = $('.popoverWrapper');
 
 			// bind events
-			popoverWrapper.on('click', '.maroonMonths a', myCalendar.monthSelect);
-			popoverWrapper.on('click', '.maroonYears a', myCalendar.yearSelect);
-			popoverWrapper.on('click', '.maroonContent td', myCalendar.daySelect);
+			popoverWrapper.on('click', '.maroonMonths a', myCalendar.actions.monthSelect);
+			popoverWrapper.on('click', '.maroonYears a', myCalendar.actions.yearSelect);
+			popoverWrapper.on('click', '.maroonContent td', myCalendar.actions.daySelect);
 
 			// instantiate the bootstrap popover
 			// for bootstrap popover options refer to
@@ -66,7 +66,7 @@
 			// every time the maroon calendar is updated
 			myPopover.on('shown.bs.popover', function () {
 				var bspopover = popoverWrapper.find('.popover-content');
-				myCalendar.on('updated', function (view) {
+				myCalendar.actions.on('updated', function (view) {
 					// render the template into the generated bootstrap popover
 					bspopover.html(template(view));
 					$('#myInputField').val(view.currentDate);

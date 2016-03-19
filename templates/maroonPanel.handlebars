@@ -18,7 +18,11 @@
   		{{#each content as |week|}}
   		<tr>
   			{{#each week as |date|}}
-  				<td class="{{date.cssClass}}"><time datetime="{{date.isoDate}}">{{date.date}}</time></td>
+  				<td class="{{date.cssClass}}">
+                    <time datetime="{{date.isoDate}}">{{date.date}}</time>
+                    <p>{{date.happening.description}}</p>
+                    <p>{{date.happening.location}}</p>
+                </td>
   			{{/each}}
   		</tr>
   		{{/each}}

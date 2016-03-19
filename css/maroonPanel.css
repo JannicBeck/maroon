@@ -38,6 +38,13 @@
 .maroonWeekdays th.primary {
 }
 
+.maroonContent p {
+    text-align: left;
+    color: grey;
+    font-weight: normal;
+    font-size: 10px;
+}
+
 .maroonContent td {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
@@ -46,6 +53,8 @@
   user-select: none;
   cursor: pointer;
   text-align: center;
+  height: 90px;
+  max-width: 0px;
 }
 
 .maroonContent td:hover {

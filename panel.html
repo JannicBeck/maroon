@@ -10,7 +10,7 @@
 <body>
 
     <div class="spacer col-lg-1"></div>
-    <div class="calendarWrapper col-lg-10" style="padding-top: 100px"></div>
+    <div class="calendarWrapper col-lg-10" style="padding-top: 20px"></div>
     <div class="spacer col-lg-1"></div>
 
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -37,16 +37,33 @@
 			var calendarWrapper = $('.calendarWrapper');
 
 			// bind events
-			calendarWrapper.on('click', '.maroonMonths button', myCalendar.monthSelect);
-			calendarWrapper.on('click', '.maroonYears button', myCalendar.yearSelect);
-			calendarWrapper.on('click', '.maroonContent td', myCalendar.daySelect);
+			calendarWrapper.on('click', '.maroonMonths button', myCalendar.actions.monthSelect);
+			calendarWrapper.on('click', '.maroonYears button', myCalendar.actions.yearSelect);
+			calendarWrapper.on('click', '.maroonContent td', myCalendar.actions.daySelect);
 
+			// rendering
             calendarWrapper.html(template(myCalendar.view));
-
-			myCalendar.on('updated', function (view) {
-				// render the template into the generated bootstrap popover
+			myCalendar.actions.on('updated', function (view) {
 				calendarWrapper.html(template(view));
 			});
+
+			var today = new moment();
+			var in2days = new moment().add(2, 'day');
+			var in6days = new moment().add(6, 'day');
+			myCalendar.registerHappening({
+				date: today,
+				description: 'team meeting'
+			});
+			myCalendar.registerHappening([{
+				date: in2days,
+				description: 'JAVA EE course at room E011',
+				location: 'Germany, Koblenz'
+			},
+			{
+				date: in6days,
+				description: 'holidays in NEW YORK'
+			}
+			]);
 
 		});
 	}());
