@@ -50,18 +50,25 @@
 			var today = new moment();
 			var in2days = new moment().add(2, 'day');
 			var in6days = new moment().add(6, 'day');
+			var in30days = new moment().add(30, 'day');
+
 			myCalendar.registerHappening({
 				date: today,
 				description: 'team meeting'
 			});
-			myCalendar.registerHappening([{
+			myCalendar.registerHappening([
+			{
 				date: in2days,
 				description: 'JAVA EE course at room E011',
 				location: 'Germany, Koblenz'
 			},
 			{
-				date: in6days,
+				date: [in2days.add(1, 'day'), in6days],
 				description: 'holidays in NEW YORK'
+			},
+			{
+				date: in30days,
+				description: 'Steinserver launch'
 			}
 			]);
 

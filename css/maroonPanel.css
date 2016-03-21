@@ -57,6 +57,10 @@
   max-width: 0px;
 }
 
+.maroonMenu {
+    padding-bottom: 20px;
+}
+
 .maroonContent td:hover {
   background-color: #D9EDF7;
 }

@@ -3,35 +3,10 @@
     <h3 class="panel-title maroonTitle">{{title}}</h3>
   </div>
 
+
   <div class="panel-body">
 
-  <table class="table">
-  	<thead>
-  		<tr class="maroonWeekdays">
-  			{{#each weekdays as |weekday|}}
-  				<th class="hidden-xs {{weekday.cssClass}}">{{weekday.weekday}}</th>
-                <th class="visible-xs {{weekday.cssClass}}">{{weekday.weekdayMin}}</th>
-  			{{/each}}
-  		</tr>
-  	</thead>
-  	<tbody class="maroonContent">
-  		{{#each content as |week|}}
-  		<tr>
-  			{{#each week as |date|}}
-  				<td class="{{date.cssClass}}">
-                    <time datetime="{{date.isoDate}}">{{date.date}}</time>
-                    <p>{{date.happening.description}}</p>
-                    <p>{{date.happening.location}}</p>
-                </td>
-  			{{/each}}
-  		</tr>
-  		{{/each}}
-  	</tbody>
-  </table>
-  </div>
-
-  <div class="panel-footer">
-      <div class="btn-toolbar" role="toolbar">
+      <div class="btn-toolbar maroonMenu" role="toolbar">
           <div class="btn-group maroonMonths pull-left" role="group">
               {{#each months as |month|}}
                   <button type="button" class="btn btn-default {{month.cssClass}}"><time datetime="{{month.isoMonth}}">{{month.month}}</time></button>
@@ -44,5 +19,34 @@
               {{/each}}
           </div>
       </div>
+
+      <table class="table">
+      	<thead>
+      		<tr class="maroonWeekdays">
+      			{{#each weekdays as |weekday|}}
+      				<th class="hidden-xs {{weekday.cssClass}}">{{weekday.weekday}}</th>
+                    <th class="visible-xs {{weekday.cssClass}}">{{weekday.weekdayMin}}</th>
+      			{{/each}}
+      		</tr>
+      	</thead>
+      	<tbody class="maroonContent">
+      		{{#each content as |week|}}
+      		<tr>
+      			{{#each week as |date|}}
+      				<td class="{{date.cssClass}}">
+                        <time datetime="{{date.isoDate}}">{{date.date}}</time>
+                        <p>{{date.happening.description}}</p>
+                        <p>{{date.happening.location}}</p>
+                    </td>
+      			{{/each}}
+      		</tr>
+      		{{/each}}
+      	</tbody>
+      </table>
+
+  </div>
+
+  <div class="panel-footer">
+     
   </div>
 </div>

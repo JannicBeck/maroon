@@ -192,13 +192,28 @@ function MaroonCalendar (options) {
 
     function registerHappening (a) {
 
-        if (a instanceof Array) {
-            a.forEach(function (happening) {
-                happenings.push(happening);
-            });
-        } else {
-            happenings.push(a);
+        // if a is a single happening transform it into an
+        // array of length 1
+        if (!(a instanceof Array)) {
+            a = [a];
         }
+
+        a.forEach(function (happening) {
+            var happeningDate = happening.date;
+
+            // if the happening spans over a timespan
+            // transform it into multiple single happenings
+            if (happeningDate instanceof Array) {
+                var dateInterval = closedDateInterval(happeningDate[0], happeningDate[1]);
+                dateInterval.forEach(function (date) {
+                    var clone = JSON.parse(JSON.stringify(happening));
+                    clone.date = date;
+                    happenings.push(clone);
+                });
+            } else {
+                happenings.push(happening);
+            }
+        });
 
         updateCalendar();
     }
