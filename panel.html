@@ -30,7 +30,11 @@
 			var myCalendar = MaroonCalendar({
 				title: 'Bootstrap Calendar',
 				timespan: [2016, 2021],
-				locale: 'de'
+				locale: 'de',
+				happenings: [{
+					date: [new moment().add(1, 'day'), new moment().add(2, 'day')],
+					description: 'Guest lecture'
+				}]
 			});
 
 			// get the popoverWrapper
@@ -52,11 +56,15 @@
 			var in6days = new moment().add(6, 'day');
 			var in30days = new moment().add(30, 'day');
 
-			myCalendar.registerHappening({
+			myCalendar.actions.registerHappening({
 				date: today,
 				description: 'team meeting'
 			});
-			myCalendar.registerHappening([
+			myCalendar.actions.registerHappening([
+			{
+				date: [new moment().subtract(100, 'day'), new moment().subtract(10, 'day')],
+				description: 'Semesterferien'
+			},
 			{
 				date: in2days,
 				description: 'JAVA EE course at room E011',

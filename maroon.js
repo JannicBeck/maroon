@@ -1,8 +1,13 @@
 function MaroonCalendar (options) {
 
+    // Callbacks
+    var updatedCallback = function (view) {};
+    var daySelectCallback = function (date) {};
+    var monthSelectCallback = function (month) {};
+    var yearSelectCallback = function (year) {};
+
     // MODEL ---------------------------------------------------------------------------------------
     var title = options.title;
-    var happenings = options.happenings || [];
     var timespan = options.timespan || [new moment().year(), new moment().add(5, 'year').year()];
     var locale = options.locale || 'en';
     moment.locale(locale);
@@ -15,6 +20,10 @@ function MaroonCalendar (options) {
     var today = new moment();
     var years = closedInterval(timespan[0], timespan[1]);
     var content = generateContent();
+    var happenings = [];
+    if (options.happenings) {
+        registerHappening(options.happenings);
+    }
     var view = generateView();
 
     // generates a 6*7 array with date objects as elements
@@ -142,11 +151,6 @@ function MaroonCalendar (options) {
         updatedCallback(view);
     }
 
-    var updatedCallback = function (view) {};
-    var daySelectCallback = function (date) {};
-    var monthSelectCallback = function (month) {};
-    var yearSelectCallback = function (year) {};
-
     function on (eventName, callback) {
         if (eventName === 'updated') {
             updatedCallback = callback;
@@ -273,9 +277,9 @@ function MaroonCalendar (options) {
             yearSelect: yearSelect,
             monthSelect: monthSelect,
             daySelect: daySelect,
-            on: on
-        },
-        registerHappening: registerHappening
+            updateCalendar: updateCalendar,
+            on: on,
+            registerHappening: registerHappening
+        }
     };
-
 }
