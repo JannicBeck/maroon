@@ -3,9 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Maroon</title>
-	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/maroonPanel.css">
+	<link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../../css/maroonPanel.css">
 </head>
 <body>
 
@@ -14,16 +14,16 @@
     <div class="spacer col-lg-1"></div>
 
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="bower_components/jquery/dist/jquery.min.js"></script>
-	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
-	<script src="bower_components/handlebars/handlebars.min.js"></script>
-	<script src="maroon.js"></script>
+	<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../../bower_components/moment/min/moment-with-locales.min.js"></script>
+	<script src="../../bower_components/handlebars/handlebars.min.js"></script>
+	<script src="../../maroon.js"></script>
 
 	<script>
 	$(function (){
 		// this will be replaced with precompiled templates in the final version
-		$.get('templates/bootstrap/maroonPanel.handlebars', function (template) {
+		$.get('../../templates/bootstrap/maroonPanel.handlebars', function (template) {
 			template = Handlebars.compile(template);
 
 			// instantiate calendar

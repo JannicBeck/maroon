@@ -3,32 +3,36 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Maroon</title>
-	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/maroonPanel.css">
+	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="../../bower_components/Materialize/dist/css/materialize.min.css" rel="stylesheet">
+    <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../../css/materialize/maroonPanel.css">
 </head>
 <body>
 
-    <div class="spacer col-lg-1"></div>
-    <div class="calendarWrapper col-lg-10" style="padding-top: 20px"></div>
-    <div class="spacer col-lg-1"></div>
+	<div class="row">
+		<div class="calendarWrapper col s12" style="padding: 10px 100px"></div>
+	</div>
+
 
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="bower_components/jquery/dist/jquery.min.js"></script>
-	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
-	<script src="bower_components/handlebars/handlebars.min.js"></script>
-	<script src="maroon.js"></script>
+	<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../../bower_components/Materialize/dist/js/materialize.min.js"></script>
+	<script src="../../bower_components/moment/min/moment-with-locales.min.js"></script>
+	<script src="../../bower_components/handlebars/handlebars.min.js"></script>
+	<script src="../../maroon.js"></script>
 
 	<script>
 	$(function (){
+    	$('.tooltipped').tooltip({delay: 50});
+
 		// this will be replaced with precompiled templates in the final version
-		$.get('templates/bootstrap/maroonPanel.handlebars', function (template) {
+		$.get('../../templates/materialize/maroonPanel.handlebars', function (template) {
 			template = Handlebars.compile(template);
 
 			// instantiate calendar
 			var myCalendar = MaroonCalendar({
-				title: 'Bootstrap Calendar',
+				title: 'Materialize Calendar',
 				timespan: [2016, 2021],
 				locale: 'de',
 				happenings: [{
@@ -41,8 +45,8 @@
 			var calendarWrapper = $('.calendarWrapper');
 
 			// bind events
-			calendarWrapper.on('click', '.maroonMonths button', myCalendar.actions.monthSelect);
-			calendarWrapper.on('click', '.maroonYears button', myCalendar.actions.yearSelect);
+			calendarWrapper.on('click', '.maroonMonths li', myCalendar.actions.monthSelect);
+			calendarWrapper.on('click', '.maroonYears li', myCalendar.actions.yearSelect);
 			calendarWrapper.on('click', '.maroonContent td', myCalendar.actions.daySelect);
 
 			// rendering

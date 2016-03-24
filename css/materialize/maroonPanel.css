@@ -1,5 +1,4 @@
 .maroonTitle {
-    text-align: center;
 }
 
 .maroonYears {
@@ -8,28 +7,31 @@
 .maroonMonths {
 }
 
-.maroonMonths button.primary {
+.maroonMonths a.primary {
+}
+
+.maroonYears a.primary {
+}
+
+.maroonMonths a.current {
     color: maroon;
 }
 
-.maroonYears button.primary {
+.maroonYears a.current {
     color: maroon;
 }
 
-.maroonMonths button.current {
-    background-color: #F5F5F5;
-}
-
-.maroonYears button.current {
-    background-color: #F5F5F5;
-}
-
-.maroonMonths button:hover {
+.maroonMonths li:hover {
     background-color: #D9EDF7;
 }
 
-.maroonYears button:hover {
+.maroonYears li:hover {
     background-color: #D9EDF7;
+}
+
+.maroonWeekdays th {
+  font-weight: normal;
+  text-align: center;
 }
 
 .maroonWeekdays th {
@@ -61,10 +63,6 @@
   text-align: center;
   height: 90px;
   max-width: 0px;
-}
-
-.maroonMenu {
-    padding-bottom: 20px;
 }
 
 .maroonContent td:hover {

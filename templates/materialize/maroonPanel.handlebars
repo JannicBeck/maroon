@@ -1,0 +1,75 @@
+<div class="card">
+    <div class="card-content center-align">
+        <span class="card-title">{{title}}</span>
+    </div>
+
+    <ul class="pagination maroonYears center-align hide-on-med-and-down">
+        {{#each years as |year|}}
+            <li class="waves-effect"><a href="#!" class="{{year.cssClass}}">{{year.year}}</a></li>
+        {{/each}}
+    </ul>
+
+    <ul class="pagination maroonMonths center-align hide-on-med-and-down">
+        {{#each months as |month|}}
+            <li class="waves-effect"><a href="#!" class="{{month.cssClass}}"><time datetime="{{month.isoMonth}}">{{month.month}}</time></a></li>
+        {{/each}}
+    </ul>
+
+    {{!-- Mobile and Tablet --}}
+    <ul class="pagination maroonYears right-align hide-on-large-only">
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        <li class="waves-effect"><a href="#!">{{currentYear}}</a></li>
+        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    </ul>
+
+    <ul class="pagination maroonMonths left-align hide-on-large-only">
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        <li class="waves-effect"><a href="#!">{{currentMonth}}</a></li>
+        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    </ul>
+    {{!-- Mobile and Tablet --}}
+
+
+    <div class="card-content">
+        <table class="table bordered">
+          <thead>
+              <tr class="maroonWeekdays">
+                  {{#each weekdays as |weekday|}}
+                      <th class="hide-on-med-and-down {{weekday.cssClass}}">{{weekday.weekday}}</th>
+                      <th class="hide-on-large-only {{weekday.cssClass}}">{{weekday.weekdayMin}}</th>
+                  {{/each}}
+              </tr>
+          </thead>
+          <tbody class="maroonContent">
+              {{#each content as |week|}}
+              <tr>
+                  {{#each week as |date|}}
+                      <td class="{{date.cssClass}} hide-on-med-and-down">
+                          <time datetime="{{date.isoDate}}">{{date.date}}</time>
+                          <p>{{date.happening.description}}</p>
+                          <p>{{date.happening.location}}</p>
+                      </td>
+
+                      {{#if date.happening.description}}
+                      <td class="{{date.cssClass}} tooltipped hide-on-large-only" data-position="bottom" data-delay="50"
+                      data-tooltip="{{date.happening.description}}">
+                      <p>
+                          <i class="material-icons tiny">query_builder</i>
+                      </p>
+
+                      {{else}}
+                      <td class="{{date.cssClass}} hide-on-large-only">
+                      {{/if}}
+
+
+                          <time datetime="{{date.isoDate}}">{{date.date}}</time>
+                      </td>
+
+                  {{/each}}
+              </tr>
+              {{/each}}
+          </tbody>
+        </table>
+    </div>
+
+</div>

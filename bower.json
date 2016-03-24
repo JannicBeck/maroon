@@ -2,9 +2,10 @@
   "name": "maroon",
   "private": true,
   "dependencies": {
-    "bootstrap": "~3.3.3",
     "moment": "2.11.2",
     "handlebars": "4.0.5",
-    "font-awesome": "4.5.0"
+    "font-awesome": "4.5.0",
+    "bootstrap": "^3.3.6",
+    "Materialize": "materialize#^0.97.5"
   }
 }
