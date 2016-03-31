@@ -5,18 +5,19 @@
   "main": "maroon.js",
   "scripts": {
     "postinstall": "npm test",
-    "build": "browserify --standalone popover.js | uglifyjs > ./dist/maroonCalendar.min.js",
-    "watch": "watchify --standalone popover.js | uglifyjs > ./dist/maroonCalendar.min.js",
-    "test": "node ./test/test.js",
-    "test-headless": "./node_modules/zuul/bin/zuul --phantom -- ./test/test.js",
-    "test-local": "./node_modules/zuul/bin/zuul --local 9000 -- ./test/*.js",
-    "ci": "node ./test/test.js && npm run test-headless"
+    "build": "browserify --standalone maroon.js | uglifyjs > ./dist/maroonCalendar.min.js",
+    "watch": "watchify --standalone maroon.js | uglifyjs > ./dist/maroonCalendar.min.js",
+    "test": "node ./test/node-tests.js | tap-dot && npm run test-headless",
+    "test-headless": "./node_modules/zuul/bin/zuul --phantom -- ./test/*.js",
+    "test-local": "./node_modules/zuul/bin/zuul --local 9000 -- ./test/browser-tests.js",
+    "ci": "npm test"
   },
   "author": "Jannic Beck <jannicbeck@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.0.0",
     "phantomjs": "^2.1.3",
+    "tap-dot": "^1.0.4",
     "tape": "^4.4.0",
     "uglify-js": "^2.6.2",
     "watchify": "^3.7.0",

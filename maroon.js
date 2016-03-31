@@ -196,7 +196,7 @@ function MaroonCalendar (options) {
 
     function registerHappening (a) {
 
-        // if a is a single happening transform it into an
+        // if "a" is a single happening transform it into an
         // array of length 1
         if (!(a instanceof Array)) {
             a = [a];
